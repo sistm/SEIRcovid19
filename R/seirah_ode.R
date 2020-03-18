@@ -21,13 +21,7 @@
 #' sol <- deSolve::lsoda(init,t,seirah_ode,par)
 
 #' # Plot solution
-#' plot(t,sol[,3],type="l",col="blue",ylim=c(0,100000),ylab="Proportion")
-#' lines(t,sol[,4],col="green")
-#' lines(t,sol[,5],col="orange")
-#' lines(t,sol[,6],col="red")
-#' legend(1, 90000, legend=c("Infectious","Not-reported","Hospitalized","Recovered"),
-#'        col=c("blue","orange","red","green"), lty=1, cex=0.8)
-#'
+#' plot_sierah(sol)
 #' @export
 seirah_ode <- function(t,Y,par){
   S<-Y[1]
@@ -49,7 +43,7 @@ seirah_ode <- function(t,Y,par){
   dailyMove<-par[9]
 
   dYdt<-vector(length=6)
-  dYdt[1]=b*S*(I+alpha*A)/popSize+dailyMove-dailyMove*S/(popSize-I-H)
+  dYdt[1]=-b*S*(I+alpha*A)/popSize+dailyMove-dailyMove*S/(popSize-I-H)
   dYdt[2]=b*S*(I+alpha*A)/popSize-E/De-dailyMove*E/(popSize-I-H)
   dYdt[3]=r*E/De-I/Dq-I/Di
   dYdt[4]=(I+A)/Di+H/Dh-dailyMove*R/(popSize-I-H)
@@ -57,4 +51,17 @@ seirah_ode <- function(t,Y,par){
   dYdt[6]=I/Dq-H/Dh
 
   return(list(dYdt))
+}
+
+plot_sierah<-function(solution,locator.legend=F){
+  ylimmax<-max(rbind(solution[,4],solution[,5],solution[,6],solution[,7]))+1
+  plot(solution[,1],solution[,4],type="l",col="blue",ylim=c(0,ylimmax),ylab="Proportion")
+  lines(solution[,1],solution[,5],col="green")
+  lines(solution[,1],solution[,6],col="orange")
+  lines(solution[,1],solution[,7],col="red")
+  if(locator.legend){
+    legend(locator(1), legend=c("Infectious","Not-reported","Hospitalized","Recovered"), col=c("blue","orange","red","green"), lty=1, cex=0.8)
+  }else{
+    legend(1, 0.9*ylimmax, legend=c("Infectious","Not-reported","Hospitalized","Recovered"), col=c("blue","orange","red","green"), lty=1, cex=0.8)
+  }
 }
