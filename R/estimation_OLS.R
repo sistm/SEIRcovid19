@@ -1,4 +1,4 @@
-#' SEIRAH derivatives functions
+#' OLS Estimation of parameters in SIERAH models
 #'
 #' @import deSolve
 #'
@@ -29,32 +29,8 @@
 #'        col=c("blue","orange","red","green"), lty=1, cex=0.8)
 #'
 #' @export
-seirah_ode <- function(t,Y,par){
-  S<-Y[1]
-  E<-Y[2]
-  I<-Y[3]
-  R<-Y[4]
-  A<-Y[5]
-  H<-Y[6]
+ols_sierah <- function(data){
 
+  
 
-  b<-par[1]
-  r<-par[2]
-  alpha<-par[3]
-  De<-par[4]
-  Di<-par[5]
-  Dq<-par[6]
-  Dh<-par[7]
-  popSize<-par[8]
-  dailyMove<-par[9]
-
-  dYdt<-vector(length=6)
-  dYdt[1]=b*S*(I+alpha*A)/popSize+dailyMove-dailyMove*S/(popSize-I-H)
-  dYdt[2]=b*S*(I+alpha*A)/popSize-E/De-dailyMove*E/(popSize-I-H)
-  dYdt[3]=r*E/De-I/Dq-I/Di
-  dYdt[4]=(I+A)/Di+H/Dh-dailyMove*R/(popSize-I-H)
-  dYdt[5]=(1-r)*E/De-A/Di-dailyMove*A/(popSize-I-H)
-  dYdt[6]=I/Dq-H/Dh
-
-  return(list(dYdt))
 }
