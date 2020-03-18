@@ -17,4 +17,7 @@ Scrap and format data from opencovid19-fr
 \examples{
 get_data_covid19(maille = "Grand-Est",
                 source = "ARS Grand-Est")
+
+get_data_covid19(maille = "France",
+                source = "Santé publique France")
 }
