@@ -16,21 +16,21 @@
 #'
 #'@examples
 #'get_data_covid19(maille_cd = "DPT-33",
-#'                 source_ch = "ARS Nouvelle-Aquitaine")
+#'                 source_ch = "agences-regionales-sante")
 #'
 #'get_data_covid19(maille_cd = "REG-75",
-#'                 source_ch = "ARS Nouvelle-Aquitaine")
+#'                 source_ch = "agences-regionales-sante")
 #'
 #'get_data_covid19(maille_cd = "REG-44",
-#'                 source_ch = "ARS Grand-Est")
+#'                 source_ch = "agences-regionales-sante")
 #'
 #'get_data_covid19(maille_cd = "FRA",
-#'                 source_ch = "Santé publique France")
+#'                 source_ch = "sante-publique-france")
 #'
 #'get_data_covid19(maille_cd = "WORLD",
-#'                 source_ch = "Santé publique France")
-get_data_covid19 <- function(maille_cd = "REG-44",
-                             source_ch = "Santé publique France",
+#'                 source_ch = "sante-publique-france")
+get_data_covid19 <- function(maille_cd = "FRA",
+                             source_ch = "sante-publique-france",
                              date_start = NULL,
                              date_end = NULL,
                              update_from_source = FALSE){
@@ -43,7 +43,7 @@ get_data_covid19 <- function(maille_cd = "REG-44",
   }
 
   data_filtered <- alldata %>%
-    dplyr::filter(maille_code == maille_cd, source_nom == source_ch)
+    dplyr::filter(maille_code == maille_cd, source_type == source_ch)
   data_filtered$date <- lubridate::as_date(data_filtered$date)
 
   data_filtered2 <- data_filtered %>%
@@ -71,7 +71,8 @@ get_data_covid19 <- function(maille_cd = "REG-44",
     dplyr::lag(data_filtered2$deces, default = 0)
 
   out_data <- data.frame("date" = seq.Date(from = date_start, by = 1, to = date_end),
-                         "maille_code" = maille_cd)
+                         "maille_code" = maille_cd,
+                         "source_type" = source_ch)
   out_data$day <- as.numeric(difftime(out_data$date, out_data$date[1], units = "day"))
   out_data2 <- left_join(out_data, dplyr::select(data_filtered2, date, cas_confirmes_incident, deces_incident),
             by="date")
