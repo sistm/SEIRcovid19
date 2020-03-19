@@ -37,8 +37,9 @@ get_data_covid19 <- function(maille_cd = "REG-44",
 
   if(update_from_source){
     alldata <- read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
+    #save(alldata, file="data/covid19fr_chiffres-cles.RData")
   }else{
-    alldata <- read.csv(file = "data/covid19fr_chiffres-cles.csv")
+    data("covid19fr_chiffres-cles")
   }
 
   data_filtered <- alldata %>%
