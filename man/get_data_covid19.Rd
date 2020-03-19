@@ -5,19 +5,36 @@
 \title{Scrap and format data from opencovid19-fr}
 \usage{
 get_data_covid19(
-  maille = "Nouvelle-Aquitaine",
-  source = "ARS Nouvelle-Aquitaine",
+  maille_cd = "REG-44",
+  source_ch = "Santé publique France",
   date_start = NULL,
-  date_end = NULL
+  date_end = NULL,
+  update_from_source = FALSE
 )
+}
+\arguments{
+\item{maille_cd}{a character sting indicating the code}
+
+\item{source_ch}{a character string either \code{"Santé publique France"}
+or \code{"ARS XXX-XXX"} (where 'XXX-XXX' must be replaced by the region name).
+Other sources are available but not so reliable...}
 }
 \description{
 Scrap and format data from opencovid19-fr
 }
 \examples{
-get_data_covid19(maille = "Grand-Est",
-                source = "ARS Grand-Est")
+get_data_covid19(maille_cd = "DPT-33",
+                source_ch = "ARS Nouvelle-Aquitaine")
 
-get_data_covid19(maille = "France",
-                source = "Santé publique France")
+get_data_covid19(maille_cd = "REG-75",
+                source_ch = "ARS Nouvelle-Aquitaine")
+
+get_data_covid19(maille_cd = "REG-44",
+                source_ch = "ARS Grand-Est")
+
+get_data_covid19(maille_cd = "FRA",
+                source_ch = "Santé publique France")
+
+get_data_covid19(maille_cd = "WORLD",
+                source_ch = "Santé publique France")
 }
