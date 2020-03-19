@@ -1,5 +1,11 @@
 #' Scrap and format data from opencovid19-fr
 #'
+#'@param maille_cd a character sting indicating the code
+#'
+#'@param source_ch a character string either \code{"Santé publique France"}
+#'or \code{"ARS XXX-XXX"} (where 'XXX-XXX' must be replaced by the region name).
+#'Other sources are available but not so reliable...
+#'
 #' @import dplyr
 #' @importFrom lubridate as_date
 #' @importFrom tidyr replace_na
@@ -9,45 +15,64 @@
 #'@export
 #'
 #'@examples
-#'get_data_covid19(maille = "Grand-Est",
-#'                 source = "ARS Grand-Est")
+#'get_data_covid19(maille_cd = "DPT-33",
+#'                 source_ch = "ARS Nouvelle-Aquitaine")
 #'
-#'get_data_covid19(maille = "France",
-#'                 source = "Santé publique France")
-get_data_covid19 <- function(maille = "Nouvelle-Aquitaine",
-                             source = "ARS Nouvelle-Aquitaine",
+#'get_data_covid19(maille_cd = "REG-75",
+#'                 source_ch = "ARS Nouvelle-Aquitaine")
+#'
+#'get_data_covid19(maille_cd = "REG-44",
+#'                 source_ch = "ARS Grand-Est")
+#'
+#'get_data_covid19(maille_cd = "FRA",
+#'                 source_ch = "Santé publique France")
+#'
+#'get_data_covid19(maille_cd = "WORLD",
+#'                 source_ch = "Santé publique France")
+get_data_covid19 <- function(maille_cd = "REG-44",
+                             source_ch = "Santé publique France",
                              date_start = NULL,
-                             date_end = NULL){
+                             date_end = NULL,
+                             update_from_source = FALSE){
 
-  alldata <- read.csv(file = "https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
+  if(update_from_source){
+    alldata <- read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
+  }else{
+    alldata <- read.csv(file = "data/covid19fr_chiffres-cles.csv")
+  }
 
   data_filtered <- alldata %>%
-    dplyr::filter(maille_nom == maille, source_nom == source)
+    dplyr::filter(maille_code == maille_cd, source_nom == source_ch)
   data_filtered$date <- lubridate::as_date(data_filtered$date)
 
+  data_filtered2 <- data_filtered %>%
+    group_by(date) %>%
+    summarise_at(c("cas_confirmes", "deces"), mean)
+
+
   if(is.null(date_start)){
-    date_start <- min(data_filtered$date)
+    date_start <- min(data_filtered2$date)
   }else{
-    date_start <- max(date_start, min(data_filtered$date))
+    date_start <- max(date_start, min(data_filtered2$date))
   }
 
   if(is.null(date_end)){
-    date_end <- max(data_filtered$date)
+    date_end <- max(data_filtered2$date)
   }else{
-    date_end <- min(date_end, max(data_filtered$date))
+    date_end <- min(date_end, max(data_filtered2$date))
   }
 
 
-  data_filtered$cas_confirmes_incident <- data_filtered$cas_confirmes -
-    dplyr::lag(data_filtered$cas_confirmes, default = 0)
-  data_filtered$deces <- tidyr::replace_na(data_filtered$deces, 0)
-  data_filtered$deces_incident <- data_filtered$deces -
-    dplyr::lag(data_filtered$deces, default = 0)
+  data_filtered2$cas_confirmes_incident <- data_filtered2$cas_confirmes -
+    dplyr::lag(data_filtered2$cas_confirmes, default = 0)
+  data_filtered2$deces <- tidyr::replace_na(data_filtered2$deces, 0)
+  data_filtered2$deces_incident <- data_filtered2$deces -
+    dplyr::lag(data_filtered2$deces, default = 0)
 
   out_data <- data.frame("date" = seq.Date(from = date_start, by = 1, to = date_end),
-                         "maille_nom" = maille)
+                         "maille_code" = maille_cd)
   out_data$day <- as.numeric(difftime(out_data$date, out_data$date[1], units = "day"))
-  out_data2 <- left_join(out_data, dplyr::select(data_filtered, date, cas_confirmes_incident, deces_incident),
+  out_data2 <- left_join(out_data, dplyr::select(data_filtered2, date, cas_confirmes_incident, deces_incident),
             by="date")
   out_data3 <- tidyr::replace_na(out_data2, replace =list("cas_confirmes_incident" = 0,
                                                           "deces_incident"=0))

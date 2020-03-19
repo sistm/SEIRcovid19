@@ -1,16 +1,22 @@
 #' Prediction of Epidemics and ICU utilization
 #'
-#' @import deSolve
+#' @param x an object of class \code{seirah_estim}
 #'
 #' @examples
-#' pred<-prediction_sierah(c(0.1912957, -0.5439555),data=dataFR,threesholdICU=5000)
-#' print(pred)
-#'
+#' pred <- predict(c(0.1912957, -0.5439555),
+#' data=dataFR,threesholdICU=5000)
+#' pred
 #'
 #' @export
-prediction_sierah <- function(b,data,threesholdICU,alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,popSize=65000000,dailyMove=1000000,log.print=TRUE,plot.comparison=FALSE){
-  transmission<-exp(b[1])
-  ascertainment<-exp(b[2])
+predict.sierah <- function(x,
+                           b, newdata, threesholdICU,
+                           alpha=1, De=5.2,
+                           Di=2.3, Dq=10, Dh=30,
+                           popSize=65000000,
+                           dailyMove=1000000,
+                           log.print=TRUE, plot.comparison=FALSE){
+  transmission <- exp(b[1])
+  ascertainment <- exp(b[2])
   if(log.print)print(paste("transmission",transmission))
   if(log.print)print(paste("ascertainment",ascertainment))
   E0<- data[1,"cas_confirmes_incident"]*2#Twice the number of cases (346 ref)
@@ -36,7 +42,7 @@ prediction_sierah <- function(b,data,threesholdICU,alpha=1,De=5.2,Di=2.3,Dq=10,D
   Jmaxlit<-sol[which(sol$`6`==max(sol$`6`)),"time"]
   print(paste("Jour Max Lit hospitalisation",Jmaxlit))
   Dmaxlit<-as.Date(as.character(data[1,"date"]))+sol[which(sol$`6`==max(sol$`6`)),"time"]
-  print(paste("Date Max Lit hospitalisation",Dmaxlit))  
+  print(paste("Date Max Lit hospitalisation",Dmaxlit))
   print("----------")
   Jdepasselit<-min(sol$time[which(sol$`6`>threesholdICU)])
   print(paste("Jour depasse capacite Lit hospitalisation",Jdepasselit))
