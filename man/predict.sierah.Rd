@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.sierah_estim.R
 \name{predict.sierah}
 \alias{predict.sierah}
-\title{OLS Estimation of parameters in SIERAH models}
+\title{Prediction of Epidemics and ICU utilization}
 \usage{
 \method{predict}{sierah}(
   x,
@@ -24,7 +24,7 @@
 \item{x}{an object of class \code{seirah_estim}}
 }
 \description{
-OLS Estimation of parameters in SIERAH models
+Prediction of Epidemics and ICU utilization
 }
 \examples{
 pred <- predict(c(0.1912957, -0.5439555),
