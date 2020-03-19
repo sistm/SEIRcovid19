@@ -23,18 +23,10 @@ Other sources are available but not so reliable...}
 Get data from opencovid19-fr for all french region or dpt
 }
 \examples{
-get_data_covid19(maille_cd = "DPT-33",
-                source_ch = "ARS Nouvelle-Aquitaine")
+# regions
+get_data_covid19_bylevel()
 
-get_data_covid19(maille_cd = "REG-75",
-                source_ch = "ARS Nouvelle-Aquitaine")
+# departements
+get_data_covid19_bylevel(level = "departement", source3="ARS")
 
-get_data_covid19(maille_cd = "REG-44",
-                source_ch = "ARS Grand-Est")
-
-get_data_covid19(maille_cd = "FRA",
-                source_ch = "Santé publique France")
-
-get_data_covid19(maille_cd = "WORLD",
-                source_ch = "Santé publique France")
 }

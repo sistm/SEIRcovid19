@@ -15,20 +15,12 @@
 #'@export
 #'
 #'@examples
-#'get_data_covid19(maille_cd = "DPT-33",
-#'                 source_ch = "ARS Nouvelle-Aquitaine")
+#'# regions
+#'get_data_covid19_bylevel()
 #'
-#'get_data_covid19(maille_cd = "REG-75",
-#'                 source_ch = "ARS Nouvelle-Aquitaine")
+#'# departements
+#'get_data_covid19_bylevel(level = "departement", source3="ARS")
 #'
-#'get_data_covid19(maille_cd = "REG-44",
-#'                 source_ch = "ARS Grand-Est")
-#'
-#'get_data_covid19(maille_cd = "FRA",
-#'                 source_ch = "Santé publique France")
-#'
-#'get_data_covid19(maille_cd = "WORLD",
-#'                 source_ch = "Santé publique France")
 get_data_covid19_bylevel <- function(level ="region",
                                      source3 = "SPF",
                                      date_start = NULL,
@@ -36,7 +28,7 @@ get_data_covid19_bylevel <- function(level ="region",
                                      update_from_source = FALSE){
 
   stopifnot(level %in%  c("region", "departement"))
-  stopifnot(source %in% c("SPF", "ARS"))
+  stopifnot(source3 %in% c("SPF", "ARS"))
 
   res <- list()
 
@@ -52,7 +44,7 @@ get_data_covid19_bylevel <- function(level ="region",
                       "ARS" = "agences-regionales-sante")
 
   all_mailles_cd <- alldata %>%
-    filter(granularite == level) %>%
+    filter(granularite == level, source_type == s) %>%
     distinct(maille_code) %>%
     pull() %>%
     as.character()
