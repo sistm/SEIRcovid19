@@ -8,8 +8,10 @@ Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 Imports: deSolve,
          dplyr,
+         ggplot2,
          lubridate,
-         tidyr
+         tidyr,
+         optimx
 License: MIT license
 Encoding: UTF-8
 LazyData: true

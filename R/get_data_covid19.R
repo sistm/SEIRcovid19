@@ -2,8 +2,8 @@
 #'
 #'@param maille_cd a character sting indicating the code
 #'
-#'@param source_ch a character string either \code{"Santé publique France"}
-#'or \code{"ARS XXX-XXX"} (where 'XXX-XXX' must be replaced by the region name).
+#'@param source_ch a character string either \code{"sante-publique-france"}
+#'or \code{"agences-regionales-sante"}.
 #'Other sources are available but not so reliable...
 #'
 #' @import dplyr
