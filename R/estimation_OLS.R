@@ -13,15 +13,16 @@
 #'
 #'GrandEST<-get_data_covid19(maille = "Grand-Est",
 #'               source = "ARS Grand-Est")
-#'optimresult<-optim(c(log(1.75),log(0.41)), ols_sierah,data=GrandEST)
-#'ols_sierah(optimresult$par,data=GrandEST,plot.comparison = TRUE)
+#'optimresult<-optim(c(log(1.75),log(0.41)), ols_sierah,data=GrandEST,popSize=5518000 ,dailyMove=0.1*5518000)
+#'ols_sierah(optimresult$par,data=GrandEST,popSize=5518000 ,dailyMove=0.1*5518000,plot.comparison = TRUE)
 #'
 #'
 #'NouvelleAquitaine<-get_data_covid19(maille = "Nouvelle-Aquitaine",
 #'               source = "ARS Nouvelle-Aquitaine")
 #'NouvelleAquitaine<-NouvelleAquitaine[41:54,]
-#'optimresult<-optim(c(log(1.75),log(0.41)), ols_sierah,data=NouvelleAquitaine)
-#'ols_sierah(optimresult$par,data=NouvelleAquitaine,plot.comparison = TRUE)
+#'NouvelleAquitaine$day<-NouvelleAquitaine$day-40
+#'optimresult<-optim(c(log(1.75),log(0.41)), ols_sierah,data=NouvelleAquitaine,popSize=5987000 ,dailyMove=0.1*5987000)
+#'ols_sierah(optimresult$par,data=NouvelleAquitaine,plot.comparison = TRUE,popSize=5987000 ,dailyMove=0.1*5987000)
 #' @export
 ols_sierah <- function(b,data,alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,popSize=65000000,dailyMove=1000000,log.print=TRUE,plot.comparison=FALSE){
   transmission<-exp(b[1])

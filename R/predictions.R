@@ -1,4 +1,4 @@
-#' OLS Estimation of parameters in SIERAH models
+#' Prediction of Epidemics and ICU utilization
 #'
 #' @import deSolve
 #'
