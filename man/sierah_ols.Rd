@@ -24,21 +24,22 @@ OLS Estimation of parameters in SIERAH models
 \examples{
 dataFR<-get_data_covid19(maille = "France",
              source = "Santé publique France")
-#Perform OLS
-optimresult<-optim(c(log(1.75),log(0.41)), sierah_ols,data=dataFR)
-#Plot fitted vs. observed
-sierah_ols(optimresult$par,data=dataFR,plot_comparison = TRUE)
+#Perform OLS            
+optimresult<-optim(c(log(1.75),log(0.41)), ols_sierah,data=dataFR)
+#Plot fitted vs. observed 
+ols_sierah(optimresult$par,data=dataFR,plot.comparison = TRUE)
 
 
 GrandEST<-get_data_covid19(maille = "Grand-Est",
               source = "ARS Grand-Est")
-optimresult<-optim(c(log(1.75),log(0.41)), sierah_ols,data=GrandEST)
-sierah_ols(optimresult$par,data=GrandEST,plot_comparison = TRUE)
+optimresult<-optim(c(log(1.75),log(0.41)), ols_sierah,data=GrandEST,popSize=5518000 ,dailyMove=0.1*5518000)
+ols_sierah(optimresult$par,data=GrandEST,popSize=5518000 ,dailyMove=0.1*5518000,plot.comparison = TRUE)
 
 
 NouvelleAquitaine<-get_data_covid19(maille = "Nouvelle-Aquitaine",
               source = "ARS Nouvelle-Aquitaine")
 NouvelleAquitaine<-NouvelleAquitaine[41:54,]
-optimresult<-optim(c(log(1.75),log(0.41)), sierah_ols,data=NouvelleAquitaine)
-sierah_ols(optimresult$par,data=NouvelleAquitaine,plot_comparison = TRUE)
+NouvelleAquitaine$day<-NouvelleAquitaine$day-40
+optimresult<-optim(c(log(1.75),log(0.41)), ols_sierah,data=NouvelleAquitaine,popSize=5987000 ,dailyMove=0.1*5987000)
+ols_sierah(optimresult$par,data=NouvelleAquitaine,plot.comparison = TRUE,popSize=5987000 ,dailyMove=0.1*5987000)
 }
