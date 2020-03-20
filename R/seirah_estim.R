@@ -26,15 +26,19 @@
 seirah_estim <- function(binit, data,
                          alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
                          popSize=65000000, dailyMove=0.1*popSize,
-                         verbose = TRUE){
+                         verbose = TRUE, optim_ols = TRUE){
 
-  param_optimal <- optim(binit,
-                       fn = seirah_ols,
-                       data = data,
-                       popSize = popSize,
-                       dailyMove = dailyMove,
-                       verbose = verbose)
-
+  if(optim_ols){
+    param_optimal <- optim(binit,
+                           fn = seirah_ols,
+                           data = data,
+                           popSize = popSize,
+                           dailyMove = dailyMove,
+                           verbose = verbose)
+  }else{
+    param_optimal <- list()
+    param_optimal[["par"]] <- binit
+  }
 
   # Optimal solution
   transmission <- exp(param_optimal$par[1])
@@ -96,12 +100,23 @@ plot.seirah_estim <- function(x){
 
 }
 
-#' Plotting method for a SEIRAH fit object
+#' Plotting method for a list of SEIRAH fit objects
 #'
 #' @import ggplot2
 #'
 #' @export
 plot_list.seirah_estim <- function(x){
+
+  browser()
+  ldf <- lapply(x, function(l){
+    temp <- as.data.frame(l$solution)
+    temp$maille_code <- names(l)
+    temp$date <- l$data$date[1]+temp$time
+    return(temp)
+  })
+  all_preds <- do.call(rbind.data.frame, ldf)
+
+
 
   sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
 
