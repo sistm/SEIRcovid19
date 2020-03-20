@@ -44,4 +44,7 @@ fit_NA <- seirah_estim(binit = c(1.75, 0.41),
 plot(fit_NA)
 
 
+simul_xihong<- seirah_estim(binit=c(1.75, 0.41),data=NULL,stateinit=c(9999467,346,80,0,80,27),
+initwithdata=FALSE,alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,popSize=65000000,dailyMove=0.1*65000000,verbose = TRUE,optim_ols = FALSE)
+plot(simul_xihong)
 }

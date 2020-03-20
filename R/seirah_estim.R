@@ -23,8 +23,8 @@
 #'                       data = data_NA,
 #'                       popSize = 5987000, dailyMove = 0.1*5987000)
 #' plot(fit_NA)
-#' 
-#' 
+#'
+#'
 #' simul_xihong<- seirah_estim(binit=c(1.75, 0.41),data=NULL,stateinit=c(9999467,346,80,0,80,27),
 #' initwithdata=FALSE,alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,popSize=65000000,dailyMove=0.1*65000000,verbose = TRUE,optim_ols = FALSE)
 #' plot(simul_xihong)
@@ -43,9 +43,9 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
   }
   if((is.null(data))&((initwithdata))){
     stop("Data need to be provided")
-  }  
+  }
   if(is.null(data))optim_ols<-FALSE
-  
+
   if(initwithdata){
     E0 <- data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
     I0 <- data[1, "cas_confirmes_incident"] # Numbers of cases
@@ -57,8 +57,8 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
   }else{
     init <-stateinit
   }
-  
-  
+
+
   if(optim_ols){
     param_optimal <- optim(log(binit),
                            fn = seirah_ols,
@@ -68,16 +68,16 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                            verbose = verbose)
     transmission <- exp(param_optimal$par[1])
     ascertainment <- exp(param_optimal$par[2])
-    }else{
-      param_optimal <- list()
-      param_optimal[["par"]] <- binit
-      transmission <- param_optimal$par[1]
-      ascertainment <- param_optimal$par[2]
-    }
+  }else{
+    param_optimal <- list()
+    param_optimal[["par"]] <- binit
+    transmission <- param_optimal$par[1]
+    ascertainment <- param_optimal$par[2]
+  }
 
   # Optimal solution
 
- 
+
   t <- seq(0,365)
   par <- c(transmission, ascertainment, alpha,
            De, Di, Dq, Dh, popSize, dailyMove)
@@ -133,39 +133,59 @@ plot.seirah_estim <- function(x){
 #' @import ggplot2
 #'
 #' @export
-plot_list.seirah_estim <- function(x){
+plot_list.seirah_estim <- function(x, only_observed_dates = TRUE,
+                                   compartments = c("S", "E", "I", "R", "A", "H")){
 
-  
-  if(is.null(x$data)){
-    ggplot(x$solution, aes(x=time)) +
-      geom_line(aes(y = S, color = "S")) +
-      geom_line(aes(y = E, color = "E")) +
-      geom_line(aes(y = I, color = "I")) +
-      geom_line(aes(y = R, color = "R")) +
-      geom_line(aes(y = A, color = "A")) +
-      geom_line(aes(y = H, color = "H")) +
-      theme_classic() +
-      ylab("Number of incident cases") +
-      scale_color_manual("", values=c("black", "orange","blue","green","purple","red"))
-  }else{
-    browser()
-    ldf <- lapply(x, function(l){
-      temp <- as.data.frame(l$solution)
-      temp$maille_code <- names(l)
-      temp$date <- l$data$date[1]+temp$time
-      return(temp)
-    })
-    all_preds <- do.call(rbind.data.frame, ldf)
-    
-    
-    sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
-    data2plot <- cbind.data.frame(x$data, sol_obstime)
-    
-     ggplot(data2plot, aes(x=date)) +
-        geom_point(aes(y = cas_confirmes_incident, color = "Observed")) +
-        geom_line(aes(y = I, color = "SEIRAH")) +
-        theme_classic() +
-        ylab("Number of incident cases") +
-        scale_color_manual("", values=c("black", "blue"))
+
+
+  ldf <- lapply(names(x), function(r){
+    l <- x[[r]]
+    temp <- as.data.frame(l$solution)
+    temp$maille_code <- r
+    temp$date <- l$data$date[1]+temp$time
+    return(temp)
+  })
+  all_preds <- do.call(rbind.data.frame, ldf)
+
+  ldf_obs <- lapply(x, "[[", "data")
+  all_data <- do.call(rbind.data.frame, ldf_obs)
+
+  preds2plot <- reshape2::melt(all_preds, id.vars=c("time", "maille_code", "date"))
+  preds2plot <- preds2plot %>%
+    filter(variable %in% compartments)
+  ymax_pred <- max(preds2plot$value)
+
+  p <- ggplot(preds2plot, aes(x = date))
+
+  if(nrow(all_data)>0){
+    ymax_obs <- max(all_data$cas_confirmes_incident)
+    p <- p +
+      geom_point(data = all_data,
+                 aes(y = cas_confirmes_incident, shape="Observed"), color="black") +
+      scale_shape_discrete("")
+
+    if(only_observed_dates){
+      ymax_pred <- preds2plot %>%
+        filter(date <= max(all_data$date)) %>%
+        select(value) %>%
+        max()
+      p <- p +
+        xlim(min(all_data$date), max(all_data$date))
+    }
+    ymax_pred <- max(ymax_pred, ymax_obs)
   }
+
+  p <- p +
+    geom_line(aes(y = value, color=variable, group = variable)) +
+    theme_classic() +
+    ylab("Number") +
+    #scale_color_manual(
+    scale_color_discrete("Compartment", labels=c("S (susceptible)", "E (exposed)",
+                                                 "I (Infected)", "R (removed)",
+                                                 "A (Not-reported)", "H (hospitalized)")) +
+    #values=c("black", "orange","blue","green","purple","red")) +
+    facet_wrap(~maille_code) +
+    ylim(0, ymax_pred)
+
+  return(p)
 }

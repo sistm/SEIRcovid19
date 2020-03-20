@@ -17,11 +17,13 @@ for (r in names(region_data)){
   message(r, " fitted")
 }
 
+plot_list.seirah_estim(res, only_observed_dates = FALSE)
+plot_list.seirah_estim(res, compartments = "I", only_observed_dates = TRUE)
 
-all_plots <- list()
-for (r in names(region_data)){
-  all_plots[[r]] <- plot(res[[r]]) + ggtitle(r)
-}
-
-library(cowplot)
-cowplot::plot_grid(plotlist = all_plots, ncol=3)
+# all_plots <- list()
+# for (r in names(region_data)){
+#   all_plots[[r]] <- plot(res[[r]]) + ggtitle(r)
+# }
+#
+# library(cowplot)
+# cowplot::plot_grid(plotlist = all_plots, ncol=3)

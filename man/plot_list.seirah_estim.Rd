@@ -4,7 +4,11 @@
 \alias{plot_list.seirah_estim}
 \title{Plotting method for a list of SEIRAH fit objects}
 \usage{
-plot_list.seirah_estim(x)
+plot_list.seirah_estim(
+  x,
+  only_observed_dates = TRUE,
+  compartments = c("S", "E", "I", "R", "A", "H")
+)
 }
 \description{
 Plotting method for a list of SEIRAH fit objects
