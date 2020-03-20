@@ -13,11 +13,10 @@
 predict.seirah_estim <- function(object, threesholdICU = 5000,
                                  verbose=TRUE){
 
-
   sol <- as.data.frame(object$solution)
   date_start <- object$data$date[1]
 
-  Jpic <- sol %>%
+    Jpic <- sol %>%
     filter(I==max(I)) %>%
     pull(time)
   Dpic <-  date_start + Jpic

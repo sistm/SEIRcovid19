@@ -27,7 +27,7 @@
 seirah_solve <- function(init, t, par){
 
   solution <- deSolve::lsoda(init, t, seirah_ode, par)
-  colnames(solution) <- c("time", "S", "E", "I", "A", "H", "R")
+  colnames(solution) <- c("time", "S", "E", "I", "R", "A", "H")
   class(solution) <- c("seirah_solve", "deSolve", "matrix" )
 
   return(solution)
