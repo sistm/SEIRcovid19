@@ -1,5 +1,6 @@
 #install.packages("./monolix/lixoftConnectors.tar.gz", repos = NULL, type="source", INSTALL_opts ="--no-multiarch")
 library(lixoftConnectors)
+library(ggplot2)
 initializeLixoftConnectors(software="monolix")
 
 newProject(modelFile = "./monolix/seirah_poisson.txt",
@@ -60,16 +61,39 @@ names(indivParams)<-c("id","transmission","ascertainment")
 
 data<-read.table("./monolix/data_region_20200320.txt",sep="\t",header=TRUE)
 chiffres<-read.table("./monolix/Chiffres.txt",sep="\t",header=TRUE)
+data$date<-lubridate::as_date(as.character(data$date))
 
-               
+
+result<-as.data.frame(matrix(NA,ncol=8,nrow=0))
+names(result)<-c("location","Jpic","Dpic","maxlit","Jmaxlit","Dmaxlit","Jdepasselit","Ddepasselit")
 for (i in 1:length(indivParams$id)){
-   i=6
-   temp_monolix_estim<-seirah_estim(binit=indivParams[i,2:3], data=data[which(data$goodID==as.character(indivParams[i,1])),], data=data[which(data$goodID==as.character(indivParams[i,1])),],
-                                    alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
-                                    popSize=chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"], dailyMove=0.10*chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"],
-                                    verbose = TRUE)
-   predict(temp_monolix_estim, threesholdICU = chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"nbICU"],verbose=TRUE)
+
+     temp_monolix_estim<-seirah_estim(binit=log(as.numeric(indivParams[i,2:3])), 
+                                    data=data[which(data$goodID==as.character(indivParams[i,1])),],
+                                    alpha=1,
+                                    De=5.2,
+                                    Di=2.3,
+                                    Dq=10,
+                                    Dh=30,
+                                    popSize=chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"], 
+                                    dailyMove=0.10*chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"],
+                                    verbose = TRUE,
+                                    optim_ols=FALSE)
+     jpeg(paste("./monolix/outputMonolix/graphics/Epidemics365_",as.character(indivParams[i,1]),".jpg",sep=""))
+     plot(temp_monolix_estim$solution)
+     dev.off()
+     
+     jpeg(paste("./monolix/outputMonolix/graphics/Fit_",as.character(indivParams[i,1]),".jpg",sep=""))
+          plot(temp_monolix_estim$data[,"day"],temp_monolix_estim$data[,"cas_confirmes_incident"],ylim=c(0,500))
+     lines(temp_monolix_estim$solution[,"time"], temp_monolix_estim$solution[,"I"],col="blue",main=as.character(indivParams[i,1]),ylab="Cas incidents",xlab="time")
+     dev.off()
+     
+       temp_monolix_projection<-predict(temp_monolix_estim, threesholdICU = chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"ICUnb"],verbose=TRUE)
    
+   result[i,]<-c(as.character(indivParams[i,1]),temp_monolix_projection$predictions$Jpic,as.character(temp_monolix_projection$predictions$Dpic),round(temp_monolix_projection$predictions$maxlit,0),temp_monolix_projection$predictions$Jmaxlit,as.character(temp_monolix_projection$predictions$Dmaxlit),temp_monolix_projection$predictions$Jdepasselit,as.character(temp_monolix_projection$predictions$Ddepasselit))
    
 }
 
+
+result
+write.table(result,file=paste("./monolix/outputMonolix/graphics/indicateurs_results.txt",sep=""),sep="\t",row.names = F,quote=F)

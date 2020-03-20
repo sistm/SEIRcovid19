@@ -7,7 +7,7 @@ plot.seirah_solve <- function(x, locator.legend=F){
 
   ylimmax <- max(rbind(x[,4], x[,5], x[,6], x[,7])) + 1
 
-  plot(x[, "time"], x[, "I"],type="l",col="blue",ylim=c(0,ylimmax),ylab="Proportion")
+  plot(x[, "time"], x[, "I"],type="l",col="blue",ylim=c(0,ylimmax),ylab="Proportion",xlab="Time")
   lines(x[, "time"], x[, "A"],col="green")
   lines(x[, "time"], x[, "H"],col="orange")
   lines(x[, "time"], x[, "R"],col="red")

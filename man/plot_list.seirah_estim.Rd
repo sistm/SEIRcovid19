@@ -2,10 +2,10 @@
 % Please edit documentation in R/seirah_estim.R
 \name{plot_list.seirah_estim}
 \alias{plot_list.seirah_estim}
-\title{Plotting method for a SEIRAH fit object}
+\title{Plotting method for a list of SEIRAH fit objects}
 \usage{
 plot_list.seirah_estim(x)
 }
 \description{
-Plotting method for a SEIRAH fit object
+Plotting method for a list of SEIRAH fit objects
 }
