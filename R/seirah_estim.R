@@ -86,12 +86,14 @@ seirah_estim <- function(binit, data,
 plot.seirah_estim <- function(x){
 
   sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
-  ylimmax <- max(rbind(sol_obstime[,"I"], x$data[,"cas_confirmes_incident"]))+1
+
   data2plot <- cbind.data.frame(x$data, sol_obstime)
+
   ggplot(data2plot, aes(x=date)) +
     geom_point(aes(y = cas_confirmes_incident, color = "Observed")) +
     geom_line(aes(y = I, color = "SEIRAH")) +
     theme_classic() +
     ylab("Number of incident cases") +
     scale_color_manual("", values=c("black", "blue"))
+
 }

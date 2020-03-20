@@ -33,7 +33,8 @@ get_data_covid19 <- function(maille_cd = "FRA",
                              source_ch = "sante-publique-france",
                              date_start = NULL,
                              date_end = NULL,
-                             update_from_source = FALSE){
+                             update_from_source = FALSE,
+                             epidemic_start = TRUE){
 
   if(update_from_source){
     alldata <- read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
@@ -50,6 +51,17 @@ get_data_covid19 <- function(maille_cd = "FRA",
     group_by(date) %>%
     summarise_at(c("cas_confirmes", "deces"), mean)
 
+  if(epidemic_start){
+    epidemic_start_date <- data_filtered2 %>%
+      arrange(date) %>%
+      filter(cas_confirmes > 0) %>%
+      pull(date)
+    data_filtered3 <- data_filtered2 %>%
+      filter(date > epidemic_start_date[1])
+
+  }else{
+    data_filtered3 <- data_filtered2
+  }
 
   if(is.null(date_start)){
     date_start <- min(data_filtered2$date)
