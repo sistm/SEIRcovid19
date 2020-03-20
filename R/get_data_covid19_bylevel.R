@@ -25,7 +25,8 @@ get_data_covid19_bylevel <- function(level ="region",
                                      source3 = "SPF",
                                      date_start = NULL,
                                      date_end = NULL,
-                                     update_from_source = FALSE){
+                                     update_from_source = FALSE,
+                                     epidemic_start = TRUE){
 
   stopifnot(level %in%  c("region", "departement"))
   stopifnot(source3 %in% c("SPF", "ARS"))
@@ -54,7 +55,8 @@ get_data_covid19_bylevel <- function(level ="region",
                                  source_ch = s,
                                  date_start = date_start,
                                  date_end = date_end,
-                                 update_from_source = update_from_source)
+                                 update_from_source = update_from_source,
+                                 epidemic_start = epidemic_start)
   }
 
 

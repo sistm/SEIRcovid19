@@ -9,7 +9,8 @@ get_data_covid19_bylevel(
   source3 = "SPF",
   date_start = NULL,
   date_end = NULL,
-  update_from_source = FALSE
+  update_from_source = FALSE,
+  epidemic_start = TRUE
 )
 }
 \arguments{

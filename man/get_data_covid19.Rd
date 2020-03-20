@@ -9,7 +9,8 @@ get_data_covid19(
   source_ch = "sante-publique-france",
   date_start = NULL,
   date_end = NULL,
-  update_from_source = FALSE
+  update_from_source = FALSE,
+  epidemic_start = TRUE
 )
 }
 \arguments{

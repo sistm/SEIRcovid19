@@ -64,29 +64,29 @@ get_data_covid19 <- function(maille_cd = "FRA",
   }
 
   if(is.null(date_start)){
-    date_start <- min(data_filtered2$date)
+    date_start <- min(data_filtered3$date)
   }else{
-    date_start <- max(date_start, min(data_filtered2$date))
+    date_start <- max(date_start, min(data_filtered3$date))
   }
 
   if(is.null(date_end)){
-    date_end <- max(data_filtered2$date)
+    date_end <- max(data_filtered3$date)
   }else{
-    date_end <- min(date_end, max(data_filtered2$date))
+    date_end <- min(date_end, max(data_filtered3$date))
   }
 
 
-  data_filtered2$cas_confirmes_incident <- data_filtered2$cas_confirmes -
-    dplyr::lag(data_filtered2$cas_confirmes, default = 0)
-  data_filtered2$deces <- tidyr::replace_na(data_filtered2$deces, 0)
-  data_filtered2$deces_incident <- data_filtered2$deces -
-    dplyr::lag(data_filtered2$deces, default = 0)
+  data_filtered3$cas_confirmes_incident <- data_filtered3$cas_confirmes -
+    dplyr::lag(data_filtered3$cas_confirmes, default = 0)
+  data_filtered3$deces <- tidyr::replace_na(data_filtered3$deces, 0)
+  data_filtered3$deces_incident <- data_filtered3$deces -
+    dplyr::lag(data_filtered3$deces, default = 0)
 
   out_data <- data.frame("date" = seq.Date(from = date_start, by = 1, to = date_end),
                          "maille_code" = maille_cd,
                          "source_type" = source_ch)
   out_data$day <- as.numeric(difftime(out_data$date, out_data$date[1], units = "day"))
-  out_data2 <- left_join(out_data, dplyr::select(data_filtered2, date, cas_confirmes_incident, deces_incident),
+  out_data2 <- left_join(out_data, dplyr::select(data_filtered3, date, cas_confirmes_incident, deces_incident),
             by="date")
   out_data3 <- tidyr::replace_na(out_data2, replace =list("cas_confirmes_incident" = 0,
                                                           "deces_incident"=0))
