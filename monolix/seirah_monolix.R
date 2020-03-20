@@ -1,17 +1,13 @@
-install.packages("./monolix/lixoftConnectors.tar.gz", repos = NULL, type="source", INSTALL_opts ="--no-multiarch")
+#install.packages("./monolix/lixoftConnectors.tar.gz", repos = NULL, type="source", INSTALL_opts ="--no-multiarch")
 library(lixoftConnectors)
 initializeLixoftConnectors(software="monolix")
 
-
-?newProject
-?observationTypes
-
-newProject(modelFile = "./monolix/poisson/seirah_poisson.txt",
+newProject(modelFile = "./monolix/seirah_poisson.txt",
            data = list(dataFile = "./monolix/data_region_20200320.txt",
                        headerTypes =c("ignore","ignore","ignore","time","observation","ignore","regressor","id","regressor"),
                        observationTypes = list(cas_confirmes_incident="discrete")))
 
-saveProject(projectFile = "./monolix/poisson/sierah_poisson_proj.mlxtran")
+saveProject(projectFile = "./monolix/outputMonolix/sierah_poisson_proj.mlxtran")
 scenario <- getScenario()
 scenario$tasks = c(populationParameterEstimation = T, 
                    conditionalModeEstimation = T, 
@@ -21,24 +17,25 @@ scenario$tasks = c(populationParameterEstimation = T,
 scenario$linearization = FALSE
 setScenario(scenario)
 
-popparams <- getPopulationParameterInformation()
-tabestimates <- NULL; tabse <- NULL
-for(i in 1:5){
-  # sample new initial estimates
-  popini <- sapply(1:nrow(popparams), function(j){runif(n=1, min=popparams$initialValue[j]/2, max=popparams$initialValue[j]*2)})
-  
-  # set sampled values as new initial estimates
-  newpopparams <- popparams
-  newpopparams$initialValue <- popini
-  setPopulationParameterInformation(newpopparams)
-  
-  # run the estimation
-  runScenario()
-  
-  # store the estimates and s.e. in table
-  tabestimates <- cbind(tabestimates, getEstimatedPopulationParameters())
-  tabse <- cbind(tabse, getEstimatedStandardErrors()$stochasticApproximation)
-}
+### Check the stability of estimation
+# popparams <- getPopulationParameterInformation()
+# tabestimates <- NULL; tabse <- NULL
+# for(i in 1:5){
+#   # sample new initial estimates
+#   popini <- sapply(1:nrow(popparams), function(j){runif(n=1, min=popparams$initialValue[j]/2, max=popparams$initialValue[j]*2)})
+#   
+#   # set sampled values as new initial estimates
+#   newpopparams <- popparams
+#   newpopparams$initialValue <- popini
+#   setPopulationParameterInformation(newpopparams)
+#   
+#   # run the estimation
+#   runScenario()
+#   
+#   # store the estimates and s.e. in table
+#   tabestimates <- cbind(tabestimates, getEstimatedPopulationParameters())
+#   tabse <- cbind(tabse, getEstimatedStandardErrors()$stochasticApproximation)
+# }
 ### Results are super stable
 # > tabestimates
 # [,1]      [,2]      [,3]      [,4]      [,5]
@@ -63,18 +60,16 @@ names(indivParams)<-c("id","transmission","ascertainment")
 
 data<-read.table("./monolix/data_region_20200320.txt",sep="\t",header=TRUE)
 chiffres<-read.table("./monolix/Chiffres.txt",sep="\t",header=TRUE)
-data_FRA <- get_data_covid19(maille_cd = "FRA",
-                            source_ch = "sante-publique-france")
-fit_FRA <- seirah_estim(binit = c(log(1.75), log(0.41)),
-                 data = data_FRA)
+
                
 for (i in 1:length(indivParams$id)){
-  # i=1
-  # predict(fit_FRA,b=indivParams[i,2:3], newdata=data[which(data$goodID==as.character(indivParams[i,1])),], threesholdICU=chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"ICUnb"],
-  #                            alpha=1, De=5.2,
-  #                            Di=2.3, Dq=10, Dh=30,
-  #                            popSize=chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"],
-  #                            dailyMove=0,.10*chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"],
-  #                            log.print=TRUE, plot.comparison=TRUE)
+   i=6
+   temp_monolix_estim<-seirah_estim(binit=indivParams[i,2:3], data=data[which(data$goodID==as.character(indivParams[i,1])),], data=data[which(data$goodID==as.character(indivParams[i,1])),],
+                                    alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
+                                    popSize=chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"], dailyMove=0.10*chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"],
+                                    verbose = TRUE)
+   predict(temp_monolix_estim, threesholdICU = chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"nbICU"],verbose=TRUE)
+   
+   
 }
 

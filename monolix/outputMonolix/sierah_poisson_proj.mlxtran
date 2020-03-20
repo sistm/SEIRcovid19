@@ -1,0 +1,49 @@
+<DATAFILE>
+
+[FILEINFO]
+file = '../data_region_20200320.txt'
+delimiter = tab
+header = {date, maille_code, source_type, day, cas_confirmes_incident, deces_incident, popsize, goodID, initinfectious}
+
+[CONTENT]
+day = {use=time}
+cas_confirmes_incident = {use=observation, name=cas_confirmes_incident, type=discrete}
+popsize = {use=regressor}
+goodID = {use=identifier}
+initinfectious = {use=regressor}
+
+<MODEL>
+
+[INDIVIDUAL]
+input = {ascertainment_pop, omega_ascertainment, transmission_pop, omega_transmission}
+
+DEFINITION:
+ascertainment = {distribution=logNormal, typical=ascertainment_pop, sd=omega_ascertainment}
+transmission = {distribution=logNormal, typical=transmission_pop, sd=omega_transmission}
+
+[LONGITUDINAL]
+file = '../seirah_poisson.txt'
+
+<FIT>
+data = cas_confirmes_incident
+model = Y
+
+<PARAMETER>
+ascertainment_pop = {value=1, method=MLE}
+omega_ascertainment = {value=1, method=MLE}
+omega_transmission = {value=1, method=MLE}
+transmission_pop = {value=1, method=MLE}
+
+<MONOLIX>
+
+[TASKS]
+populationParameters()
+individualParameters(method = {conditionalMean, conditionalMode })
+fim(run = false,method = StochasticApproximation)
+logLikelihood(run = false,method = ImportanceSampling)
+plotResult(method = {outputplot, indfits, obspred, parameterdistribution, covariatemodeldiagnosis, randomeffects, covariancemodeldiagnosis, residualsscatter, residualsdistribution, saemresults })
+
+[SETTINGS]
+GLOBAL:
+exportpath = 'sierah_poisson_proj'
+
