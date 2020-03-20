@@ -24,21 +24,19 @@ Fitting a SEIRAH by OLS
 data_FRA <- get_data_covid19(maille_cd = "FRA",
                              source_ch = "sante-publique-france")
 fit_FRA <- seirah_estim(binit = c(log(1.75), log(0.41)),
-                  data = data_FRA)
+                        data = data_FRA)
 plot(fit_FRA)
 
 data_GE <- get_data_covid19(maille_cd = "REG-44",
-                           source_ch = "agences-regionales-sante")
+                            source_ch = "agences-regionales-sante")
 fit_GE <- seirah_estim(binit = c(log(1.75), log(0.41)),
-                  data=data_GE, popSize = 5518000, dailyMove = 0.1*5518000)
+                       data=data_GE, popSize = 5518000, dailyMove = 0.1*5518000)
 plot(fit_GE)
 
 data_NA <- get_data_covid19(maille_cd = "REG-75",
                            source_ch = "agences-regionales-sante")
-data_NA <- data_NA[-c(1:40), ]
-data_NA$day <- data_NA$day-40
 fit_NA <- seirah_estim(binit = c(log(1.75), log(0.41)),
-                        data = data_NA,
-                        popSize = 5987000, dailyMove = 0.1*5987000)
+                      data = data_NA,
+                      popSize = 5987000, dailyMove = 0.1*5987000)
 plot(fit_NA)
 }

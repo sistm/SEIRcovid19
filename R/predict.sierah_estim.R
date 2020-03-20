@@ -1,56 +1,69 @@
 #' Prediction of Epidemics and ICU utilization
 #'
-#' @param x an object of class \code{seirah_estim}
+#' @param object an object of class \code{seirah_estim}
 #'
 #' @examples
-#' pred <- predict(c(0.1912957, -0.5439555),
-#' data=dataFR,threesholdICU=5000)
-#' pred
+#' data_FRA <- get_data_covid19(maille_cd = "FRA",
+#'                              source_ch = "sante-publique-france")
+#' fit_FRA <- seirah_estim(binit = c(log(1.75), log(0.41)),
+#'                         data = data_FRA, verbose = FALSE)
+#' pred <- predict(fit_FRA, verbose=TRUE)
 #'
 #' @export
-predict.sierah <- function(x,
-                           b, newdata, threesholdICU,
-                           alpha=1, De=5.2,
-                           Di=2.3, Dq=10, Dh=30,
-                           popSize=65000000,
-                           dailyMove=1000000,
-                           log.print=TRUE, plot.comparison=FALSE){
-  transmission <- exp(b[1])
-  ascertainment <- exp(b[2])
-  if(log.print)print(paste("transmission",transmission))
-  if(log.print)print(paste("ascertainment",ascertainment))
-  E0<- data[1,"cas_confirmes_incident"]*2*4#Twice the number of cases (346 ref)
-  I0<-0.5*data[1,"cas_confirmes_incident"] #Numbers of cases (80 ref)
-  R0<- 0#(0 ref)
-  A0<-I0 # A=I (80 ref)
-  H0<-0.50*data[1,"cas_confirmes_incident"]  #all at the begining H=50%I (27 ref)
-  S0<- popSize-E0-I0-A0-H0-R0 #N-E-I-A-H-R (9999467 ref)
-  init<-c(S0,E0,I0,R0,A0,H0)
-  t<-seq(0,365)
-  par<-c(transmission,ascertainment,alpha,De,Di,Dq,Dh,popSize,dailyMove)
-  sol <- deSolve::lsoda(init,t,seirah_ode,par)
-  plot_sierah(sol)
-  sol<-as.data.frame(sol)
-  print("----------")
-  Jpic<-sol[which(sol$`3`==max(sol$`3`)),"time"]
-  print(paste("Jour Pic Epidemique",Jpic))
-  Dpic<-as.Date(as.character(data[1,"date"]))+sol[which(sol$`3`==max(sol$`3`)),"time"]
-  print(paste("Date Pic Epidemique",Dpic))
-  print("----------")
-  maxlit<-round(max(sol$`6`),0)
-  print(paste("Max Lit hospitalisation",maxlit))
-  Jmaxlit<-sol[which(sol$`6`==max(sol$`6`)),"time"]
-  print(paste("Jour Max Lit hospitalisation",Jmaxlit))
-  Dmaxlit<-as.Date(as.character(data[1,"date"]))+sol[which(sol$`6`==max(sol$`6`)),"time"]
-  print(paste("Date Max Lit hospitalisation",Dmaxlit))
-  print("----------")
-  Jdepasselit<-min(sol$time[which(sol$`6`>threesholdICU)])
-  print(paste("Jour depasse capacite Lit hospitalisation",Jdepasselit))
-  Ddepasselit<-as.Date(as.character(data[1,"date"]))+min(sol$time[which(sol$`6`>threesholdICU)])
-  print(paste("Date depasse capacite Lit hospitalisation",Ddepasselit))
-  print("----------")
-  prediction_sierah<-as.data.frame(t(c(data$maille_nom[1],Jpic,Dpic,maxlit,Jmaxlit,Dmaxlit,Jdepasselit,Ddepasselit)))
-  names(prediction_sierah)<-c("Location","Jpic","Dpic","maxlit","Jmaxlit","Dmaxlit","Jdepasselit","Ddepasselit")
-  return(prediction_sierah)
+predict.seirah_estim <- function(object, threesholdICU = 5000,
+                                 verbose=TRUE){
+
+
+  sol <- as.data.frame(object$solution)
+  date_start <- object$data$date[1]
+
+  Jpic <- sol %>%
+    filter(I==max(I)) %>%
+    pull(time)
+  Dpic <-  date_start + Jpic
+
+  maxlit <- sol %>%
+    pull(H) %>%
+    max()
+
+  Jmaxlit <- sol %>%
+    filter(H == maxlit) %>%
+    pull(time)
+  Dmaxlit <- date_start + Jmaxlit
+
+  Jdepasselit <- sol %>%
+    filter(H > threesholdICU) %>%
+    pull(time) %>%
+    min()
+  Ddepasselit <- date_start + Jdepasselit
+
+
+  if(verbose){
+    message("Transmission: ", object$parameters$transmission)
+    message("Ascertainment: ", object$parameters$ascertainment)
+    message("----------")
+    message("Jour de pic épidemique : ", Jpic)
+    message("Date de pic épidemique : ", Dpic)
+    message("----------")
+    message("Nombre maximum d'hospitalisations : ", round(maxlit))
+    message("Jour du pic d'hospitalisation : ", Jmaxlit)
+    message("Date du pic d'hospitalisation : ", Dmaxlit)
+    message("----------")
+    message("Jour de depassement de la capacité de lit d'hospitalisation : ", Jdepasselit)
+    message("Date de depassement de la capacité de lit d'hospitalisation : ", Ddepasselit)
+    message("----------")
+  }
+
+  prediction_seirah <- list("fit" = object,
+                            "predictions" = list("Location" = as.character(object$data$maille_code[1]),
+                                                 "Jpic" = Jpic,
+                                                 "Dpic" = Dpic,
+                                                 "maxlit" = maxlit,
+                                                 "Jmaxlit" = Jmaxlit,
+                                                 "Dmaxlit" = Dmaxlit,
+                                                 "Jdepasselit" = Jdepasselit,
+                                                 "Ddepasselit" = Ddepasselit)
+                            )
+  return(prediction_seirah)
 }
 
