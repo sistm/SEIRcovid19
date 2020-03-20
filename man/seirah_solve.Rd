@@ -20,6 +20,7 @@ Dq<-2
 Dh<-30
 popSize<-10000000
 dailyMove<-0
+
 init<-c(9999467, 346, 80, 0, 80, 27)
 t<-seq(0,365)
 par <- c(b, r, alpha, De, Di, Dq, Dh, popSize, dailyMove)

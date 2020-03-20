@@ -2,9 +2,10 @@
 
 S3method(plot,seirah_estim)
 S3method(plot,seirah_solve)
-S3method(predict,sierah)
+S3method(predict,seirah_estim)
 export(get_data_covid19)
 export(get_data_covid19_bylevel)
+export(plot_list.seirah_estim)
 export(seirah_estim)
 export(seirah_ode)
 export(seirah_ols)
