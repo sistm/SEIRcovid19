@@ -14,12 +14,14 @@ multi_join <- function(list_of_loaded_data, join_func, ...){
 data_region<-multi_join(data_region_by_region,rbind)
 
 #population size from https://fr.wikipedia.org/wiki/R%C3%A9gion_fran%C3%A7aise
-names<-paste("REG-",c("84","27","53","24","94","44","32","11","28","75","76","52","93","01","02","03","04","06"),sep="")
-goodid<-c("AURA","BFC","Bretagne","Centre","Corse","GrandEst","HDF","IDF","Normandie","NAquitaine","Occitanie","PaysLoire","PACA","Guadeloupe","Martinique","Guyane","Reunion","Mayotte")
-size<-c(8026685,2795301,3329395,2566759,339178,5518188,5978266,12213364,3319067,5987014,5892817,3786545,5059473,382704,364354,296711,866506,270372)
-ICUnb<-c(559,198,162,180,18,465,438,1147,240,412,474,181,460,10,10,10,10,10)
-region_size<-data.frame(names, size,goodid,ICUnb)
-write.table(region_size,file="./monolix/Chiffres.txt",sep="\t",row.names = F,quote=F)
+# names<-paste("REG-",c("84","27","53","24","94","44","32","11","28","75","76","52","93","01","02","03","04","06"),sep="")
+# goodid<-c("AURA","BFC","Bretagne","Centre","Corse","GrandEst","HDF","IDF","Normandie","NAquitaine","Occitanie","PaysLoire","PACA","Guadeloupe","Martinique","Guyane","Reunion","Mayotte")
+# size<-c(8026685,2795301,3329395,2566759,339178,5518188,5978266,12213364,3319067,5987014,5892817,3786545,5059473,382704,364354,296711,866506,270372)
+# ICUnb<-c(559,198,162,180,18,465,438,1147,240,412,474,181,460,10,10,10,10,10)
+# region_size<-data.frame(names, size,goodid,ICUnb)
+# write.table(region_size,file="./monolix/Chiffres.txt",sep="\t",row.names = F,quote=F)
+
+region_size<-read.table("./monolix/Chiffres.txt",sep="\t",header=TRUE)
 
 #Create Suitable variables
 for(i in 1:length(data_region[,"maille_code"])){
