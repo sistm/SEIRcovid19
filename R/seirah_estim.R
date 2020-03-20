@@ -180,9 +180,10 @@ plot_list.seirah_estim <- function(x, only_observed_dates = TRUE,
     theme_classic() +
     ylab("Number") +
     #scale_color_manual(
-    scale_color_discrete("Compartment", labels=c("S (susceptible)", "E (exposed)",
-                                                 "I (Infected)", "R (removed)",
-                                                 "A (Not-reported)", "H (hospitalized)")) +
+    scale_color_discrete("Compartment", breaks = c("S", "E", "I", "R", "A", "H"),
+                         labels = c("S (susceptible)", "E (exposed)",
+                                    "I (Infected)", "R (removed)",
+                                    "A (Not-reported)", "H (hospitalized)")) +
     #values=c("black", "orange","blue","green","purple","red")) +
     facet_wrap(~maille_code) +
     ylim(0, ymax_pred)
