@@ -25,9 +25,9 @@
 #' plot(fit_NA)
 #'
 #'
-#' simul_xihong<- seirah_estim(binit=c(1.75, 0.41),data=NULL,stateinit=c(9999467,346,80,0,80,27),
-#' initwithdata=FALSE,alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,popSize=65000000,dailyMove=0.1*65000000,verbose = TRUE,optim_ols = FALSE)
-#' plot(simul_xihong)
+#' simul_xihong<- seirah_estim(binit=c(1.75, 0.41),data=NULL,stateinit=c(9999467, 346,80,0,80,27),
+#' initwithdata=FALSE,alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,popSize=65000000,dailyMove=0.01*65000000,verbose = TRUE,optim_ols = FALSE)
+#' plot_list.seirah_estim(list(simul_xihong))
 
 
 seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
@@ -138,17 +138,27 @@ plot_list.seirah_estim <- function(x, only_observed_dates = TRUE,
 
 
 
+  if(is.null(names(x))){
+    names(x) <- seq(from = 1, to = length(x), by = 1)
+  }
+
   ldf <- lapply(names(x), function(r){
     l <- x[[r]]
     temp <- as.data.frame(l$solution)
     temp$maille_code <- r
-    temp$date <- l$data$date[1]+temp$time
+    if(!is.null(l$data)){
+      date_start <- l$data$date[1]
+    }else{
+      date_start <- 0
+    }
+    temp$date <- date_start + temp$time
     return(temp)
   })
   all_preds <- do.call(rbind.data.frame, ldf)
 
   ldf_obs <- lapply(x, "[[", "data")
   all_data <- do.call(rbind.data.frame, ldf_obs)
+
 
   preds2plot <- reshape2::melt(all_preds, id.vars=c("time", "maille_code", "date"))
   preds2plot <- preds2plot %>%
