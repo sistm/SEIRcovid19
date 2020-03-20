@@ -6,6 +6,7 @@
 \usage{
 seirah_ols(
   b,
+  stateinit,
   data,
   alpha = 1,
   De = 5.2,
