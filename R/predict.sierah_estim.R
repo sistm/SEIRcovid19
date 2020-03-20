@@ -31,9 +31,10 @@ predict.seirah_estim <- function(object, thresholdICU = 5000,
   Dmaxlit <- date_start + Jmaxlit
 
   Jdepasselit_temp <- sol %>%
-    filter(H > thresholdICU) %>%
+    filter(H > thresholdICU)
     if(nrow(Jdepasselit_temp) > 0){
-      Jdepasselit <- pull(time) %>%
+      Jdepasselit <- Jdepasselit_temp %>%
+        pull(time) %>%
         min()
     }else{
       Jdepasselit <- Inf
