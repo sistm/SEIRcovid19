@@ -25,10 +25,9 @@
 #' plot(fit_NA)
 #'
 #'
-#' simul_xihong<- seirah_estim(binit=c(1.75, 0.41),data=NULL,stateinit=c(9999467, 346,80,0,80,27),
-#' initwithdata=FALSE,alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,popSize=65000000,dailyMove=0.01*65000000,verbose = TRUE,optim_ols = FALSE)
+#' simul_xihong<- seirah_estim(binit=c(1.75, 0.41),data=NULL,stateinit=c(9999467,346,80,0,80,27),
+#'                             initwithdata=FALSE,alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,popSize=10000000,dailyMove=500000,verbose = TRUE,optim_ols = FALSE)
 #' plot_list.seirah_estim(list(simul_xihong))
-
 
 seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                          alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
@@ -133,6 +132,7 @@ plot.seirah_estim <- function(x){
 #' @import ggplot2
 #'
 #' @export
+#'
 plot_list.seirah_estim <- function(x, only_observed_dates = TRUE,
                                    compartments = c("S", "E", "I", "R", "A", "H")){
 
