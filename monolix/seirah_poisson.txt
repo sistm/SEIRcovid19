@@ -34,7 +34,10 @@ ddt_R = (I+A)/Di+H/Dh-dailyMove*R/(popsize-I-H)
 ddt_A = (1-ascertainment)*E/De-A/Di-dailyMove*A/(popsize-I-H)
 ddt_H = I/Dq-H/Dh
 
-Y=I
+
+DEFINITION:
+Y = {type = count,  log(P(Y=k)) = -I + k*log(I) - factln(k) }
+
 
 OUTPUT:
 
