@@ -10,7 +10,7 @@
 #' pred <- predict(fit_FRA, verbose=TRUE)
 #'
 #' @export
-predict.seirah_estim <- function(object, threesholdICU = 5000,
+predict.seirah_estim <- function(object, thresholdICU = 5000,
                                  verbose=TRUE){
 
   sol <- as.data.frame(object$solution)
@@ -30,10 +30,15 @@ predict.seirah_estim <- function(object, threesholdICU = 5000,
     pull(time)
   Dmaxlit <- date_start + Jmaxlit
 
-  Jdepasselit <- sol %>%
-    filter(H > threesholdICU) %>%
-    pull(time) %>%
-    min()
+  Jdepasselit_temp <- sol %>%
+    filter(H > thresholdICU)
+    if(nrow(Jdepasselit_temp) > 0){
+      Jdepasselit <- Jdepasselit_temp %>%
+        pull(time) %>%
+        min()
+    }else{
+      Jdepasselit <- Inf
+    }
   Ddepasselit <- date_start + Jdepasselit
 
 
