@@ -9,6 +9,7 @@ get_data_covid19(
   source_ch = "sante-publique-france",
   date_start = NULL,
   date_end = NULL,
+  metropole = FALSE,
   update_from_source_url = FALSE,
   epidemic_start = TRUE
 )
@@ -24,6 +25,10 @@ Other sources are available but not so reliable...}
 Scrap and format data from opencovid19-fr
 }
 \examples{
+
+get_data_covid19(maille_cd = "FRA",
+                source_ch = "ministere-sante")
+
 get_data_covid19(maille_cd = "DPT-33",
                 source_ch = "agences-regionales-sante")
 

@@ -38,17 +38,18 @@ get_data_covid19 <- function(maille_cd = "FRA",
                              source_ch = "sante-publique-france",
                              date_start = NULL,
                              date_end = NULL,
+                             metropole = FALSE,
                              update_from_source_url = FALSE,
                              epidemic_start = TRUE){
 
   if(update_from_source_url){
     covid19_FR <- read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
-    #save(alldata, file="data/covid19fr_chiffres-cles.RData")
+    #save(covid19_FR, file="data/covid19_FR.RData")
   }else{
     data("covid19_FR")
   }
 
-  data_filtered <- alldata %>%
+  data_filtered <- covid19_FR %>%
     dplyr::filter(maille_code == maille_cd, source_type == source_ch)
   data_filtered$date <- lubridate::as_date(data_filtered$date)
 
@@ -95,5 +96,16 @@ get_data_covid19 <- function(maille_cd = "FRA",
             by="date")
   out_data3 <- tidyr::replace_na(out_data2, replace =list("cas_confirmes_incident" = 0,
                                                           "deces_incident"=0))
-  return(out_data3)
+  out_data3$maille_code <- as.character(out_data3$maille_code)
+
+ sursaud_covid19_2join <- sursaud_covid19 %>%
+   filter(maille_code == maille_cd, date_de_passage > min(out_data3$date)) %>%
+   select(maille_code, date_de_passage, nbre_hospit_corona)
+
+ out_data4 <- full_join(out_data3, sursaud_covid19_2join,
+                        by = c("date" = "date_de_passage",
+                               "maille_code" = "maille_code")) %>%
+   arrange(date)
+
+  return(out_data4)
 }
