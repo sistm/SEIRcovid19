@@ -1,4 +1,0 @@
-transmission_pop,1,-0.10264,-0.10717,0.07135
-ascertainment_pop,-0.10264,1,0.029253,-0.088714
-omega_transmission,-0.10717,0.029253,1,-0.04608
-omega_ascertainment,0.07135,-0.088714,-0.04608,1

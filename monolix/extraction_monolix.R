@@ -1,5 +1,5 @@
 rm(list = ls())
-date<-"20200320"
+date<-"20200321"
   
 #Get the data by region
 data_region_by_region<-get_data_covid19_bylevel(level = "region", source3="SPF")
@@ -32,8 +32,14 @@ for(i in 1:length(data_region[,"maille_code"])){
   }else{
     data_region$initinfectious[i]<-data_region$initinfectious[i-1]
   }
+  data_region$cumul[i]<-sum(data_region$cas_confirmes_incident[which(data_region$goodID==data_region$goodID[i])])
 }
+#Supress regions for which I0=0 à t=0
 supression<-unique(data_region$goodID[which(data_region$initinfectious==0)])
+print(cat("Regions supprimees:", supression))
+data_region<-data_region[which(!data_region$goodID%in%supression),]
+#Supress regions for which I0=0 à t=0
+supression<-unique(data_region$goodID[which(data_region$cumul<50)])
 print(cat("Regions supprimees:", supression))
 data_region<-data_region[which(!data_region$goodID%in%supression),]
 data_region$cas_confirmes_incident<-round(ifelse(data_region$cas_confirmes_incident<0,0,data_region$cas_confirmes_incident),0)

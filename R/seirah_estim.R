@@ -133,6 +133,7 @@ plot.seirah_estim <- function(x){
 #'
 #' @export
 #'
+#'
 plot_list.seirah_estim <- function(x, only_observed_dates = TRUE,
                                    compartments = c("S", "E", "I", "R", "A", "H")){
 
