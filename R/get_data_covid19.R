@@ -15,6 +15,10 @@
 #'@export
 #'
 #'@examples
+#'
+#'get_data_covid19(maille_cd = "FRA",
+#'                 source_ch = "ministere-sante")
+#'
 #'get_data_covid19(maille_cd = "DPT-33",
 #'                 source_ch = "agences-regionales-sante")
 #'
@@ -29,18 +33,19 @@
 #'
 #'get_data_covid19(maille_cd = "WORLD",
 #'                 source_ch = "sante-publique-france")
+
 get_data_covid19 <- function(maille_cd = "FRA",
                              source_ch = "sante-publique-france",
                              date_start = NULL,
                              date_end = NULL,
-                             update_from_source = FALSE,
+                             update_from_source_url = FALSE,
                              epidemic_start = TRUE){
 
-  if(update_from_source){
-    alldata <- read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
+  if(update_from_source_url){
+    covid19_FR <- read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
     #save(alldata, file="data/covid19fr_chiffres-cles.RData")
   }else{
-    data("covid19fr_chiffres-cles")
+    data("covid19_FR")
   }
 
   data_filtered <- alldata %>%
@@ -49,7 +54,7 @@ get_data_covid19 <- function(maille_cd = "FRA",
 
   data_filtered2 <- data_filtered %>%
     group_by(date) %>%
-    summarise_at(c("cas_confirmes", "deces"), mean)
+    summarise_at(c("cas_confirmes", "deces", "reanimation"), mean)
 
   if(epidemic_start){
     epidemic_start_date <- data_filtered2 %>%
