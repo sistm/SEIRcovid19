@@ -1,0 +1,20 @@
+﻿Métadonnées fichier SPF covid19 quotidien;;;
+Colonne;Type ;Description ;Exemple
+dep;integer;Departement ;02
+date_de_passage;string($date);Date de passage ;2020-02-24
+sursaud_cl_age_corona;integer;Tranche d'âge des patients ;0
+nbre_pass_corona;integer;Nombre de passages aux urgences pour suspicion de COVID-19 ;0
+nbre_pass_tot;integer;Nombre de passages aux urgences total ;453
+nbre_hospit_corona;integer;Nombre d'hospitalisations parmi les passages aux urgences pour suspicion de COVID-19 ;0
+nbre_pass_corona_h;integer;Nombre de passages aux urgences pour suspicion de COVID-19  - Hommes;0
+nbre_pass_corona_f;integer;Nombre de passages aux urgences pour suspicion de COVID-19  - Femmes;0
+nbre_pass_tot_h;integer;Nombre de passages aux urgences total - Hommes;242
+nbre_pass_tot_f;integer;Nombre de passages aux urgences total - Femmes;211
+nbre_hospit_corona_h;integer;Nombre d'hospitalisations parmi les passages aux urgences pour suspicion de COVID-19  - Hommes;0
+nbre_hospit_corona_f;integer;Nombre d'hospitalisations parmi les passages aux urgences pour suspicion de COVID-19 - Femmes;0
+nbre_acte_corona;integer;Nombres d'actes médicaux SOS Médecins pour suspicion de COVID-19;0
+nbre_acte_tot;integer;Nombres d'actes médicaux SOS Médecins total;382
+nbre_acte_corona_h;integer;Nombres d'actes médicaux SOS Médecins pour suspicion de COVID-19 - Hommes;0
+nbre_acte_corona_f;integer;Nombres d'actes médicaux SOS Médecins pour suspicion de COVID-19 - Femmes;0
+nbre_acte_tot_h;integer;Nombres d'actes médicaux SOS Médecins total - Hommes;174
+nbre_acte_tot_f;integer;Nombres d'actes médicaux SOS Médecins total - Femmes;208

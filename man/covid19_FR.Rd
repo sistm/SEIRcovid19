@@ -20,7 +20,7 @@ as of 2020-03-23 at 11:00 am
 }
 \examples{
 data(covid19_FR)
-#read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
+#read.csv("data/raw/chiffres-cles.csv")
 
 }
 \keyword{datasets}
