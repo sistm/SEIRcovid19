@@ -17,7 +17,10 @@ seirah_estim(
   popSize = 6.5e+07,
   dailyMove = 0.1 * popSize,
   verbose = TRUE,
-  optim_ols = TRUE
+  optim_ols = TRUE,
+  timeconf = 1000,
+  newdailyMove = 1e-05,
+  factorreductrans = 3
 )
 }
 \description{

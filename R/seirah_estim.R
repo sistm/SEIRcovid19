@@ -29,10 +29,30 @@
 #'                             initwithdata=FALSE,alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,popSize=10000000,dailyMove=500000,verbose = TRUE,optim_ols = FALSE)
 #' plot_list.seirah_estim(list(simul_xihong))
 
+
+
+binit=as.numeric(indivParams[i,2:3])
+data=data[which(data$goodID==as.character(indivParams[i,1])),]
+alpha=1
+De=5.2
+Di=2.3
+Dq=10
+Dh=30
+popSize=chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"]
+dailyMove=0.01*chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"]
+verbose = TRUE
+optim_ols=FALSE
+timeconf=14
+newdailyMove=0.00001
+factorreductrans=3
+stateinit=NULL
+initwithdata=TRUE
+
 seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                          alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
                          popSize=65000000, dailyMove=0.1*popSize,
-                         verbose = TRUE, optim_ols = TRUE){
+                         verbose = TRUE, optim_ols = TRUE,timeconf=1000,
+                         newdailyMove=0.00001,factorreductrans=3){
 
   if((is.null(stateinit))&((is.null(data)))){
     stop("Initial states or data need to be provided")
@@ -64,6 +84,8 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                            stateinit=init,data=data,
                            alpha=alpha,De=De,Di=Di,Dq=Dq,Dh=Dh,
                            popSize=popSize,dailyMove=dailyMove,
+                           timeconf=timeconf,newdailyMove=newdailyMove,
+                           factorreductrans=factorreductrans,
                            verbose = verbose)
     transmission <- exp(param_optimal$par[1])
     ascertainment <- exp(param_optimal$par[2])
@@ -79,7 +101,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 
   t <- seq(0,365)
   par <- c(transmission, ascertainment, alpha,
-           De, Di, Dq, Dh, popSize, dailyMove)
+           De, Di, Dq, Dh, popSize, dailyMove,timeconf,newdailyMove,factorreductrans)
   res_optimal <- seirah_solve(init, t, par)
 
   res <- list("solution" = res_optimal,

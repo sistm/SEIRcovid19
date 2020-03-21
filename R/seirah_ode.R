@@ -21,6 +21,14 @@ seirah_ode <- function(t,Y,par){
   Dh<-par[7]
   popSize<-par[8]
   dailyMove<-par[9]
+  timeconf<-par[10]
+  newdailyMove<-par[11]
+  factorreductrans<-par[12]
+  
+  if(t>timeconf){
+    dailyMove<-newdailyMove
+    b<- b/factorreductrans
+  }
 
   dYdt<-vector(length=6)
   dYdt[1]=-b*S*(I+alpha*A)/popSize+dailyMove-dailyMove*S/(popSize-I-H)
