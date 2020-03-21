@@ -119,18 +119,26 @@ plot(0,0)
 #' @import ggplot2
 #'
 #' @export
-plot.seirah_estim <- function(x){
+plot.seirah_estim <- function(x,type=1){
 
   sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
 
   data2plot <- cbind.data.frame(x$data, sol_obstime)
 
-  ggplot(data2plot, aes(x=date)) +
+  if(type==1){ggplot(data2plot, aes(x=time)) +
     geom_point(aes(y = cas_confirmes_incident, color = "Observed")) +
     geom_line(aes(y = I, color = "SEIRAH")) +
     theme_classic() +
     ylab("Number of incident cases") +
-    scale_color_manual("", values=c("black", "blue"))
+    scale_color_manual("", values=c("black", "blue"))}
+  
+  if(type==2){print(ggplot(data2plot, aes(x=time)) +
+          geom_point(aes(y = hospitalisation_incident, color = "Observed")) +
+          geom_line(aes(y = H, color = "SEIRAH")) +
+          theme_classic() +
+          ylab("Number of hospitalization") +
+          scale_color_manual("", values=c("black", "blue")))}
+  
 }
 
 #' Plotting method for a list of SEIRAH fit objects

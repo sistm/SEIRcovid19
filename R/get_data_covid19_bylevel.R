@@ -21,6 +21,8 @@
 #'# departements
 #'get_data_covid19_bylevel(level = "departement", source3="ARS")
 #'
+#'
+
 get_data_covid19_bylevel <- function(level ="region",
                                      source3 = "SPF",
                                      date_start = NULL,
