@@ -5,7 +5,7 @@
 #'
 #' @format A data frame with 2904 rows and 7 variables:
 #' \describe{
-#'   \item{maille_code}{administrative code}
+#'   \item{maille_cd}{administrative code}
 #'   \item{date_de_passage}{Date of ER visits}
 #'   \item{nbre_pass_tot}{Total number of ER visits}
 #'   \item{nbre_pass_corona}{Number of ER visits for Covid-19 suspicion}
@@ -17,10 +17,10 @@
 #'@examples
 #'data(sursaud_covid19)
 #'
-#' # Fromatting data ----
+#' ## Fromatting data ----
 #' #library(dplyr)
 #'
-#' ## Regions ----
+#' ### Regions ----
 #' #sursaud_covid19_reg <- readxl::read_xlsx("data/raw/sursaud-covid19-quotidien-2020-03-21-17h21.xlsx",
 #' #                                         sheet="reg"
 #' #)
@@ -31,13 +31,12 @@
 #' #sursaud_covid19_reg_tot$date_de_passage <- lubridate::as_date(sursaud_covid19_reg_tot$date_de_passage)
 #'
 #' #sursaud_covid19_reg_tot_ord <- sursaud_covid19_reg_tot %>%
-#' #  group_by(reg, date_de_passage) %>%
 #' #  arrange(reg, date_de_passage)
 #' #
 #' #sursaud_covid19_reg_tot_ord$reg <- paste0("REG-", sursaud_covid19_reg_tot_ord$reg)
-#' #colnames(sursaud_covid19_reg_tot_ord)[1] <- "maille_nom"
+#' #colnames(sursaud_covid19_reg_tot_ord)[1] <- "maille_code"
 #'
-#' ## Departements ----
+#' ### Departements ----
 #' #sursaud_covid19_dpt <- readxl::read_xlsx("data/raw/sursaud-covid19-quotidien-2020-03-21-17h21.xlsx",
 #' #                                         sheet="dep"
 #' #)
@@ -48,11 +47,10 @@
 #' #sursaud_covid19_dpt_tot$date_de_passage <- lubridate::as_date(sursaud_covid19_dpt_tot$date_de_passage)
 #' #
 #' #sursaud_covid19_dpt_tot_ord <- sursaud_covid19_dpt_tot %>%
-#' #  group_by(dep, date_de_passage) %>%
 #' #  arrange(dep, date_de_passage)
 #' #
 #' #sursaud_covid19_dpt_tot_ord$dep <- paste0("DPT-", sursaud_covid19_dpt_tot_ord$dep)
-#' #colnames(sursaud_covid19_dpt_tot_ord)[1] <- "maille_nom"
+#' #colnames(sursaud_covid19_dpt_tot_ord)[1] <- "maille_code"
 #' #
 #' #sursaud_covid19 <- rbind.data.frame(sursaud_covid19_reg_tot_ord, sursaud_covid19_dpt_tot_ord)
 #' #save(sursaud_covid19, file = "data/sursaud_covid19.RData")
