@@ -84,7 +84,7 @@ get_data_covid19 <- function(maille_cd = "FRA",
 
   data_filtered3$cas_confirmes_incident <- data_filtered3$cas_confirmes -
     dplyr::lag(data_filtered3$cas_confirmes, default = 0)
-  data_filtered3$deces <- tidyr::replace_na(data_filtered3$deces, 0)
+  data_filtered3$deces <- cummax(tidyr::replace_na(data_filtered3$deces, 0))
   data_filtered3$deces_incident <- data_filtered3$deces -
     dplyr::lag(data_filtered3$deces, default = 0)
 
