@@ -105,7 +105,8 @@ get_data_covid19 <- function(maille_cd = "FRA",
  out_data4 <- full_join(out_data3, sursaud_covid19_2join,
                         by = c("date" = "date_de_passage",
                                "maille_code" = "maille_code")) %>%
-   arrange(date)
+   arrange(date) %>%
+   rename(nbre_hospit_corona = hospitalisation_incident)
 
   return(out_data4)
 }
