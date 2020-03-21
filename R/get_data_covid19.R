@@ -106,7 +106,7 @@ get_data_covid19 <- function(maille_cd = "FRA",
                         by = c("date" = "date_de_passage",
                                "maille_code" = "maille_code")) %>%
    arrange(date) %>%
-   rename(nbre_hospit_corona = hospitalisation_incident)
+   rename(hospitalisation_incident = nbre_hospit_corona)
 
   return(out_data4)
 }
