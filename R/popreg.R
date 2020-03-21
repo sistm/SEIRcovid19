@@ -12,7 +12,11 @@
 #'
 #'@examples
 #'data(popreg)
+#'#popreg <- read.delim("data/raw/population_regionsFR_INED1erjan2020.tsv",
+#'                      encoding = "UTF8")
 #'
-#'@source INED
+#'@source INED \url{https://www.ined.fr/fichier/s_rubrique/159/estim.pop.nreg.sexe.gca.1975.2020.fr.xls}
+#'stored in \code{'data/raw/population_regionsFR_INED1erjan2020.tsv'}
 #'
 #'
+"popreg"
