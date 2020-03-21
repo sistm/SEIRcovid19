@@ -50,11 +50,11 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
   if(is.null(data))optim_ols<-FALSE
 
   if(initwithdata){
+    H0 <- data[1, "hospitalisation_incident"]
     E0 <- data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
-    I0 <- 0.5*data[1, "cas_confirmes_incident"] # Numbers of cases
+    I0 <- data[1, "cas_confirmes_incident"]-H0 # Numbers of cases
     R0 <- 0 #(0 ref)
     A0 <- I0 # A=I
-    H0 <- I0*0.50 #all at the begining H=50%I
     S0 <- popSize - E0 - I0 - A0 - H0 - R0 #N-E-I-A-H-R
     init <- c(S0, E0, I0, R0, A0, H0)
   }else{
