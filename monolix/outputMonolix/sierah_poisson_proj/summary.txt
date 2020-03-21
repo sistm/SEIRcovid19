@@ -1,6 +1,6 @@
 ********************************************************************************
 *                         sierah_poisson_proj.mlxtran                          *
-*                         March 20, 2020 at 12:33:41                           *
+*                         March 21, 2020 at 10:49:31                           *
 *                         Monolix version : 5.1.1                              *
 ********************************************************************************
 
@@ -8,15 +8,15 @@
 POPULATION PARAMETERS ESTIMATION _______________________________________________
 
 Fixed Effects ----------------------------     se_sa    rse(%)
-transmission_pop               :      1.51    0.0913      6.06
-ascertainment_pop              :     0.249    0.0535      21.4
+transmission_pop               :      1.12    0.0707      6.31
+ascertainment_pop              :     0.689      0.15      21.8
 
 Standard Deviation of the Random Effects -
-omega_transmission             :     0.212    0.0463      21.9
-omega_ascertainment            :     0.859     0.165      19.2
+omega_transmission             :      0.22    0.0444      20.2
+omega_ascertainment            :     0.873     0.165      18.9
 
-Elapsed time (seconds) :       72
-CPU time     (seconds) :   4.2e+2
+Elapsed time (seconds) :       24
+CPU time     (seconds) :   1.3e+2
 
  _______________________________________________________________________________
 
@@ -28,13 +28,13 @@ CORRELATION MATRIX OF THE ESTIMATES ____________________________________________
 Fisher by Stochastic Approximation ---------------------------------------------
 Correlation Matrix :
    transmission_pop         1
-  ascertainment_pop -0.093834         1
- omega_transmission -0.074825  0.009494         1
-omega_ascertainment  0.047137 -0.087262  0.017377         1
+  ascertainment_pop  -0.10264         1
+ omega_transmission  -0.10717  0.029253         1
+omega_ascertainment   0.07135 -0.088714  -0.04608         1
                                min       max   max/min
-Eigen values           :      0.88       1.2       1.3
+Eigen values           :      0.86       1.2       1.4
 
-Elapsed time (seconds) :   0.061
+Elapsed time (seconds) :    0.02
 CPU time     (seconds) :       0
 
  -------------------------------------------------------------------------------
@@ -48,22 +48,22 @@ INDIVIDUAL PARAMETERS ESTIMATION _______________________________________________
 
 Individual Parameters Estimation by Conditional Mean ---------------------------
                       min        Q1    median        Q3       max
-transmission  :      1.11       1.4      1.51      1.62      2.21
-ascertainment :    0.0373     0.187     0.236     0.427       1.4
+transmission  :     0.732      1.01      1.15       1.2       1.7
+ascertainment :     0.099     0.495     0.654      1.16      4.32
 
-Elapsed time (seconds) :      18
-CPU time     (seconds) :  1.1e+2
+Elapsed time (seconds) :     6.3
+CPU time     (seconds) :      36
 
  -------------------------------------------------------------------------------
 
 
 Individual Parameters Estimation by Conditional Mode ---------------------------
                       min        Q1    median        Q3       max
-transmission  :      1.08       1.4      1.49      1.62      2.22
-ascertainment :    0.0366     0.182     0.236     0.423      1.43
+transmission  :     0.748     0.999      1.13      1.19       1.7
+ascertainment :     0.093     0.491     0.654      1.16      4.38
 
-Elapsed time (seconds) :    0.66
-CPU time     (seconds) :       3
+Elapsed time (seconds) :    0.22
+CPU time     (seconds) :       1
 
  -------------------------------------------------------------------------------
 
@@ -74,16 +74,16 @@ CPU time     (seconds) :       3
 LOG-LIKELIHOOD ESTIMATION ______________________________________________________
                                                             (is)
 
--2 x log-likelihood                             :        3932.04
-Akaike Information Criteria               (AIC) :        3940.04
-Corrected Bayesian Information Criteria  (BICc) :        3948.61
-Bayesian Information Criteria             (BIC) :        3943.60
+-2 x log-likelihood                             :        3876.00
+Akaike Information Criteria               (AIC) :        3884.00
+Corrected Bayesian Information Criteria  (BICc) :        3892.58
+Bayesian Information Criteria             (BIC) :        3887.57
 
-Elapsed time                          (seconds) :          92.72
-CPU time                              (seconds) :         490.00
+Elapsed time                          (seconds) :          31.13
+CPU time                              (seconds) :         160.00
 
 
-[Importance Sampling] Standard error        : 0.096
+[Importance Sampling] Standard error        : 0.083
                       Sampling distribution : T-distribution with 5 degrees of freedom
 
  _______________________________________________________________________________

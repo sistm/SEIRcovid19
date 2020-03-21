@@ -15,12 +15,12 @@ De=5.2
 Di=2.3
 Dq=10
 Dh=30
-dailyMove=0.1*popsize
+dailyMove=0.01*popsize
 
 t0 = 0  ; t0 is a reserved keyword (initiation of therapy)
 
 I_0=0.5*initinfectious
-E_0=4*2*initinfectious
+E_0=2*initinfectious
 R_0=0
 A_0=I_0
 H_0=0.5*initinfectious

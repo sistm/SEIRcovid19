@@ -47,7 +47,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 
   if(initwithdata){
     E0 <- data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
-    I0 <- data[1, "cas_confirmes_incident"] # Numbers of cases
+    I0 <- 0.5*data[1, "cas_confirmes_incident"] # Numbers of cases
     R0 <- 0 #(0 ref)
     A0 <- I0 # A=I
     H0 <- I0*0.50 #all at the begining H=50%I
@@ -107,6 +107,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
   return(res)
 }
 
+plot(0,0)
 #' Plotting method for a SEIRAH fit object
 #'
 #' @import ggplot2
@@ -124,7 +125,6 @@ plot.seirah_estim <- function(x){
     theme_classic() +
     ylab("Number of incident cases") +
     scale_color_manual("", values=c("black", "blue"))
-
 }
 
 #' Plotting method for a list of SEIRAH fit objects

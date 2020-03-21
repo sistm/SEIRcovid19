@@ -19,24 +19,24 @@ scenario$linearization = FALSE
 setScenario(scenario)
 
 ### Check the stability of estimation
-# popparams <- getPopulationParameterInformation()
-# tabestimates <- NULL; tabse <- NULL
-# for(i in 1:5){
-#   # sample new initial estimates
-#   popini <- sapply(1:nrow(popparams), function(j){runif(n=1, min=popparams$initialValue[j]/2, max=popparams$initialValue[j]*2)})
-#   
-#   # set sampled values as new initial estimates
-#   newpopparams <- popparams
-#   newpopparams$initialValue <- popini
-#   setPopulationParameterInformation(newpopparams)
-#   
-#   # run the estimation
-#   runScenario()
-#   
-#   # store the estimates and s.e. in table
-#   tabestimates <- cbind(tabestimates, getEstimatedPopulationParameters())
-#   tabse <- cbind(tabse, getEstimatedStandardErrors()$stochasticApproximation)
-# }
+popparams <- getPopulationParameterInformation()
+tabestimates <- NULL; tabse <- NULL
+for(i in 1:5){
+  # sample new initial estimates
+  popini <- sapply(1:nrow(popparams), function(j){runif(n=1, min=popparams$initialValue[j]/2, max=popparams$initialValue[j]*2)})
+
+  # set sampled values as new initial estimates
+  newpopparams <- popparams
+  newpopparams$initialValue <- popini
+  setPopulationParameterInformation(newpopparams)
+
+  # run the estimation
+  runScenario()
+
+  # store the estimates and s.e. in table
+  tabestimates <- cbind(tabestimates, getEstimatedPopulationParameters())
+  tabse <- cbind(tabse, getEstimatedStandardErrors()$stochasticApproximation)
+}
 ### Results are super stable
 # > tabestimates
 # [,1]      [,2]      [,3]      [,4]      [,5]
@@ -67,8 +67,8 @@ data$date<-lubridate::as_date(as.character(data$date))
 result<-as.data.frame(matrix(NA,ncol=8,nrow=0))
 names(result)<-c("location","Jpic","Dpic","maxlit","Jmaxlit","Dmaxlit","Jdepasselit","Ddepasselit")
 for (i in 1:length(indivParams$id)){
-
-     temp_monolix_estim<-seirah_estim(binit=log(as.numeric(indivParams[i,2:3])), 
+     i=10
+     temp_monolix_estim<-seirah_estim(binit=as.numeric(indivParams[i,2:3]), 
                                     data=data[which(data$goodID==as.character(indivParams[i,1])),],
                                     alpha=1,
                                     De=5.2,
@@ -76,17 +76,19 @@ for (i in 1:length(indivParams$id)){
                                     Dq=10,
                                     Dh=30,
                                     popSize=chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"], 
-                                    dailyMove=0.10*chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"],
+                                    dailyMove=0.01*chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"size"],
                                     verbose = TRUE,
                                     optim_ols=FALSE)
      jpeg(paste("./monolix/outputMonolix/graphics/Epidemics365_",as.character(indivParams[i,1]),".jpg",sep=""))
-     plot(temp_monolix_estim$solution)
+      plot(temp_monolix_estim)
      dev.off()
      
      jpeg(paste("./monolix/outputMonolix/graphics/Fit_",as.character(indivParams[i,1]),".jpg",sep=""))
-          plot(temp_monolix_estim$data[,"day"],temp_monolix_estim$data[,"cas_confirmes_incident"],ylim=c(0,500))
-     lines(temp_monolix_estim$solution[,"time"], temp_monolix_estim$solution[,"I"],col="blue",main=as.character(indivParams[i,1]),ylab="Cas incidents",xlab="time")
+      plot(temp_monolix_estim$solution)
      dev.off()
+     plot(temp_monolix_estim$solution[,"time"],temp_monolix_estim$solution[,"E"])
+     summary(temp_monolix_estim$solution[,"time"])
+     summary(temp_monolix_estim$solution[,"H"])
      
        temp_monolix_projection<-predict(temp_monolix_estim, threesholdICU = chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"ICUnb"],verbose=TRUE)
    

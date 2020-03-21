@@ -1,3 +1,3 @@
 parameter,statistics,p-value,test
-transmission,0.965816,0.974897,Shapiro-Wilk
-ascertainment,0.956746,0.773487,Shapiro-Wilk
+transmission,0.96629,0.998149,Shapiro-Wilk
+ascertainment,0.955519,0.817838,Shapiro-Wilk
