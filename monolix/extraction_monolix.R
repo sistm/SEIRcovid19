@@ -1,8 +1,8 @@
 rm(list = ls())
-date<-"20200321"
+date<-"20200322"
   
 #Get the data by region
-data_region_by_region<-get_data_covid19_bylevel(level = "region", source3="SPF")
+data_region_by_region<-get_data_covid19_bylevel(level = "region", source3="SPF",update_from_source = TRUE)
 
 #Concatenate all dataset
 multi_join <- function(list_of_loaded_data, join_func, ...){
@@ -32,8 +32,11 @@ for(i in 1:length(data_region[,"maille_code"])){
   }else{
     data_region$initinfectious[i]<-data_region$initinfectious[i-1]
   }
-  data_region$cumul[i]<-sum(data_region$cas_confirmes_incident[which(data_region$goodID==data_region$goodID[i])])
 }
+for(i in 1:length(data_region[,"maille_code"])){
+  data_region$cumul[i]<-sum(data_region$cas_confirmes_incident[which(data_region$goodID==data_region$goodID[i])])
+} 
+head(data_region)
 #Supress regions for which I0=0 à t=0
 supression<-unique(data_region$goodID[which(data_region$initinfectious==0)])
 print(cat("Regions supprimees:", supression))
@@ -45,4 +48,46 @@ data_region<-data_region[which(!data_region$goodID%in%supression),]
 data_region$cas_confirmes_incident<-round(ifelse(data_region$cas_confirmes_incident<0,0,data_region$cas_confirmes_incident),0)
 write.table(data_region,file=paste("./monolix/data_region_",date,".txt",sep=""),sep="\t",row.names = F,quote=F)
 
-            
+data_region_monolix2y<-data_region[1,]
+data_region_monolix2y$observation[1]<-data_region_monolix2y$cas_confirmes_incident[1]
+data_region_monolix2y$observationid[1]<-1
+if((!is.na(data_region$hospitalisation_incident[1]))){
+    data_region_monolix2y[2,]<-c(data_region[1,],data_region_monolix2y$hospitalisation_incident[1],2)
+}else{
+  if((data_region$day[1]==0)){
+    data_region_monolix2y[2,]<-c(data_region[1,],0,2)
+  }else{
+  data_region_monolix2y[2,]<-NA
+  }
+}
+k<-2
+for (i in 3:(2*length(data_region$date))){
+  if(i%%2==0){
+    if((!is.na(data_region$hospitalisation_incident[k]))){
+    data_region_monolix2y[i,]<-c(data_region[k,],data_region$hospitalisation_incident[k],2)
+    }else{
+      if((data_region$day[k]==0)){
+        data_region_monolix2y[i,]<-c(data_region[k,],0,2)
+      }else{
+      data_region_monolix2y[i,]<-NA}
+    }
+    k<-k+1
+  }else{
+    data_region_monolix2y[i,]<-c(data_region[k,],data_region$cas_confirmes_incident[k],1)
+  }
+}
+data_region_monolix2y<-data_region_monolix2y[which(!is.na(data_region_monolix2y$goodID)),]
+head(data_region_monolix2y,n=20)
+for(i in 1:length(data_region_monolix2y[,"maille_code"])){
+  if(data_region_monolix2y$day[i]==0){
+    if(is.na(data_region_monolix2y$hospitalisation_incident[i])|(data_region_monolix2y$hospitalisation_incident[i]==0)){
+      data_region_monolix2y$initH[i]<-1
+    }else{
+      data_region_monolix2y$initH[i]<-data_region$hospitalisation_incident[i]
+    }
+  }else{
+    data_region_monolix2y$initH[i]<-data_region_monolix2y$initH[i-1]
+  }
+}
+
+write.table(data_region_monolix2y,file=paste("./monolix/data_region_2y_",date,".txt",sep=""),sep="\t",row.names = F,quote=F)
