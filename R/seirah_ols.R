@@ -8,7 +8,7 @@ seirah_ols <- function(b, stateinit,data,
                        popSize=65000000,dailyMove=1000000,
                        timeconf=1000,newdailyMove=0.00001*popSize,
                        factorreductrans=3,
-                       verbose = TRUE){
+                       verbose = TRUE,obs="1Y"){
 
   transmission <- exp(b[1])
   ascertainment <- exp(b[2])
@@ -33,9 +33,19 @@ seirah_ols <- function(b, stateinit,data,
   #  plot(sol)
   #}
 
-  selectedsol <- sol[which(sol[,"time"] %in% data$day), "I"]
-  ss <- sum( (data[, "cas_confirmes_incident"] - selectedsol) **2) /
+  if(obs=="1Y"){
+    selectedsol <- sol[which(sol[,"time"] %in% data$day), "I"]
+    ss <- sum( (data[, "cas_confirmes_incident"] - selectedsol) **2) /
     length(data[, "cas_confirmes_incident"])
+  } else{
+    if(obs=="2Y"){
+      selectedsol <- sol[which(sol[,"time"] %in% data$day), c("I","H")]
+      ss <- sum( (data[, "cas_confirmes_incident"] - selectedsol[,"I"]) **2) /
+        length(data[, "cas_confirmes_incident"])  +
+        sum( (data[, "hospitalisation_incident"] - selectedsol[,"H"]) **2,na.rm=TRUE) /
+        length(data[, "hospitalisation_incident"])  
+    }
+  }
 
   if(verbose){
     message("Sum of squares(objective function): ", ss, "\n")

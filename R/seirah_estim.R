@@ -8,8 +8,19 @@
 #' data_FRA <- get_data_covid19(maille_cd = "FRA",
 #'                              source_ch = "sante-publique-france")
 #' fit_FRA <- seirah_estim(binit = c(1.75, 0.41),
-#'                         data = data_FRA,dailyMove=0.01*popSize)
-#' plot(fit_FRA)
+#'                         data = data_FRA)
+#' print(plot(fit_FRA))
+#' 
+#' data_75 <- get_data_covid19(maille_cd = "REG-75",
+#'                              source_ch = "sante-publique-france")
+#' fit_75<- seirah_estim(binit = c(1.75, 0.41),
+#'                         data = data_75)
+#' print(plot(fit_FRA))
+#' fit_FRA <- seirah_estim(binit = c(1.75, 0.41),
+#'                         data = data_FRA,obs="2Y")
+#' print(plot(fit_FRA,type=1))                    
+#' print(plot(fit_FRA,type=2)) 
+#'    
 #' plot.seirah_solve(fit_FRA$solution)
 #' fit_FRA <- seirah_estim(binit = c(fit_FRA$parameters$transmission  , fit_FRA$parameters$ascertainment  ),
 #'                         data = data_FRA,dailyMove=0.1*popSize,timeconf=15,newdailyMove=0,factorreductrans=2,optim_ols=FALSE)
@@ -36,7 +47,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                          alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
                          popSize=65000000, dailyMove=0.1*popSize,
                          verbose = TRUE, optim_ols = TRUE,timeconf=1000,
-                         newdailyMove=0.00001,factorreductrans=3){
+                         newdailyMove=0.00001,factorreductrans=3,obs="1Y"){
 
   if((is.null(stateinit))&((is.null(data)))){
     stop("Initial states or data need to be provided")
@@ -50,13 +61,32 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
   if(is.null(data))optim_ols<-FALSE
 
   if(initwithdata){
-    H0 <- data[1, "hospitalisation_incident"]
-    E0 <- data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
-    I0 <- data[1, "cas_confirmes_incident"]-H0 # Numbers of cases
-    R0 <- 0 #(0 ref)
-    A0 <- I0 # A=I
-    S0 <- popSize - E0 - I0 - A0 - H0 - R0 #N-E-I-A-H-R
-    init <- c(S0, E0, I0, R0, A0, H0)
+    if(obs=="2Y"){
+      if((data[1, "hospitalisation_incident"]==0)|(is.na(data[1, "hospitalisation_incident"]))){
+        H0 <- 1
+      }else{
+        H0 <- data[1, "hospitalisation_incident"]
+      }
+        E0 <- data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
+        I0 <- data[1, "cas_confirmes_incident"]-H0 # Numbers of cases
+        R0 <- 0 #(0 ref)
+        A0 <- I0 # A=I
+        S0 <- popSize - E0 - I0 - A0 - H0 - R0 #N-E-I-A-H-R
+        init <- c(S0, E0, I0, R0, A0, H0)
+        print(init)
+    }else{
+      if(obs=="1Y"){
+       H0 <- 0.5*data[1, "cas_confirmes_incident"]
+       E0 <- data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
+       I0 <- 0.5*data[1, "cas_confirmes_incident"] # Numbers of cases
+       R0 <- 0 #(0 ref)
+       A0 <- I0 # A=I
+       S0 <- popSize - E0 - I0 - A0 - H0 - R0 #N-E-I-A-H-R
+       init <- c(S0, E0, I0, R0, A0, H0)
+      }else{
+        stop("Unrecognized observation model")
+      }
+    }
   }else{
     init <-stateinit
   }
@@ -70,7 +100,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                            popSize=popSize,dailyMove=dailyMove,
                            timeconf=timeconf,newdailyMove=newdailyMove,
                            factorreductrans=factorreductrans,
-                           verbose = verbose)
+                           verbose = verbose,obs=obs)
     transmission <- exp(param_optimal$par[1])
     ascertainment <- exp(param_optimal$par[2])
   }else{
@@ -112,8 +142,6 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 
   return(res)
 }
-
-plot(0,0)
 #' Plotting method for a SEIRAH fit object
 #'
 #' @import ggplot2
@@ -125,19 +153,20 @@ plot.seirah_estim <- function(x,type=1){
 
   data2plot <- cbind.data.frame(x$data, sol_obstime)
 
-  if(type==1){ggplot(data2plot, aes(x=time)) +
+  if(type==1){p<-ggplot(data2plot, aes(x=time)) +
     geom_point(aes(y = cas_confirmes_incident, color = "Observed")) +
     geom_line(aes(y = I, color = "SEIRAH")) +
     theme_classic() +
     ylab("Number of incident cases") +
     scale_color_manual("", values=c("black", "blue"))}
   
-  if(type==2){print(ggplot(data2plot, aes(x=time)) +
+  if(type==2){p<-ggplot(data2plot, aes(x=time)) +
           geom_point(aes(y = hospitalisation_incident, color = "Observed")) +
           geom_line(aes(y = H, color = "SEIRAH")) +
           theme_classic() +
           ylab("Number of hospitalization") +
-          scale_color_manual("", values=c("black", "blue")))}
+          scale_color_manual("", values=c("black", "blue"))}
+  return(p)
   
 }
 
