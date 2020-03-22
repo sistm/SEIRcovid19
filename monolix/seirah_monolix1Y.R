@@ -2,7 +2,6 @@
 library(lixoftConnectors)
 library(ggplot2)
 initializeLixoftConnectors(software="monolix")
-date	maille_code	source_type	day	cas_confirmes_incident	deces_incident	hospitalisation_incident	popsize	goodID	initinfectious	cumul
 
 nameproject<-"sierah_poisson_proj_1y"
 newProject(modelFile = "./monolix/seirah_poisson1Y.txt",
@@ -54,12 +53,16 @@ setScenario(scenario)
 # omega_ascertainment 0.14333148 0.14072314 0.14039738 0.14115975 0.14917383
 
 #Recupere les estimation individuelle et faire des predictions
-popparams <- getPopulationParameterInformation()
-popparams$initialValue <- c(1.5254090,0.3526815,0.1792003,0.6511337)
-setPopulationParameterInformation(popparams)
-runScenario()
+#popparams <- getPopulationParameterInformation()
+#popparams$initialValue <- c(1.5254090,0.3526815,0.1792003,0.6511337)
+#setPopulationParameterInformation(popparams)
+#runScenario()
+##########
+# RUN DIRECT ON MONOLIX
+##########
 
-indivParams = as.data.frame(getEstimatedIndividualParameters(method="conditionalMode"))
+indivParams = read.table(paste("./monolix/outputMonolix/",nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")[,c("id","transmission_mode","ascertainment_mode")]
+#as.data.frame(getEstimatedIndividualParameters(method="conditionalMode"))
 names(indivParams)<-c("id","transmission","ascertainment")
 
 data<-read.table("./monolix/data_region_20200322.txt",sep="\t",header=TRUE)
@@ -87,7 +90,7 @@ for (i in 1:length(indivParams$id)){
     jpeg(paste("./monolix/outputMonolix/",nameproject,"/graphics/FitI_",as.character(indivParams[i,1]),".jpg",sep=""))
     print(plot(temp_monolix_estim,type=1))
      dev.off()
-     jpeg(paste("./monolix/outputMonolix/",nameproject,"/graphics/FitH_",as.character(indivParams[i,1]),".jpg",sep=""))
+     jpeg(paste("./monolix/outputMonolix/",nameproject,"/graphics/PredH_",as.character(indivParams[i,1]),".jpg",sep=""))
      print(plot(temp_monolix_estim,type=2))
      dev.off()
      alpha=1
@@ -123,7 +126,7 @@ for (i in 1:length(indivParams$id)){
                                     verbose = TRUE,
                                     optim_ols=FALSE,
                                     timeconf=14,
-                                    newdailyMove=0,factorreductrans=2,obs="1Y")
+                                    newdailyMove=0,factorreductrans=3,obs="1Y")
    
 
    alpha=1
