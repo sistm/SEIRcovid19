@@ -6,7 +6,7 @@
 seirah_ols <- function(b, stateinit,data,
                        alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
                        popSize=65000000,dailyMove=1000000,
-                       timeconf=1000,newdailyMove=0.00001*popSize,
+                       timeconf=1000,lengthconf=1000,newdailyMove=0.00001*popSize,
                        factorreductrans=3,
                        verbose = TRUE,obs="1Y"){
 
@@ -22,7 +22,7 @@ seirah_ols <- function(b, stateinit,data,
   init <- stateinit
   t <- seq(0,365)
   par <- c(transmission, ascertainment, alpha,
-           De, Di, Dq, Dh, popSize, dailyMove,timeconf,newdailyMove,
+           De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,
            factorreductrans)
 
   #solve ode

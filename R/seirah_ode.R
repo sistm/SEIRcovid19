@@ -22,10 +22,11 @@ seirah_ode <- function(t,Y,par){
   popSize<-par[8]
   dailyMove<-par[9]
   timeconf<-par[10]
-  newdailyMove<-par[11]
-  factorreductrans<-par[12]
+  lengthconf<-par[11]
+  newdailyMove<-par[12]
+  factorreductrans<-par[13]
   
-  if(t>timeconf){
+  if((t>timeconf)&&(t<(timeconf+lengthconf))){
     dailyMove<-newdailyMove
     b<- b/factorreductrans
   }
@@ -37,9 +38,12 @@ seirah_ode <- function(t,Y,par){
   dYdt[4]=(I+A)/Di+H/Dh-dailyMove*R/(popSize-I-H)
   dYdt[5]=(1-r)*E/De-A/Di-dailyMove*A/(popSize-I-H)
   dYdt[6]=I/Dq-H/Dh
-
+  
+  # for (i in 1:6){
+  #   if(init[i]+dYdt[i]<1)dYdt[i]=-init[i]
+  # }
   res <- list(dYdt)
-
+  
   return(res)
 }
 

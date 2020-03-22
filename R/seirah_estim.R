@@ -46,7 +46,7 @@
 seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                          alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
                          popSize=65000000, dailyMove=0.1*popSize,
-                         verbose = TRUE, optim_ols = TRUE,timeconf=1000,
+                         verbose = TRUE, optim_ols = TRUE,timeconf=1000,lengthconf=1000,
                          newdailyMove=0.00001,factorreductrans=3,obs="1Y"){
 
   if((is.null(stateinit))&((is.null(data)))){
@@ -73,7 +73,6 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
         A0 <- I0 # A=I
         S0 <- popSize - E0 - I0 - A0 - H0 - R0 #N-E-I-A-H-R
         init <- c(S0, E0, I0, R0, A0, H0)
-        print(init)
     }else{
       if(obs=="1Y"){
        H0 <- 0.5*data[1, "cas_confirmes_incident"]
@@ -98,7 +97,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                            stateinit=init,data=data,
                            alpha=alpha,De=De,Di=Di,Dq=Dq,Dh=Dh,
                            popSize=popSize,dailyMove=dailyMove,
-                           timeconf=timeconf,newdailyMove=newdailyMove,
+                           timeconf=timeconf,lengthconf=lengthconf,newdailyMove=newdailyMove,
                            factorreductrans=factorreductrans,
                            verbose = verbose,obs=obs)
     transmission <- exp(param_optimal$par[1])
@@ -115,7 +114,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 
   t <- seq(0,365)
   par <- c(transmission, ascertainment, alpha,
-           De, Di, Dq, Dh, popSize, dailyMove,timeconf,newdailyMove,factorreductrans)
+           De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,factorreductrans)
   res_optimal <- seirah_solve(init, t, par)
 
   res <- list("solution" = res_optimal,
@@ -129,6 +128,10 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                 "Dh" = Dh,
                 "popSize" = popSize,
                 "dailyMove" = dailyMove,
+                "timeconf"=timeconf,
+                "lengthconf"=lengthconf,
+                "newdailyMove"=newdailyMove,
+                "factorreductrans"=factorreductrans,
                 "S0" = init[1],
                 "E0" = init[2],
                 "I0" = init[3],
