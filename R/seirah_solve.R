@@ -16,7 +16,7 @@
 #'
 #' init<-c(9999467, 346, 80, 0, 80, 27)
 #' t<-seq(0,365)
-par <- c(1.75, 0.41, alpha, De, Di, Dq, Dh, popSize, dailyMove,30,30,0,3000000)
+#'par <- c(1.75, 0.41, alpha, De, Di, Dq, Dh, popSize, dailyMove,30,30,0,3000000)
 #'
 #' # Solve system using lsoda
 #' sol <- seirah_solve(init, t, par)

@@ -12,7 +12,7 @@ odeType = stiff
 Dh=30
 De=5.2
 Dq=10
-dailyMove=0.01*popsize
+dailyMove=0
 
 t0 = 0  ; t0 is a reserved keyword (initiation of therapy)
 
