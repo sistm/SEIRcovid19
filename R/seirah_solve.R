@@ -25,37 +25,38 @@
 #' # Plot solution
 #' plot(sol$time,sol$I,ylim=c(0,100))
 #' @export
-seirah_solve <- function(init, t, par){
-
-  solution <- deSolve::ode(init, t, seirah_ode, par)
-  colnames(solution) <- c("time", "S", "E", "I", "R", "A", "H")
-  class(solution) <- c("seirah_solve", "deSolve", "matrix" )
-
-  return(solution)
-}
-
-
+# seirah_solve <- function(init, t, par){
 # 
-#  seirah_solve <- function(init, t, par){
-#    solution <- deSolve::ode(init, c(0,t[2]), seirah_ode, par)
-#    result<-as.data.frame(solution)
-#    for(comp in 1:6){
-#      if(result[which(result[,"time"]==t[2]),comp]<1)result[which(result[,"time"]==t[2]),comp]=0
-#    }
+#   solution <- deSolve::ode(init, t, seirah_ode, par)
+#   colnames(solution) <- c("time", "S", "E", "I", "R", "A", "H")
+#   class(solution) <- c("seirah_solve", "deSolve", "matrix" )
 # 
-#    for (i in 3:length(t)){
-#      print(i)
-#      temp<- deSolve::ode(as.numeric(result[which(result[,"time"]==t[i-1]),2:7]), c(t[i-1],t[i]), seirah_ode, par)
-#      for(comp in 1:6){
-#        if(temp[which(temp[,"time"]==t[i]),comp]<1)temp[which(temp[,"time"]==t[i]),comp]=0
-#      }
-#      result<-rbind(result,temp[2,])
-#    }
-#    solution <- as.data.frame(result)
-#    print(str(solution))
-#    colnames(solution) <- c("time", "S", "E", "I", "R", "A", "H")
-#    class(solution) <- c("seirah_solve", "deSolve", "data.frame" )
-#    print(solution)
-#    return(solution)
-#  }
+#   return(solution)
+# }
+
+
+
+ seirah_solve <- function(init, t, par){
+   solution <- deSolve::ode(init, c(0,t[2]), seirah_ode, par)
+   result<-as.data.frame(solution)
+   #print(result)
+   for(comp in 1:6){
+     if(result[which(result[,"time"]==t[2]),comp]<1)result[which(result[,"time"]==t[2]),comp]=0
+   }
+
+   for (i in 3:length(t)){
+     #print(i)
+     temp<- deSolve::ode(as.numeric(result[which(result[,"time"]==t[i-1]),2:7]), c(t[i-1],t[i]), seirah_ode, par)
+     for(comp in 1:6){
+       if(temp[which(temp[,"time"]==t[i]),comp]<1)temp[which(temp[,"time"]==t[i]),comp]=0
+     }
+     result<-rbind(result,temp[2,])
+   }
+   solution <- as.data.frame(result)
+   #print(str(solution))
+   colnames(solution) <- c("time", "S", "E", "I", "R", "A", "H")
+   class(solution) <- c("seirah_solve", "deSolve", "data.frame" )
+   #print(solution)
+   return(solution)
+ }
 

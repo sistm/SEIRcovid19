@@ -1,0 +1,90 @@
+********************************************************************************
+*                        sierah_poisson_proj_2y.mlxtran                        *
+*                        March 23, 2020 at 09:00:51                            *
+*                        Monolix version : 5.1.1                               *
+********************************************************************************
+
+
+POPULATION PARAMETERS ESTIMATION _______________________________________________
+
+Fixed Effects ----------------------------     se_sa    rse(%)
+transmission_pop               :      1.24     0.072      5.81
+ascertainment_pop              :     0.989    0.0202      2.04
+
+Standard Deviation of the Random Effects -
+omega_transmission             :     0.213    0.0425      19.9
+omega_ascertainment            :      5.13      1.72      33.4
+
+Elapsed time (seconds) :       50
+CPU time     (seconds) :   2.9e+2
+
+ _______________________________________________________________________________
+
+
+
+CORRELATION MATRIX OF THE ESTIMATES ____________________________________________
+
+
+Fisher by Stochastic Approximation ---------------------------------------------
+Correlation Matrix :
+   transmission_pop         1
+  ascertainment_pop -0.018043         1
+ omega_transmission  -0.01659 0.0048568         1
+omega_ascertainment -0.011758   0.54413-0.0011366         1
+                               min       max   max/min
+Eigen values           :      0.46       1.5       3.4
+
+Elapsed time (seconds) :   0.053
+CPU time     (seconds) :       0
+
+ -------------------------------------------------------------------------------
+
+ _______________________________________________________________________________
+
+
+
+INDIVIDUAL PARAMETERS ESTIMATION _______________________________________________
+
+
+Individual Parameters Estimation by Conditional Mean ---------------------------
+                      min        Q1    median        Q3       max
+transmission  :     0.785      1.08      1.29      1.47      1.66
+ascertainment :     0.111     0.301     0.954     0.997         1
+
+Elapsed time (seconds) :      16
+CPU time     (seconds) :      96
+
+ -------------------------------------------------------------------------------
+
+
+Individual Parameters Estimation by Conditional Mode ---------------------------
+                      min        Q1    median        Q3       max
+transmission  :     0.772      1.08      1.29      1.47      1.65
+ascertainment :     0.112     0.311     0.886     0.998         1
+
+Elapsed time (seconds) :    0.52
+CPU time     (seconds) :       2
+
+ -------------------------------------------------------------------------------
+
+ _______________________________________________________________________________
+
+
+
+LOG-LIKELIHOOD ESTIMATION ______________________________________________________
+                                                            (is)
+
+-2 x log-likelihood                             :        8521.72
+Akaike Information Criteria               (AIC) :        8529.72
+Corrected Bayesian Information Criteria  (BICc) :        8539.30
+Bayesian Information Criteria             (BIC) :        8532.28
+
+Elapsed time                          (seconds) :          57.22
+CPU time                              (seconds) :         333.00
+
+
+[Importance Sampling] Standard error        : 0.074
+                      Sampling distribution : T-distribution with 5 degrees of freedom
+
+ _______________________________________________________________________________
+

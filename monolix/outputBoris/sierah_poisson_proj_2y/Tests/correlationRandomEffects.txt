@@ -1,0 +1,2 @@
+eta1,eta2,coeff,statistics,p-value
+eta_transmission,eta_ascertainment,0,1.12778,0.279799

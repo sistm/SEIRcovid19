@@ -1,0 +1,4 @@
+location Jpic Dpic maxlit Jmaxlit Dmaxlit Jdepasselit Ddepasselit R0day195
+NA NA NA NA NA NA NA NA NA
+NA NA NA NA NA NA NA NA NA
+Centre 217 2020-10-09 2519 231 2020-10-23 131 2020-07-15 3.72213649065888
