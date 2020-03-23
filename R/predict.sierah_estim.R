@@ -11,9 +11,10 @@
 #'
 #' @export
 predict.seirah_estim <- function(object, thresholdICU = 5000,
-                                 verbose=TRUE){
+                                 verbose=TRUE,kICU=0.1){
 
   sol <- as.data.frame(object$solution)
+  sol[,"H"]<-kICU*sol[,"H"]
   date_start <- object$data$date[1]
 
     Jpic <- sol %>%
