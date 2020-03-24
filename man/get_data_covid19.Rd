@@ -18,8 +18,11 @@ get_data_covid19(
 \item{maille_cd}{a character sting indicating the code}
 
 \item{source_ch}{a character string either \code{"sante-publique-france"}
-or \code{"agences-regionales-sante"}.
+or \code{"agences-regionales-sante"} or \code{"ministere-sante"}.
 Other sources are available but not so reliable...}
+
+\item{epidemic_start}{a logical indicating wehter to left-truncate data at the
+start of the epidemics. The start of the epidemics is the first date}
 }
 \description{
 Scrap and format data from opencovid19-fr
@@ -29,7 +32,7 @@ Scrap and format data from opencovid19-fr
 get_data_covid19(maille_cd = "FRA",
                 source_ch = "ministere-sante")
 
-get_data_covid19(maille_cd = "DPT-33",
+get_data_covid19(maille_cd = "DEP-33",
                 source_ch = "agences-regionales-sante")
 
 get_data_covid19(maille_cd = "REG-75",

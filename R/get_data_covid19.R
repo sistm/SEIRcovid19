@@ -3,13 +3,17 @@
 #'@param maille_cd a character sting indicating the code
 #'
 #'@param source_ch a character string either \code{"sante-publique-france"}
-#'or \code{"agences-regionales-sante"}.
+#'or \code{"agences-regionales-sante"} or \code{"ministere-sante"}.
 #'Other sources are available but not so reliable...
+#'
+#'
+#'@param epidemic_start a logical indicating wehter to left-truncate data at the
+#'start of the epidemics. The start of the epidemics is the first date
+#'
 #'
 #' @import dplyr
 #' @importFrom lubridate as_date
 #' @importFrom tidyr replace_na
-#'
 #'
 #'
 #'@export
@@ -19,7 +23,7 @@
 #'get_data_covid19(maille_cd = "FRA",
 #'                 source_ch = "ministere-sante")
 #'
-#'get_data_covid19(maille_cd = "DPT-33",
+#'get_data_covid19(maille_cd = "DEP-33",
 #'                 source_ch = "agences-regionales-sante")
 #'
 #'get_data_covid19(maille_cd = "REG-75",
@@ -51,20 +55,28 @@ get_data_covid19 <- function(maille_cd = "FRA",
 
   data_filtered <- opencovid19_FR %>%
     dplyr::filter(maille_code == maille_cd, source_type == source_ch)
+
+  stopifnot(nrow(data_filtered)>0)
+
   data_filtered$date <- lubridate::as_date(data_filtered$date)
 
   data_filtered2 <- data_filtered %>%
     group_by(date) %>%
     summarise_at(c("cas_confirmes", "deces", "reanimation"), mean)
 
+  data_filtered2$cas_confirmes_incident <- data_filtered2$cas_confirmes -
+    dplyr::lag(data_filtered2$cas_confirmes, default = 0)
+  data_filtered2$deces <- cummax(tidyr::replace_na(data_filtered2$deces, 0))
+  data_filtered2$deces_incident <- data_filtered2$deces -
+    dplyr::lag(data_filtered2$deces, default = 0)
+
   if(epidemic_start){
     epidemic_start_date <- data_filtered2 %>%
       arrange(date) %>%
-      filter(cas_confirmes > 0) %>%
+      filter(cas_confirmes_incident > 0 & lead(cas_confirmes_incident)>0 & lead(cas_confirmes_incident, n = 2)>0) %>%
       pull(date)
     data_filtered3 <- data_filtered2 %>%
       filter(date > epidemic_start_date[1])
-
   }else{
     data_filtered3 <- data_filtered2
   }
@@ -80,13 +92,6 @@ get_data_covid19 <- function(maille_cd = "FRA",
   }else{
     date_end <- min(date_end, max(data_filtered3$date))
   }
-
-
-  data_filtered3$cas_confirmes_incident <- data_filtered3$cas_confirmes -
-    dplyr::lag(data_filtered3$cas_confirmes, default = 0)
-  data_filtered3$deces <- cummax(tidyr::replace_na(data_filtered3$deces, 0))
-  data_filtered3$deces_incident <- data_filtered3$deces -
-    dplyr::lag(data_filtered3$deces, default = 0)
 
   out_data <- data.frame("date" = seq.Date(from = date_start, by = 1, to = date_end),
                          "maille_code" = maille_cd,
