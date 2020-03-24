@@ -25,16 +25,17 @@
 #' # Plot solution
 #' plot(sol$time,sol$I,ylim=c(0,100))
 #' @export
+
+
+
 # seirah_solve <- function(init, t, par){
-# 
+#
 #   solution <- deSolve::ode(init, t, seirah_ode, par)
 #   colnames(solution) <- c("time", "S", "E", "I", "R", "A", "H")
 #   class(solution) <- c("seirah_solve", "deSolve", "matrix" )
-# 
+#
 #   return(solution)
 # }
-
-
 
  seirah_solve <- function(init, t, par){
    solution <- deSolve::ode(init, c(0,t[2]), seirah_ode, par)

@@ -2,13 +2,13 @@
 % Please edit documentation in R/plot.seirah_solve.R
 \name{plot.seirah_solve}
 \alias{plot.seirah_solve}
-\title{Plotting results from SEIRAH}
+\title{Plotting results from SEIRAH solve}
 \usage{
-\method{plot}{seirah_solve}(x)
+\method{plot}{seirah_solve}(x, chiffres = NULL, split = TRUE)
 }
 \arguments{
 \item{x}{an object of class \code{seirah_solve}}
 }
 \description{
-Plotting results from SEIRAH
+Plotting results from SEIRAH solve
 }

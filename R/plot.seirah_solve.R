@@ -1,4 +1,4 @@
-#'Plotting results from SEIRAH
+#'Plotting results from SEIRAH solve
 #'
 #'@param x an object of class \code{seirah_solve}
 #'
@@ -19,3 +19,15 @@ plot.seirah_solve <- function(x, chiffres = NULL, split=TRUE){
 
   p
 }
+
+#'Plotting results from SEIDRAH solve
+#'
+#'@param x an object of class \code{seirah_solve}
+#'
+#'@importFrom reshape2 melt
+#'
+#'@export
+plot.seidrah_solve <- function(x, chiffres = NULL, split=TRUE){
+  plot.seirah_solve(x, chiffres = NULL, split=TRUE)
+}
+

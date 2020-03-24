@@ -10,6 +10,7 @@ Depends: R (>= 3.5.0)
 Imports: deSolve,
          dplyr,
          ggplot2,
+         reshape2,
          lubridate,
          tidyr,
          stats
