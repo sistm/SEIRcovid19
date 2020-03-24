@@ -2,17 +2,20 @@
 #'
 #'@param x an object of class \code{seirah_solve}
 #'
+#'@importFrom reshape2 melt
+#'
 #'@export
-plot.seirah_solve <- function(x){
+plot.seirah_solve <- function(x, chiffres = NULL, split=TRUE){
 
-  par(mfrow=c(2,3))
-  plot(x[,"time"],x[,"S"],type="l",xlab="Time",ylab="S",col="#56B4E9")
-  plot(x[,"time"],x[,"E"],type="l",xlab="Time",ylab="E",col="#F0E442")
-  plot(x[,"time"],x[,"I"],type="l",xlab="Time",ylab="I",col="#E69F00")
-  plot(x[,"time"],x[,"R"],type="l",xlab="Time",ylab="R",col="#009E73")
-  plot(x[,"time"],x[,"A"],type="l",xlab="Time",ylab="A",col="#CC79A7")
-  plot(x[,"time"],x[,"H"],type="l",xlab="Time",ylab="H",col="#D55E00")
-  abline(h=chiffres[which(chiffres$goodid==as.character(indivParams[i,1])),"ICUnb"],col="red")
-  par(mfrow=c(1,1))
+  data2plot <- reshape2::melt(x, id.vars = "time", variable.name="Compartment")
+  p <- ggplot(data2plot, aes(x = time, y=value)) +
+    geom_line(aes(colour=Compartment))
 
+  if(split){
+    p <- p + facet_wrap(~Compartment, scales = "free_y") + xlim(0, NA)
+  }
+
+  p <- p +theme_bw()
+
+  p
 }
