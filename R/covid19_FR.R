@@ -14,4 +14,4 @@
 #'@source opencovid-19 data \url{https://github.com/opencovid19-fr/data/blob/master/dist/chiffres-cles.csv}
 #'stored in \code{'data/raw/chiffres-cles.csv'}
 #'
-"covid19_FR"
+"opencovid19_FR"

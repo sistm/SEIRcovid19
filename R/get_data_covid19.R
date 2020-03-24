@@ -49,7 +49,7 @@ get_data_covid19 <- function(maille_cd = "FRA",
     data("opencovid19_FR")
   }
 
-  data_filtered <- covid19_FR %>%
+  data_filtered <- opencovid19_FR %>%
     dplyr::filter(maille_code == maille_cd, source_type == source_ch)
   data_filtered$date <- lubridate::as_date(data_filtered$date)
 
