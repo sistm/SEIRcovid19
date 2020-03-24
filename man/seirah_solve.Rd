@@ -23,11 +23,12 @@ dailyMove<-0
 
 init<-c(9999467, 346, 80, 0, 80, 27)
 t<-seq(0,365)
-par <- c(b, r, alpha, De, Di, Dq, Dh, popSize, dailyMove)
+par <- c(1.75, 0.41, alpha, De, Di, Dq, Dh, popSize, dailyMove,30,30,0,3000000)
 
 # Solve system using lsoda
 sol <- seirah_solve(init, t, par)
+plot(sol)
 
 # Plot solution
-plot(sol)
+plot(sol$time,sol$I,ylim=c(0,100))
 }

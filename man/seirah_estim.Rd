@@ -19,8 +19,10 @@ seirah_estim(
   verbose = TRUE,
   optim_ols = TRUE,
   timeconf = 1000,
+  lengthconf = 1000,
   newdailyMove = 1e-05,
-  factorreductrans = 3
+  factorreductrans = 3,
+  obs = "1Y"
 )
 }
 \description{
@@ -31,7 +33,22 @@ data_FRA <- get_data_covid19(maille_cd = "FRA",
                              source_ch = "sante-publique-france")
 fit_FRA <- seirah_estim(binit = c(1.75, 0.41),
                         data = data_FRA)
-plot(fit_FRA)
+print(plot(fit_FRA))
+
+data_75 <- get_data_covid19(maille_cd = "REG-75",
+                             source_ch = "sante-publique-france")
+fit_75<- seirah_estim(binit = c(1.75, 0.41),
+                        data = data_75)
+print(plot(fit_FRA))
+fit_FRA <- seirah_estim(binit = c(1.75, 0.41),
+                        data = data_FRA,obs="2Y")
+print(plot(fit_FRA,type=1))                    
+print(plot(fit_FRA,type=2)) 
+   
+plot.seirah_solve(fit_FRA$solution)
+fit_FRA <- seirah_estim(binit = c(fit_FRA$parameters$transmission  , fit_FRA$parameters$ascertainment  ),
+                        data = data_FRA,dailyMove=0.1*popSize,timeconf=15,newdailyMove=0,factorreductrans=2,optim_ols=FALSE)
+plot.seirah_solve(fit_FRA$solution)                        
 
 data_GE <- get_data_covid19(maille_cd = "REG-44",
                             source_ch = "agences-regionales-sante")

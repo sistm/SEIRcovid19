@@ -43,10 +43,10 @@ get_data_covid19 <- function(maille_cd = "FRA",
                              epidemic_start = TRUE){
 
   if(update_from_source_url){
-    covid19_FR <- read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
-    #save(covid19_FR, file="data/covid19_FR.RData")
+    opencovid19_FR <- read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
+    #save(opencovid19_FR, file="data/opencovid19_FR.RData")
   }else{
-    data("covid19_FR")
+    data("opencovid19_FR")
   }
 
   data_filtered <- covid19_FR %>%

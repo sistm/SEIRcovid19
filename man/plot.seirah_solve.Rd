@@ -4,7 +4,7 @@
 \alias{plot.seirah_solve}
 \title{Plotting results from SEIRAH}
 \usage{
-\method{plot}{seirah_solve}(x, locator.legend = F)
+\method{plot}{seirah_solve}(x)
 }
 \arguments{
 \item{x}{an object of class \code{seirah_solve}}

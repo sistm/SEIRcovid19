@@ -15,7 +15,12 @@ seirah_ols(
   Dh = 30,
   popSize = 6.5e+07,
   dailyMove = 1e+06,
-  verbose = TRUE
+  timeconf = 1000,
+  lengthconf = 1000,
+  newdailyMove = 1e-05 * popSize,
+  factorreductrans = 3,
+  verbose = TRUE,
+  obs = "1Y"
 )
 }
 \description{

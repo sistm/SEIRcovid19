@@ -30,4 +30,5 @@ get_data_covid19_bylevel()
 # departements
 get_data_covid19_bylevel(level = "departement", source3="ARS")
 
+
 }

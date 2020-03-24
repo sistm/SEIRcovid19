@@ -4,7 +4,7 @@
 \alias{plot.seirah_estim}
 \title{Plotting method for a SEIRAH fit object}
 \usage{
-\method{plot}{seirah_estim}(x)
+\method{plot}{seirah_estim}(x, type = 1)
 }
 \description{
 Plotting method for a SEIRAH fit object
