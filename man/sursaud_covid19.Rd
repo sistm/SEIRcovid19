@@ -18,14 +18,14 @@ A data frame with 2904 rows and 7 variables:
 }
 \source{
 SURSAUD database share by Santé Publique France \url{https://www.data.gouv.fr/fr/datasets/r/941ff2b4-ea24-4cdf-b0a7-655f2a332fb2}
-stored in \code{'data/raw/sursaud-covid19-quotidien-2020-03-21-17h21.xlsx'}
+stored in \code{'data/raw/sursaud-covid19-quotidien-2020-03-23-11h55.xlsx'}
 }
 \usage{
 sursaud_covid19
 }
 \description{
 A dataset containing the  Emergency Covid-19 related counts in France during
-the Covid epidemics as of 2020-03-21 at 17:21 (Paris time).
+the Covid epidemics as of 2020-03-23 at 11:55am (Paris time).
 }
 \examples{
 data(sursaud_covid19)
