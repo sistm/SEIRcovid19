@@ -44,6 +44,15 @@ seidrah_ode <- function(t,Y,par){
   dYdt[6] <- (1-r)*E/De - A/Di - dailyMove*A/(popSize-I-H-D) + dailyMove*A/(S+E+A+R)#A
   dYdt[7] <- I/Dq - H/Dh #H
 
+  #MEL
+  dYdt[1] <- -b*S*(I+alpha*A)/popSize + dailyMove*S/(S+E+A+R) - dailyMove*S/(popSize-I-H-D) #S
+  dYdt[2] <- b*S*(I+alpha*A)/popSize-E/De - dailyMove*E/(popSize-I-H-D) + dailyMove*E/(S+E+A+R) #E
+  dYdt[3] <- r*E/De - I/Dq - I/Di -I/Mi #I
+  dYdt[4] <- H/Mh+I/Mi
+  dYdt[5] <- (I+A)/Di + H/Dh - dailyMove*R/(popSize-I-H-D) + dailyMove*R/(S+E+A+R)#R
+  dYdt[6] <- (1-r)*E/De - A/Di - dailyMove*A/(popSize-I-H-D) + dailyMove*A/(S+E+A+R)#A
+  dYdt[7] <- I/Dq - H/Dh -H/Mh #H
+  
   # for (i in 1:6){
   #   if(init[i]+dYdt[i]<1)dYdt[i]=-init[i]
   # }
