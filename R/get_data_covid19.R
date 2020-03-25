@@ -69,6 +69,8 @@ get_data_covid19 <- function(maille_cd = "FRA",
   data_filtered2$deces <- cummax(tidyr::replace_na(data_filtered2$deces, 0))
   data_filtered2$deces_incident <- data_filtered2$deces -
     dplyr::lag(data_filtered2$deces, default = 0)
+  data_filtered2$reanimation_incident <- data_filtered2$reanimation -
+    dplyr::lag(data_filtered2$reanimation, default = 0)
 
   if(epidemic_start){
     epidemic_start_date <- data_filtered2 %>%
@@ -97,7 +99,7 @@ get_data_covid19 <- function(maille_cd = "FRA",
                          "maille_code" = maille_cd,
                          "source_type" = source_ch)
   out_data$day <- as.numeric(difftime(out_data$date, out_data$date[1], units = "day"))
-  out_data2 <- left_join(out_data, dplyr::select(data_filtered3, date, cas_confirmes_incident, deces_incident),
+  out_data2 <- left_join(out_data, dplyr::select(data_filtered3, date, cas_confirmes_incident, deces_incident, reanimation_incident),
             by="date")
   out_data3 <- tidyr::replace_na(out_data2, replace =list("cas_confirmes_incident" = 0,
                                                           "deces_incident"=0))

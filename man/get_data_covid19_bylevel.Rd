@@ -14,21 +14,34 @@ get_data_covid19_bylevel(
 )
 }
 \arguments{
-\item{maille_cd}{a character sting indicating the code}
+\item{source3}{a character string either \code{"SPF"}
+or \code{"ARS"}}
 
-\item{source_ch}{a character string either \code{"Santé publique France"}
-or \code{"ARS XXX-XXX"} (where 'XXX-XXX' must be replaced by the region name).
-Other sources are available but not so reliable...}
+\item{maille_cd}{a character sting indicating the code}
 }
 \description{
 Get data from opencovid19-fr for all french region or dpt
 }
 \examples{
 # regions
-get_data_covid19_bylevel()
+temp <- get_data_covid19_bylevel()
 
 # departements
-get_data_covid19_bylevel(level = "departement", source3="ARS")
+get_data_covid19_bylevel(level = "region", source3="ARS")
 
-
+#data_reg_consolide <- get_data_covid19_bylevel()
+#for(x in names(data_reg_consolide)){
+#  data_reg_consolide[[x]] <- data_reg_consolide[[x]] \%>\%
+#    select(-deces_incident, -source_type)
+#  temp <- get_data_covidé19(maille_cd = x, source_ch="opencovid19-fr",
+#                            epidemic_start  =FALSE)
+#  if(!is.null(temp)){
+#  temp <- temp \%>\%
+#    select(date, maille_code, deces_incident)
+#  data_reg_consolide[[x]] <- left_join(data_reg_consolide[[x]], temp)
+#  }else{
+#    data_reg_consolide[[x]] <- NULL
+#  }
+#}
+#save(data_reg_consolide, file = "data_reg_consolide.RData")
 }
