@@ -103,6 +103,15 @@ get_data_covid19 <- function(maille_cd = "FRA",
                                                           "deces_incident"=0))
   out_data3$maille_code <- as.character(out_data3$maille_code)
 
+  sursaud_covid19_FRA <- sursaud_covid19 %>% #summing at the FRANCE level
+    filter(grepl("REG-",maille_code)) %>%
+    select(-maille_code) %>%
+    group_by(date_de_passage) %>%
+    summarise_all(sum, na.rm=TRUE) %>%
+    tibble::add_column(maille_code = "FRA", .before = "date_de_passage")
+
+  sursaud_covid19 <- bind_rows(sursaud_covid19, sursaud_covid19_FRA)
+
  sursaud_covid19_2join <- sursaud_covid19 %>%
    filter(maille_code == maille_cd, date_de_passage > min(out_data3$date)) %>%
    select(maille_code, date_de_passage, nbre_hospit_corona)
