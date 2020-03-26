@@ -158,7 +158,7 @@ get_data_covid19_hierarchical <- function(maille_cd = "FRA",
     epidemic_start_date <- data_consolidated %>%
       ungroup() %>%
       arrange(date) %>%
-      filter(I > 0 & lead(I)>0 & lead(I, n = 2)>0) %>%
+      filter(I > 0 & lead(I)>0 & lead(I, n = 2)>0 & lead(I, n = 3)>0) %>%
       top_n(-1, date) %>%
       pull(date)
     data_consolidated2 <- data_consolidated %>%
@@ -178,7 +178,9 @@ get_data_covid19_hierarchical <- function(maille_cd = "FRA",
   }
 
   out_data <- data_consolidated2 %>%
-    select(c(date, maille_code, maille_nom, I, H, D, U, R))
+    ungroup() %>%
+    mutate(day = seq(from=0, to =n()-1, by=1)) %>%
+    select(c(date, maille_code, maille_nom, day, I, H, D, U, R))
 
   return(out_data)
 }

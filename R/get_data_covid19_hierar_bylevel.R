@@ -60,12 +60,13 @@ get_data_covid19_hierar_bylevel <- function(level ="region",
   }
 
   for(m in all_mailles_cd){
-    res[[m]] <- get_data_covid19_hierarchical(maille_cd = m,
+    res[[m]] <- as.data.frame(get_data_covid19_hierarchical(maille_cd = m,
                                               sources_hierarchy = sources_hierarchy,
                                               date_start = date_start,
                                               date_end = date_end,
                                               update_from_source = update_from_source,
                                               epidemic_start = epidemic_start)
+    )
   }
 
   return(res)
