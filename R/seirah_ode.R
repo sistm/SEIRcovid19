@@ -10,8 +10,8 @@ seirah_ode <- function(t,Y,par){
   R<-Y[4]
   A<-Y[5]
   H<-Y[6]
-
-
+  
+  
   b<-par[1]
   r<-par[2]
   alpha<-par[3]
@@ -30,7 +30,7 @@ seirah_ode <- function(t,Y,par){
     dailyMove<-newdailyMove
     b<- b/factorreductrans
   }
-
+  
   dYdt<-vector(length=6)
   dYdt[1]=-b*S*(I+alpha*A)/popSize+dailyMove-dailyMove*S/(popSize-I-H)
   dYdt[2]=b*S*(I+alpha*A)/popSize-E/De-dailyMove*E/(popSize-I-H)
@@ -46,5 +46,3 @@ seirah_ode <- function(t,Y,par){
   
   return(res)
 }
-
-

@@ -5,12 +5,31 @@
 #' @importFrom stats optim
 #'
 #' @examples
+#' 
+#' 
+# data<-read.table("./monolix2Y/data_region_2y_cumullissage20200329.txt",header=TRUE)
+# data<-data[which(data$observationid==1),]
+# data$I<-data$lissageI
+# data$H<-data$lissageH
+# data1<-data[which(data$maille_code=="REG-11"),]
+# 
+# temp<-seirah_estim(binit = c(1.0, 0.4),initwithdata=TRUE,obs="2Y",De=0.0001,popSize=data1$popsize[1], data = data1,optim_ols =TRUE)
+# plot(temp)
+
+
 #' data_FRA <- get_data_covid19(maille_cd = "FRA",
 #'                              source_ch = "sante-publique-france")
-#' fit_FRA <- seirah_estim(binit = c(1.75, 0.41),
-#'                         data = data_FRA)
+#' fit_FRA <- seirah_estim(binit = c(1.0, 0.99),stateinit=c(64999999,1,1,0,5,1),initwithdata=FALSE,obs="2Y",
+#'                         data = data_FRA,optim_ols =TRUE)
 #' print(plot(fit_FRA))
 #' 
+#' 
+#' H_0=1
+# I_0=1
+# E_0=1
+# R_0=0
+# A_0=5
+# S_0=p
 #' data_75 <- get_data_covid19(maille_cd = "REG-75",
 #'                              source_ch = "sante-publique-france")
 #' fit_75<- seirah_estim(binit = c(1.75, 0.41),
@@ -62,15 +81,16 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 
   if(initwithdata){
     if(obs=="2Y"){
-      if((data[1, "hospitalisation_incident"]==0)|(is.na(data[1, "hospitalisation_incident"]))){
+     # if((data[1, "hospitalisation_incident"]==0)|(is.na(data[1, "hospitalisation_incident"]))){
+      if((data[1, "I"]==0)|(is.na(data[1, "H"]))){
         H0 <- 1
       }else{
-        H0 <- data[1, "hospitalisation_incident"]
+        H0 <- data[1, "H"]#data[1, "hospitalisation_incident"]
       }
-        E0 <- data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
-        I0 <- data[1, "cas_confirmes_incident"]-H0 # Numbers of cases
+        E0 <- 2*data[1, "I"]#data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
+        I0 <- data[1, "I"]-H0#data[1, "cas_confirmes_incident"]-H0 # Numbers of cases
         R0 <- 0 #(0 ref)
-        A0 <- I0 # A=I
+        A0 <- data[1, "I"]#I0 # A=I
         S0 <- popSize - E0 - I0 - A0 - H0 - R0 #N-E-I-A-H-R
         init <- c(S0, E0, I0, R0, A0, H0)
     }else{
@@ -92,7 +112,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 
 
   if(optim_ols){
-    param_optimal <- optim(log(binit),
+    param_optimal <- optim(c(log(binit[1]),logit(binit[2])),
                            fn = seirah_ols,
                            stateinit=init,data=data,
                            alpha=alpha,De=De,Di=Di,Dq=Dq,Dh=Dh,
@@ -100,8 +120,9 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                            timeconf=timeconf,lengthconf=lengthconf,newdailyMove=newdailyMove,
                            factorreductrans=factorreductrans,
                            verbose = verbose,obs=obs)
+    print(param_optimal$convergence)
     transmission <- exp(param_optimal$par[1])
-    ascertainment <- exp(param_optimal$par[2])
+    ascertainment <- expit(param_optimal$par[2])
   }else{
     param_optimal <- list()
     param_optimal[["par"]] <- binit
@@ -150,28 +171,53 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 #' @import ggplot2
 #'
 #' @export
+#' 
 plot.seirah_estim <- function(x,type=1){
 
-  sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
+sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
+names(sol_obstime)<-c("time","Smod","Emod","Imod","Rmod","Amod","Hmod")
+sol_obstime$Hmodest<-sol_obstime$Imod/x$parameters$Dq
+sol_obstime$Imodest<-x$parameters$ascertainment*sol_obstime$Emod/x$parameters$De
+data2plot <- cbind.data.frame(x$data, sol_obstime)
 
-  data2plot <- cbind.data.frame(x$data, sol_obstime)
+if(type==1){p<-ggplot(data2plot, aes(x=time)) +
+  geom_point(aes(y = I, color = "Observed")) +
+  geom_line(aes(y = Imodest, color = "SEIRAH")) +
+  theme_classic() +
+  ylab("Number of incident cases") +
+  scale_color_manual("", values=c("black", "blue"))}
+if(type==2){p<-ggplot(data2plot, aes(x=time)) +
+  geom_point(aes(y = H, color = "Observed")) +
+  geom_line(aes(y = Hmodest, color = "SEIRAH")) +
+  theme_classic() +
+  ylab("Number of hospitalization") +
+  scale_color_manual("", values=c("black", "blue"))}
+return(p)
 
-  if(type==1){p<-ggplot(data2plot, aes(x=time)) +
-    geom_point(aes(y = cas_confirmes_incident, color = "Observed")) +
-    geom_line(aes(y = I, color = "SEIRAH")) +
-    theme_classic() +
-    ylab("Number of incident cases") +
-    scale_color_manual("", values=c("black", "blue"))}
-  
-  if(type==2){p<-ggplot(data2plot, aes(x=time)) +
-          geom_point(aes(y = hospitalisation_incident, color = "Observed")) +
-          geom_line(aes(y = H, color = "SEIRAH")) +
-          theme_classic() +
-          ylab("Number of hospitalization") +
-          scale_color_manual("", values=c("black", "blue"))}
-  return(p)
-  
 }
+# plot.seirah_estim <- function(x,type=1){
+# 
+#   sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
+#   names(sol_obstime)<-c("time","Smod","Emod","Imod","Rmod","Amod","Hmod")
+#   
+#   data2plot <- cbind.data.frame(x$data, sol_obstime)
+# 
+#   if(type==1){p<-ggplot(data2plot, aes(x=time)) +
+#     geom_point(aes(y = log(I), color = "Observed")) +
+#     geom_line(aes(y = log(Imod), color = "SEIRAH")) +
+#     theme_classic() +
+#     ylab("Number of incident cases") +
+#     scale_color_manual("", values=c("black", "blue"))}
+#   
+#   if(type==2){p<-ggplot(data2plot, aes(x=time)) +
+#           geom_point(aes(y = H, color = "Observed")) +
+#           geom_line(aes(y = Hmod, color = "SEIRAH")) +
+#           theme_classic() +
+#           ylab("Number of hospitalization") +
+#           scale_color_manual("", values=c("black", "blue"))}
+#   return(p)
+#   
+# }
 
 #' Plotting method for a list of SEIRAH fit objects
 #'

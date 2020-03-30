@@ -35,15 +35,15 @@ seirah_ols <- function(b, stateinit,data,
 
   if(obs=="1Y"){
     selectedsol <- sol[which(sol[,"time"] %in% data$day), "I"]
-    ss <- sum( (data[, "cas_confirmes_incident"] - selectedsol) **2) /
-    length(data[, "cas_confirmes_incident"])
+    ss <- sum( (data[, "I"] - selectedsol) **2) /
+    length(data[, "I"])
   } else{
     if(obs=="2Y"){
       selectedsol <- sol[which(sol[,"time"] %in% data$day), c("I","H")]
-      ss <- sum( (data[, "cas_confirmes_incident"] - selectedsol[,"I"]) **2) /
-        length(data[, "cas_confirmes_incident"])  +
-        sum( (data[, "hospitalisation_incident"] - selectedsol[,"H"]) **2,na.rm=TRUE) /
-        length(data[, "hospitalisation_incident"])  
+      ss <- sum( (data[, "I"] - selectedsol[,"I"]) **2) /
+        length(data[, "I"])  +
+        sum( (data[, "H"] - selectedsol[,"H"]) **2,na.rm=TRUE) /
+        length(data[, "H"])  
     }
   }
 
