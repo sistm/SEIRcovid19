@@ -1,3 +1,0 @@
-eta,statistics,p-value
-eta_transmission,0.945957,0.803494
-eta_ascertainment,0.913135,0.312747
