@@ -1,0 +1,3 @@
+residuals,statistics,p-value,test
+NPDE_Y1,0.959996,3.68815e-7,Shapiro-Wilk
+NPDE_Y2,0.988156,0.0588037,Shapiro-Wilk

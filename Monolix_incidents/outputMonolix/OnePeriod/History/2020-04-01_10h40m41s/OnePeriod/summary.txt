@@ -1,0 +1,102 @@
+********************************************************************************
+*                          OnePeriod.mlxtran                                   *
+*                          April 01, 2020 at 10:40:39                          *
+*                          Monolix version : 5.1.1                             *
+********************************************************************************
+
+
+POPULATION PARAMETERS ESTIMATION _______________________________________________
+
+Fixed Effects ----------------------------     se_sa    rse(%)
+b_pop                          :      2.21     0.144      6.51
+Dq_pop                         :     0.909       0.4        44
+E0_pop                         :       612       174      28.4
+A0_pop                         :       370       166        45
+
+Standard Deviation of the Random Effects -
+omega_b                        :     0.231    0.0522      22.6
+omega_Dq                       :      1.53     0.386      25.2
+omega_E0                       :     0.935     0.217      23.2
+omega_A0                       :       1.4     0.469      33.4
+
+Elapsed time (seconds) :   2.1e+2
+CPU time     (seconds) :   1.1e+3
+
+ _______________________________________________________________________________
+
+
+
+CORRELATION MATRIX OF THE ESTIMATES ____________________________________________
+
+
+Fisher by Stochastic Approximation ---------------------------------------------
+Correlation Matrix :
+   b_pop         1
+  Dq_pop-0.0065857         1
+  E0_pop-0.00070767 0.0039477         1
+  A0_pop -0.035651 0.0010823 -0.046509         1
+ omega_b -0.075452 0.0023801-0.0010373   0.04792         1
+omega_Dq 0.0064992  -0.14474-0.0055446 0.0081076-0.0068431         1
+omega_E0-0.0047389  0.006481  -0.22952 -0.015122  -0.00123  -0.01117         1
+omega_A0  0.041143 0.0025329  0.010573  -0.31903 -0.057143  -0.01282  0.017885         1
+                               min       max   max/min
+Eigen values           :      0.68       1.4         2
+
+Elapsed time (seconds) :    0.11
+CPU time     (seconds) :       0
+
+ -------------------------------------------------------------------------------
+
+ _______________________________________________________________________________
+
+
+
+INDIVIDUAL PARAMETERS ESTIMATION _______________________________________________
+
+
+Individual Parameters Estimation by Conditional Mean ---------------------------
+           min        Q1    median        Q3       max
+b  :      1.06      2.11       2.3      2.46      2.93
+Dq :     0.032     0.602      1.47      3.01      4.51
+E0 :       202       384       557   1.39e+3   4.24e+3
+A0 :      43.9       180       472       955   1.74e+3
+
+Elapsed time (seconds) :      80
+CPU time     (seconds) :  4.7e+2
+
+ -------------------------------------------------------------------------------
+
+
+Individual Parameters Estimation by Conditional Mode ---------------------------
+           min        Q1    median        Q3       max
+b  :      1.07       2.1       2.3      2.45      2.93
+Dq :    0.0297     0.628      1.45      3.02      4.41
+E0 :       193       394       448   1.28e+3    4.1e+3
+A0 :      40.3       172       566   1.01e+3   1.75e+3
+
+Elapsed time (seconds) :     3.1
+CPU time     (seconds) :      13
+
+ -------------------------------------------------------------------------------
+
+ _______________________________________________________________________________
+
+
+
+LOG-LIKELIHOOD ESTIMATION ______________________________________________________
+                                                            (is)
+
+-2 x log-likelihood                             :        9537.26
+Akaike Information Criteria               (AIC) :        9553.26
+Corrected Bayesian Information Criteria  (BICc) :        9572.50
+Bayesian Information Criteria             (BIC) :        9557.78
+
+Elapsed time                          (seconds) :         139.53
+CPU time                              (seconds) :         368.00
+
+
+[Importance Sampling] Standard error        : 0.175
+                      Sampling distribution : T-distribution with 5 degrees of freedom
+
+ _______________________________________________________________________________
+
