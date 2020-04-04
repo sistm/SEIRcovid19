@@ -1,0 +1,5 @@
+parameter,statistics,p-value,test
+b1,0.93999,0.667682,Shapiro-Wilk
+Dq,0.923761,0.495012,Shapiro-Wilk
+E0,0.910733,0.325123,Shapiro-Wilk
+A0,0.934169,0.7004,Shapiro-Wilk
