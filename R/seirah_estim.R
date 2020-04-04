@@ -66,7 +66,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                          alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
                          popSize=65000000, dailyMove=0.1*popSize,
                          verbose = TRUE, optim_ols = TRUE,timeconf=1000,lengthconf=1000,
-                         newdailyMove=0.00001,factorreductrans=3,obs="1Y"){
+                         newdailyMove=0.00001,factorreductrans=3,obs="1Y",E0given=NULL,A0given=NULL,b2=NULL,pred=FALSE){
 
   if((is.null(stateinit))&((is.null(data)))){
     stop("Initial states or data need to be provided")
@@ -82,15 +82,13 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
   if(initwithdata){
     if(obs=="2Y"){
      # if((data[1, "hospitalisation_incident"]==0)|(is.na(data[1, "hospitalisation_incident"]))){
-      if((data[1, "I"]==0)|(is.na(data[1, "H"]))){
-        H0 <- 1
-      }else{
-        H0 <- data[1, "H"]#data[1, "hospitalisation_incident"]
-      }
-        E0 <- 2*data[1, "I"]#data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
-        I0 <- data[1, "I"]-H0#data[1, "cas_confirmes_incident"]-H0 # Numbers of cases
+     
+        H0 <- data[1, "init_H0"]#data[1, "hospitalisation_incident"]
+      
+        E0 <- ifelse(is.null(E0given),2*data[1, "init_I0"],E0given)#data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
+        I0 <- data[1, "init_I0"]#data[1, "cas_confirmes_incident"]-H0 # Numbers of cases
         R0 <- 0 #(0 ref)
-        A0 <- data[1, "I"]#I0 # A=I
+        A0 <- ifelse(is.null(A0given),data[1, "init_I0"],A0given) #I0 # A=I
         S0 <- popSize - E0 - I0 - A0 - H0 - R0 #N-E-I-A-H-R
         init <- c(S0, E0, I0, R0, A0, H0)
     }else{
@@ -132,11 +130,11 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 
   # Optimal solution
 
-
+  factorreductrans<-ifelse(is.null(b2),factorreductrans,transmission/b2)
   t <- seq(0,365)
   par <- c(transmission, ascertainment, alpha,
            De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,factorreductrans)
-  res_optimal <- seirah_solve(init, t, par)
+  res_optimal <- seirah_solve(init, t, par,pred)
 
   res <- list("solution" = res_optimal,
               "parameters" = list(
@@ -175,19 +173,23 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 plot.seirah_estim <- function(x,type=1){
 
 sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
-names(sol_obstime)<-c("time","Smod","Emod","Imod","Rmod","Amod","Hmod")
+names(sol_obstime)<-c("day","Smod","Emod","Imod","Rmod","Amod","Hmod")
 sol_obstime$Hmodest<-sol_obstime$Imod/x$parameters$Dq
 sol_obstime$Imodest<-x$parameters$ascertainment*sol_obstime$Emod/x$parameters$De
-data2plot <- cbind.data.frame(x$data, sol_obstime)
 
-if(type==1){p<-ggplot(data2plot, aes(x=time)) +
-  geom_point(aes(y = I, color = "Observed")) +
+temp<-x$data[which(x$data$obs_id==type),]
+data2plot <- merge(temp, sol_obstime, by = "day")
+
+if(type==1){
+  p<-ggplot(data2plot, aes(x=day)) +
+  geom_point(aes(y = obs, color = "Observed")) +
   geom_line(aes(y = Imodest, color = "SEIRAH")) +
   theme_classic() +
   ylab("Number of incident cases") +
   scale_color_manual("", values=c("black", "blue"))}
-if(type==2){p<-ggplot(data2plot, aes(x=time)) +
-  geom_point(aes(y = H, color = "Observed")) +
+
+if(type==2){p<-ggplot(data2plot, aes(x=day)) +
+  geom_point(aes(y = obs, color = "Observed")) +
   geom_line(aes(y = Hmodest, color = "SEIRAH")) +
   theme_classic() +
   ylab("Number of hospitalization") +

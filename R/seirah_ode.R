@@ -11,8 +11,6 @@ seirah_ode <- function(t,Y,par){
   A<-Y[5]
   H<-Y[6]
   
-  
-  b<-par[1]
   r<-par[2]
   alpha<-par[3]
   De<-par[4]
@@ -26,9 +24,13 @@ seirah_ode <- function(t,Y,par){
   newdailyMove<-par[12]
   factorreductrans<-par[13]
   
-  if((t>timeconf)&&(t<(timeconf+lengthconf))){
+  b<-par[1]
+  if((t>=timeconf)&(t<(timeconf+lengthconf))){
     dailyMove<-newdailyMove
-    b<- b/factorreductrans
+    b<- par[1]/factorreductrans
+  }
+  if(t>=timeconf+lengthconf){
+    dailyMove<-newdailyMove
   }
   
   dYdt<-vector(length=6)
@@ -42,6 +44,7 @@ seirah_ode <- function(t,Y,par){
   # for (i in 1:6){
   #   if(init[i]+dYdt[i]<1)dYdt[i]=-init[i]
   # }
+  
   res <- list(dYdt)
   
   return(res)

@@ -37,19 +37,22 @@
 #   return(solution)
 # }
 
- seirah_solve <- function(init, t, par){
+ seirah_solve <- function(init, t, par,pred=TRUE){
    solution <- deSolve::ode(init, c(0,t[2]), seirah_ode, par)
    result<-as.data.frame(solution)
    #print(result)
-   for(comp in 1:6){
+   if(pred){
+      for(comp in 1:6){
      if(result[which(result[,"time"]==t[2]),comp]<1)result[which(result[,"time"]==t[2]),comp]=0
    }
-
+   }
    for (i in 3:length(t)){
-     #print(i)
+     # print(i)
      temp<- deSolve::ode(as.numeric(result[which(result[,"time"]==t[i-1]),2:7]), c(t[i-1],t[i]), seirah_ode, par)
-     for(comp in 1:6){
+     if(pred){
+        for(comp in 1:6){
        if(temp[which(temp[,"time"]==t[i]),comp]<1)temp[which(temp[,"time"]==t[i]),comp]=0
+        }
      }
      result<-rbind(result,temp[2,])
    }
