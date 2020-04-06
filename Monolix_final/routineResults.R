@@ -69,9 +69,11 @@ getPlot<-function(temp_monolix_estim,nameproject,indivParamsreg){
 #indivParamsreg<-indivParams[i,]
 getR0<-function(solution,indivParamsreg){
   
-  res<-as.data.frame(matrix(NA,ncol=11,nrow=0))
-  names(res)<-c("reg","time","R0","R0ICmin","R0ICmax","I","Imin","Imax","A","Amin","Amax")
+  res<-as.data.frame(matrix(NA,ncol=13,nrow=0))
+  names(res)<-c("reg","date","time","R0","R0ICmin","R0ICmax","I","Imin","Imax","A","Amin","Amax","this")
     
+
+  datestart<-solution$data$date[1]
   Dq<-as.numeric(indivParamsreg[1,"Dq_mode"])
   alpha<-solution$parameters$alpha
   Di<-solution$parameters$Di
@@ -106,7 +108,8 @@ At<-solution$solution[which(solution$solution$time==time),"A"]
 R0minmax<-Di*bmin/(Amaxmax+Imaxmax)*(alpha*Aminmax+(Dqmin*Iminmax)/(Di+Dqmax))
 R0maxmax<-Di*bmax/(Aminmax+Iminmax)*(alpha*Amaxmax+(Dqmax*Imaxmax)/(Di+Dqmin))
 R0<-Di*b/(It+At)*(alpha*At+Dq*It/(Di+Dq))
-res[time,]<-c(as.character(indivParamsreg[1,1]),time,R0,R0minmax,R0maxmax,It,Iminmax,Imaxmax,At,Aminmax,Amaxmax)
+this<-(alpha*At+Dq*It/(Di+Dq))
+res[time,]<-c(as.character(indivParamsreg[1,1]),as.character(datestart),time,R0,R0minmax,R0maxmax,It,Iminmax,Imaxmax,At,Aminmax,Amaxmax,this)
   }
   return(res)
 }
@@ -115,7 +118,6 @@ res[time,]<-c(as.character(indivParamsreg[1,1]),time,R0,R0minmax,R0maxmax,It,Imi
 ### GET THE R0
 #indivParamsreg<-indivParams[i,]
 getPlotR0<-function(res,nameproject,indivParamsreg){
-
   jpeg(paste(path,"outputMonolix/",nameproject,"/graphics/R0_",as.character(indivParamsreg[1,1]),".jpg",sep=""))
   p<-ggplot(res, aes(x=as.numeric(time))) +
     geom_line(aes(y = as.numeric(R0)),col='black') +
@@ -128,14 +130,62 @@ getPlotR0<-function(res,nameproject,indivParamsreg){
   dev.off()
 }
 
+getPlotR0all<-function(R0table,nameproject){
+R0tableFRANCE<- data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-06-19"), "day"))
+for (i in 1:length(R0tableFRANCE$time)){
+  R0tableFRANCE$A[i]<-sum(as.numeric(R0table$A[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
+  R0tableFRANCE$I[i]<-sum(as.numeric(R0table$I[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
+  R0tableFRANCE$Amin[i]<-sum(as.numeric(R0table$Amin[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
+  R0tableFRANCE$Imin[i]<-sum(as.numeric(R0table$Imin[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
+  R0tableFRANCE$Amax[i]<-sum(as.numeric(R0table$Amax[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
+  R0tableFRANCE$Imax[i]<-sum(as.numeric(R0table$Imax[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
+}
+R0table$finaltime<-as.Date(R0table$date)+as.numeric(R0table$time)
+pop<-read.table("./Monolix_final/outputMonolix/final/populationParameters.txt",sep=",",header=TRUE)
+
+b1<-pop$value[pop$parameter=="b1_pop"]
+b2<-b1/exp(-pop$value[pop$parameter=="beta_pop"])
+R0tableFRANCE$R0<-ifelse(as.Date(R0tableFRANCE$time)<as.Date("2020-03-17"),b1*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di)),b2*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di)))
+
+R0table$Region<-R0table$reg
+jpeg(paste(path,"outputMonolix/",nameproject,"/graphics/R0_all.jpg",sep=""))
+p<-ggplot(R0table, aes(x=as.Date(finaltime))) +
+  geom_line(aes(y = as.numeric(R0),color=Region)) +
+  geom_ribbon(data=R0table,aes(ymin=as.numeric(R0ICmin),ymax=as.numeric(R0ICmax),fill=Region),alpha=0.3) +
+  geom_line(data=R0tableFRANCE,aes(x=time, y = as.numeric(R0)),col="black") +
+  theme_classic() +facet_wrap(~reg)+
+  xlim(as.Date("2020-03-01"),as.Date("2020-05-01"))+
+  ylab("Effective Reproductive Number")+ylim(1,5)  +
+  xlab("Time")#+ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax))))
+print(p)
+dev.off()
+}
+
+
 
 ###### GET INDICATOR TABLE 
 getindicators<-function(indivParams){
 indivParamsprint<-indivParams
 indivParamsprint$b1_mode<-round(indivParamsprint$b1_mode,2)
+indivParamsprint$b1_modemin<-round(indivParamsprint$b1_mode-1.96*indivParamsprint$b1_sd,2)
+indivParamsprint$b1_modemmax<-round(indivParamsprint$b1_mode+1.96*indivParamsprint$b1_sd,2)
+indivParamsprint$b1summary<-paste(indivParamsprint$b1_mode," [",indivParamsprint$b1_modemin,"; ",indivParamsprint$b1_modemmax,"]",sep="")
+
 indivParamsprint$Dq_mode<-round(indivParamsprint$Dq_mode,2)
+indivParamsprint$Dq_modemin<-round(indivParamsprint$Dq_mode-1.96*indivParamsprint$Dq_sd,2)
+indivParamsprint$Dq_modemmax<-round(indivParamsprint$Dq_mode+1.96*indivParamsprint$Dq_sd,2)
+indivParamsprint$Dqsummary<-paste(indivParamsprint$Dq_mode," [",indivParamsprint$Dq_modemin,"; ",indivParamsprint$Dq_modemmax,"]",sep="")
+
 indivParamsprint$E0_mode<-round(indivParamsprint$E0_mode,0)
+indivParamsprint$E0_modemin<-round(indivParamsprint$E0_mode-1.96*indivParamsprint$E0_sd,0)
+indivParamsprint$E0_modemmax<-round(indivParamsprint$E0_mode+1.96*indivParamsprint$E0_sd,0)
+indivParamsprint$E0summary<-paste(indivParamsprint$E0_mode," [",indivParamsprint$E0_modemin,"; ",indivParamsprint$E0_modemmax,"]",sep="")
+
 indivParamsprint$A0_mode<-round(indivParamsprint$A0_mode,0)
+indivParamsprint$A0_modemin<-round(indivParamsprint$A0_mode-1.96*indivParamsprint$A0_sd,0)
+indivParamsprint$A0_modemmax<-round(indivParamsprint$A0_mode+1.96*indivParamsprint$A0_sd,0)
+indivParamsprint$A0summary<-paste(indivParamsprint$A0_mode," [",indivParamsprint$A0_modemin,"; ",indivParamsprint$A0_modemmax,"]",sep="")
+
 indivParamsprint$R0<-round(as.numeric(indivParamsprint$R0),1)
 indivParamsprint$R0min<-round(as.numeric(indivParamsprint$R0min),1)
 indivParamsprint$R0max<-round(as.numeric(indivParamsprint$R0max),1)
@@ -145,7 +195,10 @@ indivParamsprint$R0maxconf<-round(as.numeric(indivParamsprint$R0maxconf),1)
 indivParamsprint$R0summary<-paste(indivParamsprint$R0," [",indivParamsprint$R0min,"; ",indivParamsprint$R0max,"]",sep="")
 indivParamsprint$R0confsummary<-paste(indivParamsprint$R0conf," [",indivParamsprint$R0minconf,"; ",indivParamsprint$R0maxconf,"]",sep="")
 
-print(xtable(indivParamsprint[,c("id","timestart","Icumul","Hcumul","b1_mode","Dq_mode","E0_mode","A0_mode","R0summary","R0confsummary")]))
+print(xtable(indivParamsprint[,c("id","b1summary","Dqsummary","E0summary","A0summary","R0summary","R0confsummary")]))
+
+print(xtable(indivParamsprint[,c("id","timestart","Icumul","Hcumul","popsize","r_sent")]))
+
 }
 
 getIHD<-function(solution,indivParamsreg){

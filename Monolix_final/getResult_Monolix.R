@@ -10,6 +10,9 @@ nameproject<-"final"
 dataname<-"data_monolix_20200403.txt"
 codename<- "monolix_Estimation_2periode_cov.txt"
 
+
+
+
 indivParams = read.table(paste(path,"/outputMonolix/",nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
 dir.create(paste(path,"outputMonolix/",nameproject,"/graphics",sep=""))
 data<-read.table(paste(path,dataname,sep=""),sep="\t",header=TRUE)
@@ -19,6 +22,11 @@ indivParams$r_sent[i]<-data$ascertainement[which((data$IDname==indivParams$id[i]
 data$date<-lubridate::as_date(as.character(data$date))
 timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day","IDname")]
 
+load("./data/popreg.RData")
+popreg$idnames<-c("AURA","BFC","Bretagne","Centre","Corse","GrandEst","HDF","IDF","Normandie","NAquitaine","Occitanie","PaysLoire","PACA","G1","G2","G3","G4","G5","France")
+for(i in 1:length(indivParams$id)){
+indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i])]
+}
 
  for (i in 1:length(indivParams$id)){
     print(as.character(indivParams$id[i]))
@@ -49,6 +57,12 @@ timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day"
           A0given,b2,tconf)
     getPlot(solution,nameproject,indivParams[i,])
     res<-getR0(solution,indivParams[i,])
+    if(i==1){
+        R0table<-res
+    }else{
+        R0table<-rbind(R0table,res)
+    }
+    
     getPlotR0(res,nameproject,indivParams[i,])
     
     indivParams[i,c("R0","R0min","R0max")]<-res[which(res$time==(tconf-1)),c("R0","R0ICmin","R0ICmax")]
@@ -66,6 +80,9 @@ timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day"
 }
 ### Get Table Article
 getindicators(indivParams)
+
+### Plot R0
+getPlotR0all(R0table,nameproject)
 
 ################## 
 ### PREDICTION COURT TERME
@@ -107,8 +124,6 @@ grid.arrange(p1,p2,p3,p4, ncol=2, nrow = 2)
 ### INDICATEURS 
 #################
 ############
-load("./data/popreg.RData")
-popreg$idnames<-c("AURA","BFC","Bretagne","Centre","Corse","GrandEst","HDF","IDF","Normandie","NAquitaine","Occitanie","PaysLoire","PACA","G1","G2","G3","G4","G5","France")
 result<-as.data.frame(indivParams$id)
 names(result)<-"reg"
 k<-1
@@ -283,7 +298,8 @@ for (K in c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,100)){
      mean(indivParams$r_sent)
      quantile(indivParams$r_sent,0.05)
      quantile(indivParams$r_sent,0.95)
-     (1-(2*mean(indivParams$r_sent))/(1-mean(indivParams$r_sent)))/5.2
-     (1-(2*quantile(indivParams$r_sent,0.05))/(1-quantile(indivParams$r_sent,0.05)))/5.2
-     (1-(2*quantile(indivParams$r_sent,0.95))/(1-quantile(indivParams$r_sent,0.95)))/5.2
+     (1-(2*mean(indivParams$r_sent))/(1-mean(indivParams$r_sent)))/5.1
+     (1-(2*quantile(indivParams$r_sent,0.05))/(1-quantile(indivParams$r_sent,0.05)))/5.1
+     (1-(2*quantile(indivParams$r_sent,0.95))/(1-quantile(indivParams$r_sent,0.95)))/5.1
+     
      
