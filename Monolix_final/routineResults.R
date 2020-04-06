@@ -9,7 +9,12 @@ getSolution<-function(b,
                       Dh,
                       popSize,
                       E0given,
-                      A0given,b2,tconf,lengthconf=1000,newdailyMove=0,pred=FALSE){
+                      A0given,
+                      b2,
+                      tconf,
+                      lengthconf=1000,
+                      newdailyMove=0,
+                      pred=FALSE){
   
   # i=2
   # initwithdata=TRUE
