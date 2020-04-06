@@ -2,6 +2,7 @@ library(xtable)
 library(ggplot2)
 library(lubridate)
 library(gridExtra)
+library(forcats)
 source("./Monolix_final/routineResults.R")
 
 
@@ -17,7 +18,7 @@ indivParams = read.table(paste(path,"/outputMonolix/",nameproject,"/IndividualPa
 dir.create(paste(path,"outputMonolix/",nameproject,"/graphics",sep=""))
 data<-read.table(paste(path,dataname,sep=""),sep="\t",header=TRUE)
 for (i in 1:length(indivParams$id)){
-indivParams$r_sent[i]<-data$ascertainement[which((data$IDname==indivParams$id[i])&(data$day==0)&(data$obs_id==1))]
+    indivParams$r_sent[i]<-data$ascertainement[which((data$IDname==indivParams$id[i])&(data$day==0)&(data$obs_id==1))]
 }
 data$date<-lubridate::as_date(as.character(data$date))
 timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day","IDname")]
@@ -25,7 +26,7 @@ timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day"
 load("./data/popreg.RData")
 popreg$idnames<-c("AURA","BFC","Bretagne","Centre","Corse","GrandEst","HDF","IDF","Normandie","NAquitaine","Occitanie","PaysLoire","PACA","G1","G2","G3","G4","G5","France")
 for(i in 1:length(indivParams$id)){
-indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i])]
+    indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i])]
 }
 
 
@@ -33,7 +34,7 @@ indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i
 R0s_list <- list()
 solutions_list <- list()
 predictions_list <- list()
- for (i in 1:length(indivParams$id)){
+for (i in 1:length(indivParams$id)){
     message(as.character(indivParams$id[i]), "...")
     b<-as.numeric(indivParams[i,c("b1_mode")])
     r<-as.numeric(indivParams[i,c("r_sent")])
@@ -49,18 +50,22 @@ predictions_list <- list()
     b2<-as.numeric(indivParams[i,"b1_mode"])*exp(as.numeric(indivParams[i,"beta_mode"]))
     tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
 
-    solution<-getSolution( b,
-          r,
-          dataregion,
-          alpha,
-          De,
-          Di,
-          Dq,
-          Dh,
-          popSize,
-          E0given,
-          A0given,b2,tconf)
+    solution <- getSolution( b,
+                             r,
+                             dataregion,
+                             alpha,
+                             De,
+                             Di,
+                             Dq,
+                             Dh,
+                             popSize,
+                             E0given,
+                             A0given,b2,tconf)
+    solution$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solution$solution))
+    solution$solution$reg <- as.character(indivParams$id[i])
+    solutions_list[[i]] <- solution
     getPlot(solution,nameproject,indivParams[i,])
+
     res<-getR0(solution,indivParams[i,])
     R0s_list[[i]] <-  res
 
@@ -72,14 +77,14 @@ predictions_list <- list()
     indivParams[i,"Icumul"]<-sum(dataregion$obs[which((dataregion$obs_id==1))])
     indivParams[i,"Hcumul"]<-sum(dataregion$obs[which((dataregion$obs_id==2))])
 
-    res<-getIHD(solution,indivParams[i,])
+    res <- getIHD(solution,indivParams[i,])
     predictions_list[[i]] <- res
     message("Done\n")
- }
+}
 
 ### Get Figure Article
-fits_list <- lapply(solutions_list, "[[", "solution")
-all_fit_df <- do.call(rbind.data.frame, fits_list)
+
+getPlotSolutionAll(solutions_list, nameproject = nameproject)
 
 all_R0s_df <- do.call(rbind.data.frame, R0s_list)
 getPlotR0all(all_R0s_df, nameproject = nameproject)
@@ -202,57 +207,6 @@ for (K in c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,100)){
             newdailyMove=0
             pred=TRUE
 
-         solution<-getSolution( b,
-                                r,
-                                dataregion,
-                                alpha,
-                                De,
-                                Di,
-                                Dq,
-                                Dh,
-                                popSize,
-                                E0given,
-                                A0given,tconf,lengthconf,newdailyMove,pred)
-
-         nblits<-ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
-         par(mfrow=c(2,3))
-         plot(solution$solution$time,solution$solution$S)
-         plot(solution$solution$time,solution$solution$E)
-         plot(solution$solution$time,solution$solution$A)
-         plot(solution$solution$time,solution$solution$I)
-         plot(solution$solution$time,solution$solution$H)
-         plot(solution$solution$time,solution$solution$R)
-         nbdeath<-c(nbdeath,tauxD*solution$solution$R[365]*as.numeric(indivParams[i,c("r_sent")]))
-         nbhospmax<-c(nbhospmax,max(solution$solution$H))
-
-         timeout<-min(solution$solution$time[which(solution$solution$H*tauxICU>nblits)])
-         dateout<-dataregion$date[1]+timeout
-         # print(dateout)
-         if(dureeconf%in%timings){
-             toprint<-c(toprint,as.character(dateout))
-         }
-        }
-
-        if(length(which(is.na(toprint)))!=0){
-        for (dureeconf in seq(timings[which(is.na(toprint))[1]-1],timings[which(is.na(toprint))[1]],by=1)){
-            # print(paste("dureeconf",dureeconf,sep=" "))
-            b<-as.numeric(indivParams[i,c("b1_mode")])
-            r<-as.numeric(indivParams[i,c("r_sent")])
-            dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
-            alpha<-1.5
-            De<-5.2
-            Di<-2.3
-            Dq<-as.numeric(indivParams[i,c("Dq_mode")])
-            Dh<-30
-            popSize<-dataregion$popsize[1]
-            E0given<-as.numeric(indivParams[i,c("E0_mode")])
-            A0given<-as.numeric(indivParams[i,c("A0_mode")])
-            b2<-as.numeric(indivParams[i,"b1_mode"])/K
-            tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
-            lengthconf=dureeconf
-            newdailyMove=0
-            pred=TRUE
-
             solution<-getSolution( b,
                                    r,
                                    dataregion,
@@ -266,22 +220,73 @@ for (K in c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,100)){
                                    A0given,tconf,lengthconf,newdailyMove,pred)
 
             nblits<-ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
-            # par(mfrow=c(2,2))
-            # plot(solution$solution$time,solution$solution$E)
-            # plot(solution$solution$time,solution$solution$A)
-            # plot(solution$solution$time,solution$solution$I,ylim=c(0,100))
-            # plot(solution$solution$time,solution$solution$H)
-
+            par(mfrow=c(2,3))
+            plot(solution$solution$time,solution$solution$S)
+            plot(solution$solution$time,solution$solution$E)
+            plot(solution$solution$time,solution$solution$A)
+            plot(solution$solution$time,solution$solution$I)
+            plot(solution$solution$time,solution$solution$H)
+            plot(solution$solution$time,solution$solution$R)
+            nbdeath<-c(nbdeath,tauxD*solution$solution$R[365]*as.numeric(indivParams[i,c("r_sent")]))
+            nbhospmax<-c(nbhospmax,max(solution$solution$H))
 
             timeout<-min(solution$solution$time[which(solution$solution$H*tauxICU>nblits)])
             dateout<-dataregion$date[1]+timeout
             # print(dateout)
-            if((FIRST)&!is.finite(timeout)){
-                topt<-dureeconf-1
-                FIRST<-FALSE
-                break
+            if(dureeconf%in%timings){
+                toprint<-c(toprint,as.character(dateout))
             }
         }
+
+        if(length(which(is.na(toprint)))!=0){
+            for (dureeconf in seq(timings[which(is.na(toprint))[1]-1],timings[which(is.na(toprint))[1]],by=1)){
+                # print(paste("dureeconf",dureeconf,sep=" "))
+                b<-as.numeric(indivParams[i,c("b1_mode")])
+                r<-as.numeric(indivParams[i,c("r_sent")])
+                dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
+                alpha<-1.5
+                De<-5.2
+                Di<-2.3
+                Dq<-as.numeric(indivParams[i,c("Dq_mode")])
+                Dh<-30
+                popSize<-dataregion$popsize[1]
+                E0given<-as.numeric(indivParams[i,c("E0_mode")])
+                A0given<-as.numeric(indivParams[i,c("A0_mode")])
+                b2<-as.numeric(indivParams[i,"b1_mode"])/K
+                tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
+                lengthconf=dureeconf
+                newdailyMove=0
+                pred=TRUE
+
+                solution<-getSolution( b,
+                                       r,
+                                       dataregion,
+                                       alpha,
+                                       De,
+                                       Di,
+                                       Dq,
+                                       Dh,
+                                       popSize,
+                                       E0given,
+                                       A0given,tconf,lengthconf,newdailyMove,pred)
+
+                nblits<-ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
+                # par(mfrow=c(2,2))
+                # plot(solution$solution$time,solution$solution$E)
+                # plot(solution$solution$time,solution$solution$A)
+                # plot(solution$solution$time,solution$solution$I,ylim=c(0,100))
+                # plot(solution$solution$time,solution$solution$H)
+
+
+                timeout<-min(solution$solution$time[which(solution$solution$H*tauxICU>nblits)])
+                dateout<-dataregion$date[1]+timeout
+                # print(dateout)
+                if((FIRST)&!is.finite(timeout)){
+                    topt<-dureeconf-1
+                    FIRST<-FALSE
+                    break
+                }
+            }
         }
         result[k,]<-c(K,as.character(indivParams$id[i]),toprint,topt)
         resultdeath[k,]<-c(K,as.character(indivParams$id[i]),round(nbdeath,0))
@@ -293,16 +298,16 @@ for (K in c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,100)){
     }
 }
 
-     xtable(result)
+xtable(result)
 
 
 #############################
 ### PERCENTAGE OF ASYMTOMATIC
 #############################
-     mean(indivParams$r_sent)
-     quantile(indivParams$r_sent,0.05)
-     quantile(indivParams$r_sent,0.95)
-     (1-(2*mean(indivParams$r_sent))/(1-mean(indivParams$r_sent)))/5.1
-     (1-(2*quantile(indivParams$r_sent,0.05))/(1-quantile(indivParams$r_sent,0.05)))/5.1
-     (1-(2*quantile(indivParams$r_sent,0.95))/(1-quantile(indivParams$r_sent,0.95)))/5.1
+mean(indivParams$r_sent)
+quantile(indivParams$r_sent,0.05)
+quantile(indivParams$r_sent,0.95)
+(1-(2*mean(indivParams$r_sent))/(1-mean(indivParams$r_sent)))/5.1
+(1-(2*quantile(indivParams$r_sent,0.05))/(1-quantile(indivParams$r_sent,0.05)))/5.1
+(1-(2*quantile(indivParams$r_sent,0.95))/(1-quantile(indivParams$r_sent,0.95)))/5.1
 

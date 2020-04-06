@@ -130,14 +130,129 @@ getPlotR0<-function(res,nameproject,indivParamsreg){
   dev.off()
 }
 
-getPlotR0all <- function(R0table,nameproject){
+
+
+
+
+
+full_region_names <- function(x){
+  forcats::fct_recode(x,
+                      "Île-de-France"="IDF",
+                      "Nouvelle Aquitaine" = "NAquitaine",
+                      "Auvergne-Rhône-Alpes" = "AURA",
+                      "Centre-Val de Loire" = "Centre",
+                      "Bourgogne-Franche-Comté" = "BFC",
+                      "Normandie" = "Normandie",
+                      "Hauts-de-France" = "HDF",
+                      "Grand Est" = "GrandEst",
+                      "Pays de la Loire" = "PaysLoire",
+                      "Bretagne" = "Bretagne",
+                      "Occitanie" = "Occitanie",
+                      "Provence-Alpes-Côte d'Azur" = "PACA"
+  )
+}
+
+
+
+
+plotSolutionAll <- function(solutions_list, nameproject){
+  library(patchwork)
+  sol_est_list <- lapply(solutions_list,
+                         function(x){
+                           sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
+                           names(sol_obstime)<-c("day","Smod","Emod","Imod","Rmod","Amod","Hmod", "date", "IDname")
+                           sol_obstime$Hmodest<-sol_obstime$Imod/x$parameters$Dq
+                           sol_obstime$Imodest<-x$parameters$ascertainment*sol_obstime$Emod/x$parameters$De
+                           return(sol_obstime)
+                         })
+
+  data_list <- lapply(solutions_list, "[[", "data")
+  all_data_df <- do.call(rbind.data.frame, data_list)
+
+  all_fit_df_2plot <- reshape2::melt(sol_est_list, id.vars=c("day", "date", "IDname"),
+                                     value.name="obs", variable.name="obs_id")
+  all_data_df$obs_id <- forcats::fct_recode(factor(all_data_df$obs_id),
+                                            "Incident confirmed cases" = "1",
+                                            "Incident hospitalized cases" = "2"
+  )
+  all_fit_df_2plot$obs_id <- forcats::fct_recode(factor(all_fit_df_2plot$obs_id),
+                                                 "Incident confirmed cases" = "Imodest",
+                                                 "Incident hospitalized cases" = "Hmodest"
+  )
+  all_data_df$IDname <- full_region_names(all_data_df$IDname)
+  all_fit_df_2plot$IDname <- full_region_names(all_fit_df_2plot$IDname)
+
+  #adding the max value all the time to ensure that scales match
+  Imax_obs <- max(all_data_df %>% filter(obs_id == "Incident confirmed cases") %>% pull(obs))
+  Imax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident confirmed cases") %>% pull(obs))
+  Hmax_obs <- max(all_data_df %>% filter(obs_id == "Incident hospitalized cases") %>% pull(obs))
+  Hmax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident hospitalized cases") %>% pull(obs))
+
+  dataObs2plot_1 <- all_data_df %>% filter(IDname %in% levels(all_data_df$IDname)[1:6])
+  dataObs2plot_2 <- all_data_df %>% filter(IDname %in% levels(all_data_df$IDname)[7:12])
+  dataSim2plot_1 <- all_fit_df_2plot %>% filter(obs_id %in% c("Incident confirmed cases", "Incident hospitalized cases"),
+                                                IDname %in% levels(all_data_df$IDname)[1:6]) %>% select(date, IDname, obs_id, obs)
+  dataSim2plot_2 <- all_fit_df_2plot %>% filter(obs_id %in% c("Incident confirmed cases", "Incident hospitalized cases"),
+                                                IDname %in% levels(all_data_df$IDname)[7:12]) %>% select(date, IDname, obs_id, obs)
+  dataObs2plot_1$show <- TRUE
+  dataObs2plot_1 <- rbind.data.frame((dataObs2plot_1 %>% filter(obs_id == "Incident confirmed cases"))[1,],
+                                     (dataObs2plot_1 %>% filter(obs_id == "Incident hospitalized cases"))[1,],
+                                     dataObs2plot_1)
+  dataObs2plot_1[1:2, "obs"] <- c(max(Imax_obs, Imax_sim), max(Hmax_obs, Hmax_sim))
+  dataObs2plot_1[1:2, "show"] <- rep(FALSE, 2)
+  dataObs2plot_2$show <- TRUE
+  dataObs2plot_2 <- rbind.data.frame((dataObs2plot_2 %>% filter(obs_id == "Incident confirmed cases"))[1,],
+                                     (dataObs2plot_2 %>% filter(obs_id == "Incident hospitalized cases"))[1,],
+                                     dataObs2plot_2)
+  dataObs2plot_2[1:2, "obs"] <- c(max(Imax_obs, Imax_sim), max(Hmax_obs, Hmax_sim))
+  dataObs2plot_2[1:2, "show"] <- rep(FALSE, 2)
+
+
+  p1 <- ggplot(dataObs2plot_1, aes(x=date, y=obs, group=IDname)) +
+    geom_point(aes(color="Observed", shape=show)) +
+    geom_line(data = dataSim2plot_1,
+              aes(linetype="Estimate"), color="blue") +
+    scale_shape_manual(values=c(NA, 16)) +
+    scale_color_manual(values="black") +
+    facet_grid(obs_id~IDname, scales = "free_y") +
+    theme_bw() +
+    guides(color="none", linetype="none", shape="none") +
+    theme(legend.position = "bottom") +
+    ylab("") +
+    xlab(NULL) +
+    theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
+    theme(strip.background = element_rect(fill="white"),
+          strip.text = element_text(size=8)) +
+    NULL
+  p2 <- ggplot(dataObs2plot_2, aes(x=date, y=obs, group=IDname)) +
+    geom_point(aes(color="Observed", shape=show)) +
+    geom_line(data = dataSim2plot_2,
+              aes(linetype="Estimate"), color="blue") +
+    scale_shape_manual(values=c(NA, 16)) +
+    scale_color_manual(values="black") +
+    facet_grid(obs_id~IDname, scales = "free_y") +
+    theme_bw() +
+    guides(color=guide_legend(title=""), linetype=guide_legend(title=""), shape="none") +
+    theme(legend.position = "bottom") +
+    ylab("") +
+    xlab("Date") +
+    theme(axis.text.x = element_text(angle=45, hjust=1)) +
+    theme(strip.background = element_rect(fill="white"),
+          strip.text = element_text(size=8)) +
+    NULL
+  return(p1/p2)
+}
+
+getPlotSolutionAll <- function(solutions_list, nameproject){
   old.loc <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "en_GB.UTF-8")
-  p <- plotR0all(R0table,nameproject)
-  ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/R0_all.jpg"),
-         device = "jpeg", dpi = 300, width=7, height=5.2)
+  p <- plotSolutionAll(solutions_list,nameproject)
+  ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/fit_all.jpg"),
+         device = "jpeg", dpi = 300, width=10, height=8)
   Sys.setlocale("LC_TIME",old.loc)
 }
+
+
 
 plotR0all <- function(R0table,nameproject){
   R0tableFRANCE<- data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-06-19"), "day"))
@@ -157,21 +272,7 @@ plotR0all <- function(R0table,nameproject){
   b2<-b1/exp(-pop$value[pop$parameter=="beta_pop"])
   R0tableFRANCE$R0<-ifelse(as.Date(R0tableFRANCE$time)<as.Date("2020-03-17"),b1*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di)),b2*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di)))
 
-  R0table$Region <- R0table$reg
-  R0table$Region <- forcats::fct_recode(R0table$Region,
-                                        "Île-de-France"="IDF",
-                                        "Nouvelle Aquitaine" = "NAquitaine",
-                                        "Auvergne-Rhône-Alpes" = "AURA",
-                                        "Centre-Val de Loire" = "Centre",
-                                        "Bourgogne-Franche-Comté" = "BFC",
-                                        "Normandie" = "Normandie",
-                                        "Hauts-de-France" = "HDF",
-                                        "Grand Est" = "GrandEst",
-                                        "Pays de la Loire" = "PaysLoire",
-                                        "Bretagne" = "Bretagne",
-                                        "Occitanie" = "Occitanie",
-                                        "Provence-Alpes-Côte d'Azur" = "PACA"
-  )
+  R0table$Region <- full_region_names(R0table$reg)
 
   p <- ggplot(R0table, aes(x=as.Date(finaltime))) +
     geom_line(aes(y = as.numeric(R0),color=Region, linetype="Region-wise value")) +
@@ -196,6 +297,16 @@ plotR0all <- function(R0table,nameproject){
   return(p)
 }
 
+
+
+getPlotR0all <- function(R0table,nameproject){
+  old.loc <- Sys.getlocale("LC_TIME")
+  Sys.setlocale("LC_TIME", "en_GB.UTF-8")
+  p <- plotR0all(R0table,nameproject)
+  ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/R0_all.jpg"),
+         device = "jpeg", dpi = 300, width=7, height=5.2)
+  Sys.setlocale("LC_TIME",old.loc)
+}
 
 ###### GET INDICATOR TABLE
 getindicators<-function(indivParams){
