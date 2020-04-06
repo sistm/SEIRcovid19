@@ -9,7 +9,7 @@ getSolution<-function(b,
                       Dh,
                       popSize,
                       E0given,
-                      A0given,tconf,lengthconf=1000,newdailyMove=0,pred=FALSE){
+                      A0given,b2,tconf,lengthconf=1000,newdailyMove=0,pred=FALSE){
   
   # i=2
   # initwithdata=TRUE
@@ -150,8 +150,8 @@ print(xtable(indivParamsprint[,c("id","timestart","Icumul","Hcumul","b1_mode","D
 
 getIHD<-function(solution,indivParamsreg){
   
-  res<-as.data.frame(matrix(NA,ncol=15,nrow=0))
-  names(res)<-c("reg","i","time","Iincident","Iincidentmin","Iincidentmax","Hincident","Hincidentmin","Hincidentmax","Dincident","Dincidentmin","Dincidentmax","ICUincident","ICUincidentmin","ICUincidentmax")
+  res<-as.data.frame(matrix(NA,ncol=17,nrow=0))
+  names(res)<-c("reg","i","time","Iincident","Iincidentmin","Iincidentmax","Hincident","Hincidentmin","Hincidentmax","Dincident","Dincidentmin","Dincidentmax","ICUincident","ICUincidentmin","ICUincidentmax","infected","immunised")
   
   timeinterest<-unique(solution$data$day[which(as.character(solution$data$date)=="2020-03-11")])
   
@@ -162,8 +162,13 @@ getIHD<-function(solution,indivParamsreg){
   tauxDEATHmax=5091/64338#Au 3/4/2020
   tauxDEATHmin=5091/64338#Au 3/4/2020
     
-  for (i in (0:30)){
+  for (i in (0:100)){
     thistime<-timeinterest+i
+    
+  immunised<-solution$solution$R[which(solution$solution$time==thistime)]
+  
+  infected<-solution$solution$E[which(solution$solution$time==thistime)]+solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$A[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+solution$solution$R[which(solution$solution$time==thistime)]
+    
   Iincident<-solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*((1-tauxDEATH)*solution$solution$R[which(solution$solution$time==thistime)])
   Iincidentmax<-Iincident+1.96*(sqrt(solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+(indivParamsreg[1,"r_sent"]*(1-tauxDEATHmin))**2*solution$solution$R[which(solution$solution$time==thistime)]))
   Iincidentmin<-Iincident-1.96*(sqrt(solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+(indivParamsreg[1,"r_sent"]*(1-tauxDEATHmin))**2*solution$solution$R[which(solution$solution$time==thistime)]))
@@ -182,7 +187,7 @@ getIHD<-function(solution,indivParamsreg){
   ICUincidentmin<-ICUincident-1.96*tauxICUmin*sqrt(ICUincident)
   ICUincidentmax<-ICUincident+1.96*tauxICUmax*sqrt(ICUincident)
   
-  res[i+1,]<-c(as.character(indivParamsreg[1,1]), i,thistime, Iincident,Iincidentmin,Iincidentmax,Hincident,Hincidentmin,Hincidentmax,Dincident,Dincidentmin,Dincidentmax,ICUincident,ICUincidentmin,ICUincidentmax)
+  res[i+1,]<-c(as.character(indivParamsreg[1,1]), i,thistime, Iincident,Iincidentmin,Iincidentmax,Hincident,Hincidentmin,Hincidentmax,Dincident,Dincidentmin,Dincidentmax,ICUincident,ICUincidentmin,ICUincidentmax,infected,immunised)
  
   }
   
