@@ -2,6 +2,7 @@ library(xtable)
 library(ggplot2)
 library(lubridate)
 library(gridExtra)
+library(forcats)
 source("./Monolix_final/routineResults.R")
 
 
@@ -20,7 +21,7 @@ indivParams = read.table(paste(path,"/outputMonolix/",nameproject,"/IndividualPa
 dir.create(paste(path,"outputMonolix/",nameproject,"/graphics",sep=""))
 data<-read.table(paste(path,dataname,sep=""),sep="\t",header=TRUE)
 for (i in 1:length(indivParams$id)){
-indivParams$r_sent[i]<-data$ascertainement[which((data$IDname==indivParams$id[i])&(data$day==0)&(data$obs_id==1))]
+    indivParams$r_sent[i]<-data$ascertainement[which((data$IDname==indivParams$id[i])&(data$day==0)&(data$obs_id==1))]
 }
 data$date<-lubridate::as_date(as.character(data$date))
 timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day","IDname")]
@@ -28,11 +29,16 @@ timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day"
 load("./data/popreg.RData")
 popreg$idnames<-c("AURA","BFC","Bretagne","Centre","Corse","GrandEst","HDF","IDF","Normandie","NAquitaine","Occitanie","PaysLoire","PACA","G1","G2","G3","G4","G5","France")
 for(i in 1:length(indivParams$id)){
-indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i])]
+    indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i])]
 }
 
- for (i in 1:length(indivParams$id)){
-    print(as.character(indivParams$id[i]))
+
+
+R0s_list <- list()
+solutions_list <- list()
+predictions_list <- list()
+for (i in 1:length(indivParams$id)){
+    message(as.character(indivParams$id[i]), "...")
     b<-as.numeric(indivParams[i,c("b1_mode")])
     r<-as.numeric(indivParams[i,c("r_sent")])
     dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
@@ -46,48 +52,51 @@ indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i
     A0given<-as.numeric(indivParams[i,c("A0_mode")])
     b2<-as.numeric(indivParams[i,"b1_mode"])*exp(as.numeric(indivParams[i,"beta_mode"]))
     tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
- 
-    solution<-getSolution( b,
-          r,
-          dataregion,
-          alpha,
-          De,
-          Di,
-          Dq,
-          Dh,
-          popSize,
-          E0given,
-          A0given,b2,tconf)
+
+    solution <- getSolution( b,
+                             r,
+                             dataregion,
+                             alpha,
+                             De,
+                             Di,
+                             Dq,
+                             Dh,
+                             popSize,
+                             E0given,
+                             A0given,b2,tconf)
+    solution$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solution$solution))
+    solution$solution$reg <- as.character(indivParams$id[i])
+    solutions_list[[i]] <- solution
     getPlot(solution,nameproject,indivParams[i,])
+
     res<-getR0(solution,indivParams[i,])
-    if(i==1){
-        R0table<-res
-    }else{
-        R0table<-rbind(R0table,res)
-    }
-    
+    R0s_list[[i]] <-  res
+
     getPlotR0(res,nameproject,indivParams[i,])
-    
+
     indivParams[i,c("R0","R0min","R0max")]<-res[which(res$time==(tconf-1)),c("R0","R0ICmin","R0ICmax")]
     indivParams[i,c("R0conf","R0minconf","R0maxconf")]<-res[which(res$time==100),c("R0","R0ICmin","R0ICmax")]
     indivParams[i,"timestart"]<-as.character(dataregion$date[which((dataregion$day==0)&(dataregion$obs_id==1))])
     indivParams[i,"Icumul"]<-sum(dataregion$obs[which((dataregion$obs_id==1))])
-    indivParams[i,"Hcumul"]<-sum(dataregion$obs[which((dataregion$obs_id==2))])  
-    
-    res<-getIHD(solution,indivParams[i,])
-    if(i==1){
-        predictions<-res
-    }else{
-        predictions<-rbind(predictions,res)
-    }
+    indivParams[i,"Hcumul"]<-sum(dataregion$obs[which((dataregion$obs_id==2))])
+
+    res <- getIHD(solution,indivParams[i,])
+    predictions_list[[i]] <- res
+    message("Done\n")
 }
+
+### Get Figure Article
+
+getPlotSolutionAll(solutions_list, nameproject = nameproject)
+
+all_R0s_df <- do.call(rbind.data.frame, R0s_list)
+getPlotR0all(all_R0s_df, nameproject = nameproject)
+
+
 ### Get Table Article
 getindicators(indivParams)
 
-### Plot R0
-getPlotR0all(R0table,nameproject)
-
-################## 
+##################
 ### PREDICTION COURT TERME
 #################
 ###### Get predictions 10 jours
@@ -123,8 +132,8 @@ grid.arrange(p1,p2,p3,p4, ncol=2, nrow = 2)
 
 
 
-################## 
-### INDICATEURS 
+##################
+### INDICATEURS
 #################
 ############
 result<-as.data.frame(indivParams$id)
@@ -134,11 +143,11 @@ for (region in unique(result$reg)){
     result$immunised0[k]<-as.numeric(predictions$immunised[which((predictions$reg==region)&(predictions$i==7))])/popreg$population[which(popreg$idnames==region)]
     result$infected0[k]<-as.numeric(predictions$infected[which((predictions$reg==region)&(predictions$i==7))])/popreg$population[which(popreg$idnames==region)]
     result$immunised8[k]<-as.numeric(predictions$immunised[which((predictions$reg==region)&(predictions$i==14))])/popreg$population[which(popreg$idnames==region)]
-    result$infected8[k]<-as.numeric(predictions$infected[which((predictions$reg==region)&(predictions$i==14))])/popreg$population[which(popreg$idnames==region)]  
+    result$infected8[k]<-as.numeric(predictions$infected[which((predictions$reg==region)&(predictions$i==14))])/popreg$population[which(popreg$idnames==region)]
     result$immunised21[k]<-as.numeric(predictions$immunised[which((predictions$reg==region)&(predictions$i==28))])/popreg$population[which(popreg$idnames==region)]
-    result$infected21[k]<-as.numeric(predictions$infected[which((predictions$reg==region)&(predictions$i==28))])/popreg$population[which(popreg$idnames==region)]  
+    result$infected21[k]<-as.numeric(predictions$infected[which((predictions$reg==region)&(predictions$i==28))])/popreg$population[which(popreg$idnames==region)]
     result$immunised90[k]<-as.numeric(predictions$immunised[which((predictions$reg==region)&(predictions$i==97))])/popreg$population[which(popreg$idnames==region)]
-    result$infected90[k]<-as.numeric(predictions$infected[which((predictions$reg==region)&(predictions$i==97))])/popreg$population[which(popreg$idnames==region)]  
+    result$infected90[k]<-as.numeric(predictions$infected[which((predictions$reg==region)&(predictions$i==97))])/popreg$population[which(popreg$idnames==region)]
     k<-k+1
 }
 sizeFR<-popreg$population[which(popreg$maille_code=="FRA")]
@@ -159,7 +168,7 @@ xtable(result)
 ############
 
 
-################## 
+##################
 ### PREDICTION LONG TERME
 #################
 tauxICU=0.056
@@ -269,36 +278,36 @@ for (K in c(3,10,100)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10
             lengthconf=dureeconf
             newdailyMove=0
             pred=TRUE
-            
-            solution<-getSolution( b,
-                                   r,
-                                   dataregion,
-                                   alpha,
-                                   De,
-                                   Di,
-                                   Dq,
-                                   Dh,
-                                   popSize,
-                                   E0given,
-                                   A0given,b2,tconf,lengthconf,newdailyMove,pred)
-            
-            nblits<-nbICUplus*ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
-            # par(mfrow=c(2,2))
-            # plot(solution$solution$time,solution$solution$E)
-            # plot(solution$solution$time,solution$solution$A)
-            # plot(solution$solution$time,solution$solution$I,ylim=c(0,100))
-            # plot(solution$solution$time,solution$solution$H)
-            
-            
-            timeout<-min(solution$solution$time[which(solution$solution$H*tauxICU>nblits)])   
-            dateout<-dataregion$date[1]+timeout
-            # print(dateout)
-            if((FIRST)&!is.finite(timeout)){
-                topt<-dureeconf-1
-                FIRST<-FALSE
-                break
+
+                solution<-getSolution( b,
+                                       r,
+                                       dataregion,
+                                       alpha,
+                                       De,
+                                       Di,
+                                       Dq,
+                                       Dh,
+                                       popSize,
+                                       E0given,
+                                       A0given,tconf,lengthconf,newdailyMove,pred)
+
+                nblits<-ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
+                # par(mfrow=c(2,2))
+                # plot(solution$solution$time,solution$solution$E)
+                # plot(solution$solution$time,solution$solution$A)
+                # plot(solution$solution$time,solution$solution$I,ylim=c(0,100))
+                # plot(solution$solution$time,solution$solution$H)
+
+
+                timeout<-min(solution$solution$time[which(solution$solution$H*tauxICU>nblits)])
+                dateout<-dataregion$date[1]+timeout
+                # print(dateout)
+                if((FIRST)&!is.finite(timeout)){
+                    topt<-dureeconf-1
+                    FIRST<-FALSE
+                    break
+                }
             }
-        }
         }
         result[k,]<-c(K,as.character(indivParams$id[i]),toprint,topt)
         resultdeath[k,]<-c(K,as.character(indivParams$id[i]),round(nbdeath,0))
@@ -311,9 +320,10 @@ for (K in c(3,10,100)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10
         print(resultfinepidemics[k,])
         k<-k+1
     }
-}     
+}
 
-     xtable(result)   
+xtable(result)
+
      
      # result2fois_death<-resultdeath 
      #   result2fois_end<-resultdeath 
@@ -324,14 +334,14 @@ for (K in c(3,10,100)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10
        result3fois_end<-resultdeath
        result3fois_hosto<-resulthospmax
        result3fois_ICU<-result
+
 #############################
 ### PERCENTAGE OF ASYMTOMATIC
 #############################
-     mean(indivParams$r_sent)
-     quantile(indivParams$r_sent,0.05)
-     quantile(indivParams$r_sent,0.95)
-     (1-(2*mean(indivParams$r_sent))/(1-mean(indivParams$r_sent)))/5.1
-     (1-(2*quantile(indivParams$r_sent,0.05))/(1-quantile(indivParams$r_sent,0.05)))/5.1
-     (1-(2*quantile(indivParams$r_sent,0.95))/(1-quantile(indivParams$r_sent,0.95)))/5.1
-     
-     
+mean(indivParams$r_sent)
+quantile(indivParams$r_sent,0.05)
+quantile(indivParams$r_sent,0.95)
+(1-(2*mean(indivParams$r_sent))/(1-mean(indivParams$r_sent)))/5.1
+(1-(2*quantile(indivParams$r_sent,0.05))/(1-quantile(indivParams$r_sent,0.05)))/5.1
+(1-(2*quantile(indivParams$r_sent,0.95))/(1-quantile(indivParams$r_sent,0.95)))/5.1
+
