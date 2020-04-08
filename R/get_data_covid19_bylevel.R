@@ -34,7 +34,6 @@
 #'#    data_reg_consolide[[x]] <- NULL
 #'#  }
 #'#}
-#'#save(data_reg_consolide, file = "data_reg_consolide.RData")
 
 get_data_covid19_bylevel <- function(level ="region",
                                      source3 = "SPF",

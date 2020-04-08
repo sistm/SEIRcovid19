@@ -4,7 +4,7 @@
 \alias{seirah_solve}
 \title{SEIRAH solve function}
 \usage{
-seirah_solve(init, t, par)
+seirah_solve(init, t, par, pred = TRUE)
 }
 \description{
 SEIRAH solve function

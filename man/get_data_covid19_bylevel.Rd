@@ -43,5 +43,4 @@ get_data_covid19_bylevel(level = "region", source3="ARS")
 #    data_reg_consolide[[x]] <- NULL
 #  }
 #}
-#save(data_reg_consolide, file = "data_reg_consolide.RData")
 }

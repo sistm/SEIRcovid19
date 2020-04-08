@@ -30,14 +30,27 @@ Fitting a SEIRAH by OLS
 }
 \examples{
 data_44 <- get_data_covid19(maille_cd = "REG-44",
-                             source_ch = "sante-publique-france")
+                             source_ch = "agences-regionales-sante")
+
 colnames(data_44)[5] <- "I"
 colnames(data_44)[6] <- "D"
 colnames(data_44)[7] <- "H"
+data_44[data_44$date > "2020-03-16", "I"] <- NA
 fit_44 <- seidrah_estim(binit = c(1.75, 0.7, 0.01),
                         popSize = 5.5*10^6,
                         data = data_44, obs=c("I", "D", "H"))
 plot(fit_44)
+
+data_FRA <- get_data_covid19(maille_cd = "FRA",
+                             source_ch = "sante-publique-france")
+colnames(data_FRA)[5] <- "I"
+colnames(data_FRA)[6] <- "D"
+colnames(data_FRA)[7] <- "H"
+fit_FRA <- seidrah_estim(binit = c(1.75, 0.7, 0.01),
+                        popSize = 65*10^6,
+                        data = data_FRA, obs=c("I", "D", "H"))
+plot(fit_FRA)
+
 
 simul_xihong<- seirah_estim(binit=c(1.75, 0.41),data=NULL,stateinit=c(9999467,346,80,0,80,27),
                             initwithdata=FALSE,alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,popSize=10000000,dailyMove=500000,verbose = TRUE,optim_ols = FALSE)

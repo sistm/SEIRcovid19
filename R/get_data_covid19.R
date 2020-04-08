@@ -98,7 +98,6 @@ get_data_covid19 <- function(maille_cd = "FRA",
   out_data <- data.frame("date" = seq.Date(from = date_start, by = 1, to = date_end),
                          "maille_code" = maille_cd,
                          "source_type" = source_ch)
-  out_data$day <- as.numeric(difftime(out_data$date, out_data$date[1], units = "day"))
   out_data2 <- left_join(out_data, dplyr::select(data_filtered3, date, cas_confirmes_incident, deces_incident, reanimation_incident),
             by="date")
   out_data3 <- tidyr::replace_na(out_data2, replace =list("cas_confirmes_incident" = 0,
@@ -123,6 +122,8 @@ get_data_covid19 <- function(maille_cd = "FRA",
                                "maille_code" = "maille_code")) %>%
    arrange(date) %>%
    rename(hospitalisation_incident = nbre_hospit_corona)
+
+ out_data4$day <- as.numeric(difftime(out_data4$date, out_data4$date[1], units = "day"))
 
   return(out_data4)
 }
