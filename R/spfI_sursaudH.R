@@ -1,0 +1,43 @@
+#' Regional incident numbers of confirmed cases and hospitalizations from Emergency room for Covid-19
+#'
+#' Observed Confirmed Covid-19 cases from Sante Publique France and
+#' Hospitalizations from SurSaUD database.
+#'
+#' This dataset is constructed by merging \link{\code{sursaud_covid19}} and
+#' \link{\code{opencovid19_FR}}
+#'
+#' @format A data frame with and 8 variables:
+#' \describe{
+#'   \item{reg_id}{administrative regional code}
+#'   \item{region_name}{French name of the region}
+#'   \item{date}{Date of observation}
+#'   \item{day}{number of day since the epidemic start in that region}
+#'   \item{init_I0}{Initial number of confirmed infected cases at the epidemic start (one value repeated)}
+#'   \item{init_H0}{Initial number of hospitalized cases at the epidemic start (one value repeated)}
+#'   \item{obs_id}{Number of 'acte SOS medecin' for Covid-19 suspicion}
+#'   \item{obs}{observed number}
+#'   \item{confinement}{binary variable indicating wether confinement is in place (\code{1}) or not (\code{0})}
+#' }
+#'
+#'@examples
+#' # spfI_sursaudH <- get_data_covid19_bylevel()
+#' # for(x in names(data_reg_consolide)){
+#' #   spfI_sursaudH[[x]] <- spfI_sursaudH[[x]] %>%
+#' #     rename(reg_id = maille_code, I = cas_confirmes_incident,
+#' #            H = hospitalisation_incident) %>%
+#' #     select(reg_id, date, day, I, H) %>%
+#' #     mutate(init_I0 = max(1, I[1], na.rm=TRUE),
+#' #            init_H0 = max(0, H[1], na.rm=TRUE),
+#' #            confinement = 1*(date > "2020-03-17")
+#' #     )
+#' # }
+#' # spfI_sursaudH <- do.call(rbind.data.frame, spfI_sursaudH)
+#' # row.names(spfI_sursaudH) <- NULL
+#' # spfI_sursaudH <- reshape2::melt(spfI_sursaudH, measure.vars = c("I", "H"),
+#' #                                 value.name="obs", variable.name="obs_id")
+#' # spfI_sursaudH <- spfI_sursaudH[!is.na(spfI_sursaudH$obs), ]
+#' # save(spfI_sursaudH, file = "data/spfI_sursaudH.RData")
+#'
+#'
+"spfI_sursaudH"
+
