@@ -5,7 +5,7 @@
 #'
 #' @examples
 #' SPF_I_SURSAUD_H_covid19fr <- prepare_data_4monolix(update_from_source = FALSE)
-#' save(SPF_I_SURSAUD_H_covid19fr, file = "SPF_I_SURSAUD_H_covid19fr.RData")
+#' #save(SPF_I_SURSAUD_H_covid19fr, file = "data/SPF_I_SURSAUD_H_covid19fr.RData")
 #'
 prepare_data_4monolix <- function(update_from_source = TRUE){
   all <- get_data_covid19_bylevel(level = "region", source3 = "SPF",
