@@ -101,8 +101,16 @@ seirah_confidence_interval_response <- function(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,be
                   mat_mean_q_05_95_I = mat_mean_q_05_95_I,mat_mean_q_05_95_R=mat_mean_q_05_95_R,mat_mean_q_05_95_A = mat_mean_q_05_95_A,
                   mat_mean_q_05_95_H=mat_mean_q_05_95_H,mat_mean_q_05_95_Y1=mat_mean_q_05_95_Y1,mat_mean_q_05_95_Y2=mat_mean_q_05_95_Y2)
   
+  donnees<-data.frame(time= Times_integ,Smoyen = mat_mean_q_05_95_S[3,],Emoyen = mat_mean_q_05_95_E[3,],Imoyen= mat_mean_q_05_95_I[3,],
+                      Rmoyen = mat_mean_q_05_95_R[3,],Amoyen = mat_mean_q_05_95_A[3,],Hmoyen = mat_mean_q_05_95_H[3,],Y1moyen= mat_mean_q_05_95_Y1[3,],Y2moyen= mat_mean_q_05_95_Y2[3,],
+                      Smin = mat_mean_q_05_95_S[1,],Emin = mat_mean_q_05_95_E[1,],Imin = mat_mean_q_05_95_I[1,],Rmin = mat_mean_q_05_95_R[1,],
+                      Amin = mat_mean_q_05_95_A[1,],Hmin = mat_mean_q_05_95_H[1,],Y1min= mat_mean_q_05_95_Y1[1,],Y2min= mat_mean_q_05_95_Y2[1,],
+                      Smax = mat_mean_q_05_95_S[2,],Emax = mat_mean_q_05_95_E[2,],Imax = mat_mean_q_05_95_I[2,],Rmax = mat_mean_q_05_95_R[2,],
+                      Amax = mat_mean_q_05_95_A[2,],Hmax = mat_mean_q_05_95_H[2,],Y1max= mat_mean_q_05_95_Y1[2,],Y2max= mat_mean_q_05_95_Y2[2,])
+ # colnames(donnees) <-c("time","Smoyen","Emoyen","Imoyen","Rmoyen",
+  #                      "Amoyen","Hmoyen","Smin","Emin","Imin","Rmin","Amin","Hmin","Smax","Emax","Imax","Rmax","Amax","Hmax")
   
-  return( res_list )
+  return(donnees)
 }
 
 
