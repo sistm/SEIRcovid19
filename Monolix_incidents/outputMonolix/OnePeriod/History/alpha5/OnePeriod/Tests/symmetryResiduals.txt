@@ -1,3 +1,0 @@
-residuals,statistics,p-value,test
-NPDE_Y1,-2.49387,0.0126358,Symmetry
-NPDE_Y2,-0.53296,0.594061,Symmetry
