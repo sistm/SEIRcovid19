@@ -156,6 +156,7 @@ full_region_names <- function(x){
 
 
 plotSolutionAll <- function(solutions_list, nameproject){
+  library(dplyr)
   library(patchwork)
   sol_est_list <- lapply(solutions_list,
                          function(x){
@@ -285,7 +286,7 @@ plotR0all <- function(R0table,nameproject){
     facet_wrap(~Region, ncol = 3) +
     theme(strip.background = element_rect(fill="white")) +
     xlim(as.Date("2020-03-01"),as.Date("2020-05-01"))+
-    ylab(expression(paste("Effective Reproductive Number ", R[0](t)))) +
+    ylab(expression(paste("Effective Reproductive Number ", R(t, xi)))) +
     #ylim(1,5) +
     #ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax))))
     xlab("Date") +
