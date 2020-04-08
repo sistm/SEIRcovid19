@@ -45,38 +45,42 @@ data_frame_res = seirah_confidence_interval_response(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0
 
 
 
-matplot(data_frame_res$time,data_frame_res$Emoyen,type="l",ylab = "E",xlab="days",col="black",ylim = c(0,max(data_frame_res$Emax)))
-lines(data_frame_res$time,data_frame_res$Emin,col="red")
-lines(data_frame_res$time,data_frame_res$Emax,col="red")
+h <- ggplot(data_frame_res, aes(data_frame_res$time))
+h + xlab("Days") + ylab("E") + 
+  geom_ribbon(aes(ymin = data_frame_res$Emin, ymax = data_frame_res$Emax), fill = "grey70") +
+  geom_line(aes(y = data_frame_res$Emoyen))
 
-matplot(data_frame_res$time,data_frame_res$Imoyen,type="l",ylab = "I",xlab="days",col="black",ylim = c(0,max(data_frame_res$Imax)))
-lines(data_frame_res$time,data_frame_res$Imin,col="red")
-lines(data_frame_res$time,data_frame_res$Imax,col="red")
+h <- ggplot(data_frame_res, aes(data_frame_res$time))
+h + xlab("Days") + ylab("I") + 
+  geom_ribbon(aes(ymin = data_frame_res$Imin, ymax = data_frame_res$Imax), fill = "grey70") +
+  geom_line(aes(y = data_frame_res$Imoyen))
 
-matplot(data_frame_res$time,data_frame_res$Rmoyen,type="l",ylab = "R",xlab="days",col="black",ylim = c(0,max(data_frame_res$Rmax)))
-lines(data_frame_res$time,data_frame_res$Rmin,col="red")
-lines(data_frame_res$time,data_frame_res$Rmax,col="red")
+h <- ggplot(data_frame_res, aes(data_frame_res$time))
+h + xlab("Days") + ylab("R") + 
+  geom_ribbon(aes(ymin = data_frame_res$Rmin, ymax = data_frame_res$Rmax), fill = "grey70") +
+  geom_line(aes(y = data_frame_res$Rmoyen))
 
-matplot(data_frame_res$time,data_frame_res$Amoyen,type="l",ylab = "A",xlab="days",col="black",ylim = c(0,max(data_frame_res$Amax)))
-lines(data_frame_res$time,data_frame_res$Amin,col="red")
-lines(data_frame_res$time,data_frame_res$Amax,col="red")
+h <- ggplot(data_frame_res, aes(data_frame_res$time))
+h + xlab("Days") + ylab("A") + 
+  geom_ribbon(aes(ymin = data_frame_res$Amin, ymax = data_frame_res$Amax), fill = "grey70") +
+  geom_line(aes(y = data_frame_res$Amoyen))
 
-matplot(data_frame_res$time,data_frame_res$Hmoyen,type="l",ylab = "H",xlab="days",col="black",ylim = c(0,max(data_frame_res$Hmax)))
-lines(data_frame_res$time,data_frame_res$Hmin,col="red")
-lines(data_frame_res$time,data_frame_res$Hmax,col="red")
+h <- ggplot(data_frame_res, aes(data_frame_res$time))
+h + xlab("Days") + ylab("H") + 
+  geom_ribbon(aes(ymin = data_frame_res$Hmin, ymax = data_frame_res$Hmax), fill = "grey70") +
+  geom_line(aes(y = data_frame_res$Hmoyen))
 
 
-matplot(data_frame_res$time,data_frame_res$Hmoyen,type="l",ylab = "H",xlab="days",col="black",ylim = c(0,max(data_frame_res$Hmax)))
-lines(data_frame_res$time,data_frame_res$Hmin,col="red")
-lines(data_frame_res$time,data_frame_res$Hmax,col="red")
+h <- ggplot(data_frame_res, aes(data_frame_res$time))
+h + xlab("Days") + ylab("Ascertained cases (incident numbers)") + 
+  geom_ribbon(aes(ymin = data_frame_res$Y1min, ymax = data_frame_res$Y1max), fill = "grey70") +
+  geom_line(aes(y = data_frame_res$Y1moyen))
 
-matplot(data_frame_res$time,data_frame_res$Y1moyen,type="l",ylab = "Ascertained cases (incident numbers)",xlab="days",col="black",ylim = c(0,max(data_frame_res$Y1max)))
-lines(data_frame_res$time,data_frame_res$Y1min,col="red")
-lines(data_frame_res$time,data_frame_res$Y1max,col="red")
+h <- ggplot(data_frame_res, aes(data_frame_res$time))
+h + xlab("Days") + ylab("Hospitalized cases (incident numbers)") + 
+  geom_ribbon(aes(ymin = data_frame_res$Y2min, ymax = data_frame_res$Y2max), fill = "grey70") +
+  geom_line(aes(y = data_frame_res$Y2moyen))
 
-matplot(data_frame_res$time,data_frame_res$Y2moyen,type="l",ylab = "Hospitalized cases (incident numbers)",xlab="days",col="black",ylim = c(0,max(data_frame_res$Y2max)))
-lines(data_frame_res$time,data_frame_res$Y2min,col="red")
-lines(data_frame_res$time,data_frame_res$Y2max,col="red")
 
 
 

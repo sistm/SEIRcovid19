@@ -3,36 +3,43 @@ library(ggplot2)
 library(lubridate)
 library(gridExtra)
 library(forcats)
+library(dplyr)
 source("./Monolix_final/routineResults.R")
 
 
 path<-"./Monolix_final/"
-nameproject<-"final"
+nameproject<-"final_nomove"
 dataname<-"data_monolix_20200403.txt"
-codename<- "monolix_Estimation_2periode_cov.txt"
+codename<- "monolix_Estimation_2periode_cov_final.txt"
 
 alphafixed<-1.5
-Defixed<-5.2
+Defixed<-5.1
 Difixed<-2.3
 Dhfixed<-30
 
-
+## Get Individual Parameters & data
 indivParams = read.table(paste(path,"/outputMonolix/",nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
 dir.create(paste(path,"outputMonolix/",nameproject,"/graphics",sep=""))
 data<-read.table(paste(path,dataname,sep=""),sep="\t",header=TRUE)
+## Get rfrom sentinelle
 for (i in 1:length(indivParams$id)){
     indivParams$r_sent[i]<-data$ascertainement[which((data$IDname==indivParams$id[i])&(data$day==0)&(data$obs_id==1))]
 }
 data$date<-lubridate::as_date(as.character(data$date))
 timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day","IDname")]
-
+## Get population size
 load("./data/popreg.RData")
 popreg$idnames<-c("AURA","BFC","Bretagne","Centre","Corse","GrandEst","HDF","IDF","Normandie","NAquitaine","Occitanie","PaysLoire","PACA","G1","G2","G3","G4","G5","France")
 for(i in 1:length(indivParams$id)){
     indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i])]
 }
-
-
+data[which(data$day==0),c("reg_id","IDname")]
+## Get ICU
+load("./data/ICUcapacity_FR.RData")
+ICUcapacity_FR$idnames<-c("G1","G2","G3","G4","G5","IDF","Centre","BFC","Normandie","HDF","GrandEst","PaysLoire","Bretagne","NAquitaine","Occitanie","AURA","PACA","Corse","France")
+for(i in 1:length(indivParams$id)){
+  indivParams$ICUcapacity[i]<-ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$idnames==indivParams$id[i])]
+}
 
 R0s_list <- list()
 solutions_list <- list()
@@ -100,42 +107,11 @@ getindicators(indivParams)
 ### PREDICTION COURT TERME
 #################
 ###### Get predictions 10 jours
-datagouv<-read.table("./data/datagouv.txt",header=TRUE)
-datagouv$time<-as.Date(datagouv$time)
-
-datapred<-data.frame(time=c("2020-03-11","2020-03-12","2020-03-13","2020-03-14","2020-03-15","2020-03-16","2020-03-17","2020-03-18","2020-03-19","2020-03-20","2020-03-21","2020-03-22","2020-03-23","2020-03-24","2020-03-25","2020-03-26","2020-03-27","2020-03-28","2020-03-29","2020-03-30","2020-03-31","2020-04-01","2020-04-02","2020-04-03","2020-04-04","2020-04-05","2020-04-06","2020-04-07","2020-04-08","2020-04-09","2020-04-10"))
-datapred$i<-seq(0,30,by=1)
-for (i in datapred$i){
-    datapred$infected[i+1]<-sum(as.numeric(predictions$infected[which(predictions$i==i)]))
-    datapred$immunised[i+1]<-sum(as.numeric(predictions$immunised[which(predictions$i==i)]))
-    datapred$Iincident[i+1]<-sum(as.numeric(predictions$Iincident[which(predictions$i==i)]))
-    datapred$Iincidentmin[i+1]<-sum(as.numeric(predictions$Iincidentmin[which(predictions$i==i)]))
-    datapred$Iincidentmax[i+1]<-sum(as.numeric(predictions$Iincidentmax[which(predictions$i==i)]))
-    datapred$Hincident[i+1]<-sum(as.numeric(predictions$Hincident[which(predictions$i==i)]))
-    datapred$Hincidentmin[i+1]<-sum(as.numeric(predictions$Hincidentmin[which(predictions$i==i)]))
-    datapred$Hincidentmax[i+1]<-sum(as.numeric(predictions$Hincidentmax[which(predictions$i==i)]))
-    datapred$Dincident[i+1]<-sum(as.numeric(predictions$Dincident[which(predictions$i==i)]))
-    datapred$Dincidentmin[i+1]<-sum(as.numeric(predictions$Dincidentmin[which(predictions$i==i)]))
-    datapred$Dincidentmax[i+1]<-sum(as.numeric(predictions$Dincidentmax[which(predictions$i==i)]))
-    datapred$ICUincident[i+1]<-sum(as.numeric(predictions$ICUincident[which(predictions$i==i)]))
-    datapred$ICUincidentmin[i+1]<-sum(as.numeric(predictions$ICUincidentmin[which(predictions$i==i)]))
-    datapred$ICUincidentmax[i+1]<-sum(as.numeric(predictions$ICUincidentmax[which(predictions$i==i)]))
-}
-datapred$time<-as.Date(datapred$time)
-
-p1 <- ggplot(datapred, aes(x=time,y=log10(Iincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(Iobs)))+theme_classic()+ylab("Log10 Cumulative number of ascertained cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax)), fill = "red",alpha=0.2)
-p2 <- ggplot(datapred, aes(x=time,y=log10(Hincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(Hobs)))+theme_classic()+ylab("Log10 Prevalent number of hospitalized cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax)), fill = "red",alpha=0.2)
-p3 <- ggplot(datapred, aes(x=time,y=log10(ICUincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(ICUobs)))+theme_classic()+ylab("Log10 Prevalent number of ICU cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax)), fill = "red",alpha=0.2)
-p4 <- ggplot(datapred, aes(x=time,y=log10(Dincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(Dobs)))+theme_classic()+ylab("Log10 Cumulative number of death") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax)), fill = "red",alpha=0.2)
-
-grid.arrange(p1,p2,p3,p4, ncol=2, nrow = 2)
-
-
+getpredictionShortterm(predictions,nameproject)
 
 ##################
 ### INDICATEURS
 #################
-############
 result<-as.data.frame(indivParams$id)
 names(result)<-"reg"
 k<-1
@@ -153,17 +129,18 @@ for (region in unique(result$reg)){
 sizeFR<-popreg$population[which(popreg$maille_code=="FRA")]
 
 names(result)
-result<-rbind(result,c("France",datapred$immunised[which(datapred$i==7)]/sizeFR,,datapred$infected[which(datapred$i==7)]/sizeFR,,datapred$immunised[which(datapred$i==14)]/sizeFR,,datapred$infected[which(datapred$i==14)]/sizeFR,,datapred$immunised[which(datapred$i==28)]/sizeFR,,datapred$infected[which(datapred$i==28)]/sizeFR,,datapred$immunised[which(datapred$i==97)]/sizeFR,,datapred$infected[which(datapred$i==97)]/sizeFR))
-result$immunised0<-round(result$immunised0*100,1)
-result$infected0<-round(result$infected0*100,1)
-result$immunised8<-round(result$immunised8*100,1)
-result$infected8<-round(result$infected8*100,1)
-result$immunised21<-round(result$immunised21*100,1)
-result$infected21<-round(result$infected21*100,1)
-result$immunised90<-round(result$immunised90*100,1)
-result$infected90<-round(result$infected90*100,1)
+result$reg<-as.character(result$reg)
+result<-rbind(result,c("France",sum(as.numeric(predictions$immunised[which(predictions$i==7)]))/sizeFR,sum(as.numeric(predictions$infected[which(predictions$i==7)]))/sizeFR,sum(as.numeric(predictions$immunised[which(predictions$i==14)]))/sizeFR,sum(as.numeric(predictions$infected[which(predictions$i==14)]))/sizeFR,sum(as.numeric(predictions$immunised[which(predictions$i==28)]))/sizeFR,sum(as.numeric(predictions$infected[which(predictions$i==28)]))/sizeFR,sum(as.numeric(predictions$immunised[which(predictions$i==97)]))/sizeFR,sum(as.numeric(predictions$infected[which(predictions$i==97)]))/sizeFR))
+result$immunised0<-round(as.numeric(result$immunised0)*100,1)
+result$infected0<-round(as.numeric(result$infected0)*100,1)
+result$immunised8<-round(as.numeric(result$immunised8)*100,1)
+result$infected8<-round(as.numeric(result$infected8)*100,1)
+result$immunised21<-round(as.numeric(result$immunised21)*100,1)
+result$infected21<-round(as.numeric(result$infected21)*100,1)
+result$immunised90<-round(as.numeric(result$immunised90)*100,1)
+result$infected90<-round(as.numeric(result$infected90)*100,1)
 
-result<-result[,c("reg","infected0","infected8","infected21","immunised0","immunised8","immunised21")]
+result<-result[,c("reg","infected0","infected8","infected21","infected90","immunised0","immunised8","immunised21","immunised90")]
 xtable(result)
 ############
 
