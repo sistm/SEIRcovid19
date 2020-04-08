@@ -75,7 +75,8 @@ get_data_covid19 <- function(maille_cd = "FRA",
   if(epidemic_start){
     epidemic_start_date <- data_filtered2 %>%
       arrange(date) %>%
-      filter(cas_confirmes_incident > 0 & lead(cas_confirmes_incident)>0 & lead(cas_confirmes_incident, n = 2)>0 & lead(cas_confirmes_incident, n = 3)>0) %>%
+      filter(cas_confirmes_incident > 0 & lead(cas_confirmes_incident)>0 & lead(cas_confirmes_incident, n = 2)>0 & lead(cas_confirmes_incident, n = 3)>0
+             & lead(date)-date==1 & lead(date, n=2)-lead(date, n=1)==1 & lead(date, n=3)-lead(date, n=2)==1) %>%
       pull(date)
     data_filtered3 <- data_filtered2 %>%
       filter(date >= epidemic_start_date[1])
