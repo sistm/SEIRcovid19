@@ -4,10 +4,10 @@
 #' @export
 #'
 #' @examples
-#' SPF_I_SURSAUD_H_covid19fr <- prepare_data_4monolix()
+#' SPF_I_SURSAUD_H_covid19fr <- prepare_data_4monolix(update_from_source = FALSE)
 #' save(SPF_I_SURSAUD_H_covid19fr, file = "SPF_I_SURSAUD_H_covid19fr.RData")
 #'
-prepare_data_4monolix <- function( update_from_source = TRUE){
+prepare_data_4monolix <- function(update_from_source = TRUE){
   all <- get_data_covid19_bylevel(level = "region", source3 = "SPF", update_from_source = TRUE)
 
   prep1reg <- function(x){
@@ -28,13 +28,15 @@ prepare_data_4monolix <- function( update_from_source = TRUE){
     mutate(init_I0 = I0, init_H0 = H0) %>%
     reshape2::melt(id.vars=c("reg_id", "date", "day", "init_I0", "init_H0"), variable.name="obs_id",
                    value.name = "obs") %>%
-    mutate(isolation = 1*(! date < "2020-03-18"))
+    mutate(confinement = 1*(date > "2020-03-17"))
   }
 
   all_prep <- lapply(all, prep1reg)
 
   all_df <- do.call(rbind, all_prep)
   rownames(all_df) <- NULL
+
+  all_df <- all_df[!is.na(all_df), ]
 
   return(all_df)
 }
