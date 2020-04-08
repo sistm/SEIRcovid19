@@ -1,13 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# SEIRcovid19FR
+# `SEIRcovid19FR`: population inference for the early epidemic dynamics of
 
 <!-- badges: start -->
 
 <!-- badges: end -->
 
-The goal of SEIRcovid19FR is to …
+`SEIRcovid19FR` is an R package to perform
 
 ## Installation
 
