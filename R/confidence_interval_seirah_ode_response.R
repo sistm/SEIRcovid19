@@ -40,15 +40,43 @@ time_beg_conf = 15
 length_confinment = 45
 
 #Computation of 5% and 95% percent quantiles for each state variable 
-list_res = seirah_confidence_interval_response(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,beta,betasd,De,Di,Dh,r,alpha,R0,I0,H0,N,n,
+data_frame_res = seirah_confidence_interval_response(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,beta,betasd,De,Di,Dh,r,alpha,R0,I0,H0,N,n,
                                     time_beg,time_end,time_beg_conf,length_confinment)
 
 
 
-matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_E),type="l",ylab = "E",xlab="days")
-matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_I),type="l",ylab = "I",xlab="days")
-matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_R),type="l",ylab = "R",xlab="days")
-matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_A),type="l",ylab = "A",xlab="days")
-matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_H),type="l",ylab = "H",xlab="days")
-matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_Y1),type="l",ylab = "Ascertained cases (incident numbers)",xlab="days")
-matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_Y2),type="l",ylab = "Hospitalized cases (incident numbers)",xlab="days")
+matplot(data_frame_res$time,data_frame_res$Emoyen,type="l",ylab = "E",xlab="days",col="black",ylim = c(0,max(data_frame_res$Emax)))
+lines(data_frame_res$time,data_frame_res$Emin,col="red")
+lines(data_frame_res$time,data_frame_res$Emax,col="red")
+
+matplot(data_frame_res$time,data_frame_res$Imoyen,type="l",ylab = "I",xlab="days",col="black",ylim = c(0,max(data_frame_res$Imax)))
+lines(data_frame_res$time,data_frame_res$Imin,col="red")
+lines(data_frame_res$time,data_frame_res$Imax,col="red")
+
+matplot(data_frame_res$time,data_frame_res$Rmoyen,type="l",ylab = "R",xlab="days",col="black",ylim = c(0,max(data_frame_res$Rmax)))
+lines(data_frame_res$time,data_frame_res$Rmin,col="red")
+lines(data_frame_res$time,data_frame_res$Rmax,col="red")
+
+matplot(data_frame_res$time,data_frame_res$Amoyen,type="l",ylab = "A",xlab="days",col="black",ylim = c(0,max(data_frame_res$Amax)))
+lines(data_frame_res$time,data_frame_res$Amin,col="red")
+lines(data_frame_res$time,data_frame_res$Amax,col="red")
+
+matplot(data_frame_res$time,data_frame_res$Hmoyen,type="l",ylab = "H",xlab="days",col="black",ylim = c(0,max(data_frame_res$Hmax)))
+lines(data_frame_res$time,data_frame_res$Hmin,col="red")
+lines(data_frame_res$time,data_frame_res$Hmax,col="red")
+
+
+matplot(data_frame_res$time,data_frame_res$Hmoyen,type="l",ylab = "H",xlab="days",col="black",ylim = c(0,max(data_frame_res$Hmax)))
+lines(data_frame_res$time,data_frame_res$Hmin,col="red")
+lines(data_frame_res$time,data_frame_res$Hmax,col="red")
+
+matplot(data_frame_res$time,data_frame_res$Y1moyen,type="l",ylab = "Ascertained cases (incident numbers)",xlab="days",col="black",ylim = c(0,max(data_frame_res$Y1max)))
+lines(data_frame_res$time,data_frame_res$Y1min,col="red")
+lines(data_frame_res$time,data_frame_res$Y1max,col="red")
+
+matplot(data_frame_res$time,data_frame_res$Y2moyen,type="l",ylab = "Hospitalized cases (incident numbers)",xlab="days",col="black",ylim = c(0,max(data_frame_res$Y2max)))
+lines(data_frame_res$time,data_frame_res$Y2min,col="red")
+lines(data_frame_res$time,data_frame_res$Y2max,col="red")
+
+
+
