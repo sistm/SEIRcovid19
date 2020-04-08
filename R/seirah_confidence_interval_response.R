@@ -15,6 +15,9 @@ seirah_confidence_interval_response <- function(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,be
   mat_resp_A = matrix(0,nb_mc,length(Times_integ ))
   mat_resp_H = matrix(0,nb_mc,length(Times_integ ))
   
+  mat_resp_Y1 = matrix(0,nb_mc,length(Times_integ ))
+  mat_resp_Y2 = matrix(0,nb_mc,length(Times_integ ))
+  
   for (mc_cur  in 1:nb_mc){
    
     b_cur = b + bsd*rnorm(1,0)
@@ -37,43 +40,68 @@ seirah_confidence_interval_response <- function(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,be
     mat_resp_R[mc_cur,] = t(res_ode_cur[,5])
     mat_resp_A[mc_cur,] = t(res_ode_cur[,6])
     mat_resp_H[mc_cur,] = t(res_ode_cur[,7])
+    mat_resp_Y1[mc_cur,] = t( par_cur[2]*res_ode_cur[,3]/par_cur[4])
+    mat_resp_Y2[mc_cur,] = t(res_ode_cur[,4]/par_cur[6])
+    
   }
   
-  mat_q_05_95_S = matrix(0,2,length(Times_integ ))
-  mat_q_05_95_E = matrix(0,2,length(Times_integ ))
-  mat_q_05_95_I = matrix(0,2,length(Times_integ ))
-  mat_q_05_95_R = matrix(0,2,length(Times_integ ))
-  mat_q_05_95_A = matrix(0,2,length(Times_integ ))
-  mat_q_05_95_H = matrix(0,2,length(Times_integ ))
+  mat_mean_q_05_95_S = matrix(0,3,length(Times_integ ))
+  mat_mean_q_05_95_E = matrix(0,3,length(Times_integ ))
+  mat_mean_q_05_95_I = matrix(0,3,length(Times_integ ))
+  mat_mean_q_05_95_R = matrix(0,3,length(Times_integ ))
+  mat_mean_q_05_95_A = matrix(0,3,length(Times_integ ))
+  mat_mean_q_05_95_H = matrix(0,3,length(Times_integ ))
+  mat_mean_q_05_95_Y1 = matrix(0,3,length(Times_integ ))
+  mat_mean_q_05_95_Y2 = matrix(0,3,length(Times_integ ))
   
   
   for (nt in 1:length(Times_integ )){
    qu_S_nt =  quantile(mat_resp_S[,nt],c(0.05,0.95))
-   mat_q_05_95_S[1,nt] = qu_S_nt[1]
-   mat_q_05_95_S[2,nt] = qu_S_nt[2]
+   mat_mean_q_05_95_S[1,nt] = qu_S_nt[1]
+   mat_mean_q_05_95_S[2,nt] = qu_S_nt[2]
+   mat_mean_q_05_95_S[3,nt] = mean(mat_resp_S[,nt])
    
    qu_E_nt =  quantile(mat_resp_E[,nt],c(0.05,0.95))
-   mat_q_05_95_E[1,nt] = qu_E_nt[1]
-   mat_q_05_95_E[2,nt] = qu_E_nt[2]
+   mat_mean_q_05_95_E[1,nt] = qu_E_nt[1]
+   mat_mean_q_05_95_E[2,nt] = qu_E_nt[2]
+   mat_mean_q_05_95_E[3,nt] = mean(mat_resp_E[,nt])
    
    qu_I_nt =  quantile(mat_resp_I[,nt],c(0.05,0.95))
-   mat_q_05_95_I[1,nt] = qu_I_nt[1]
-   mat_q_05_95_I[2,nt] = qu_I_nt[2]
+   mat_mean_q_05_95_I[1,nt] = qu_I_nt[1]
+   mat_mean_q_05_95_I[2,nt] = qu_I_nt[2]
+   mat_mean_q_05_95_I[3,nt] = mean(mat_resp_I[,nt])
    
    qu_R_nt =  quantile(mat_resp_R[,nt],c(0.05,0.95))
-   mat_q_05_95_R[1,nt] = qu_R_nt[1]
-   mat_q_05_95_R[2,nt] = qu_R_nt[2]
+   mat_mean_q_05_95_R[1,nt] = qu_R_nt[1]
+   mat_mean_q_05_95_R[2,nt] = qu_R_nt[2]
+   mat_mean_q_05_95_R[3,nt] = mean(mat_resp_R[,nt])
    
    qu_A_nt =  quantile(mat_resp_A[,nt],c(0.05,0.95))
-   mat_q_05_95_A[1,nt] = qu_A_nt[1]
-   mat_q_05_95_A[2,nt] = qu_A_nt[2]
+   mat_mean_q_05_95_A[1,nt] = qu_A_nt[1]
+   mat_mean_q_05_95_A[2,nt] = qu_A_nt[2]
+   mat_mean_q_05_95_A[3,nt] = mean(mat_resp_A[,nt])
    
    qu_H_nt =  quantile(mat_resp_H[,nt],c(0.05,0.95))
-   mat_q_05_95_H[1,nt] = qu_H_nt[1]
-   mat_q_05_95_H[2,nt] = qu_H_nt[2]
+   mat_mean_q_05_95_H[1,nt] = qu_H_nt[1]
+   mat_mean_q_05_95_H[2,nt] = qu_H_nt[2]
+   mat_mean_q_05_95_H[3,nt] = mean(mat_resp_H[,nt])
+   
+   qu_Y1_nt =  quantile(mat_resp_Y1[,nt],c(0.05,0.95))
+   mat_mean_q_05_95_Y1[1,nt] = qu_Y1_nt[1]
+   mat_mean_q_05_95_Y1[2,nt] = qu_Y1_nt[2]
+   mat_mean_q_05_95_Y1[3,nt] = mean(mat_resp_Y1[,nt])
+   
+   qu_Y2_nt =  quantile(mat_resp_Y2[,nt],c(0.05,0.95))
+   mat_mean_q_05_95_Y2[1,nt] = qu_Y2_nt[1]
+   mat_mean_q_05_95_Y2[2,nt] = qu_Y2_nt[2]
+   mat_mean_q_05_95_Y2[3,nt] = mean(mat_resp_Y2[,nt])
   }
   
-  res_list = list(Times_integ = Times_integ,mat_q_05_95_S = mat_q_05_95_S, mat_q_05_95_E = mat_q_05_95_E,mat_q_05_95_I = mat_q_05_95_I,mat_q_05_95_R=mat_q_05_95_R,mat_q_05_95_A = mat_q_05_95_A,mat_q_05_95_H=mat_q_05_95_H)
+  res_list = list(Times_integ = Times_integ,mat_mean_q_05_95_S = mat_mean_q_05_95_S, mat_mean_q_05_95_E = mat_mean_q_05_95_E,
+                  mat_mean_q_05_95_I = mat_mean_q_05_95_I,mat_mean_q_05_95_R=mat_mean_q_05_95_R,mat_mean_q_05_95_A = mat_mean_q_05_95_A,
+                  mat_mean_q_05_95_H=mat_mean_q_05_95_H,mat_mean_q_05_95_Y1=mat_mean_q_05_95_Y1,mat_mean_q_05_95_Y2=mat_mean_q_05_95_Y2)
+  
+  
   return( res_list )
 }
 

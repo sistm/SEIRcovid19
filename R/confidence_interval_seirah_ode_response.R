@@ -45,8 +45,10 @@ list_res = seirah_confidence_interval_response(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,bet
 
 
 
-matplot(list_res$Times_integ,t(list_res$mat_q_05_95_E),type="l",ylab = "E",xlab="days")
-matplot(list_res$Times_integ,t(list_res$mat_q_05_95_I),type="l",ylab = "I",xlab="days")
-matplot(list_res$Times_integ,t(list_res$mat_q_05_95_R),type="l",ylab = "R",xlab="days")
-matplot(list_res$Times_integ,t(list_res$mat_q_05_95_A),type="l",ylab = "A",xlab="days")
-matplot(list_res$Times_integ,t(list_res$mat_q_05_95_H),type="l",ylab = "H",xlab="days")
+matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_E),type="l",ylab = "E",xlab="days")
+matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_I),type="l",ylab = "I",xlab="days")
+matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_R),type="l",ylab = "R",xlab="days")
+matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_A),type="l",ylab = "A",xlab="days")
+matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_H),type="l",ylab = "H",xlab="days")
+matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_Y1),type="l",ylab = "Ascertained cases (incident numbers)",xlab="days")
+matplot(list_res$Times_integ,t(list_res$mat_mean_q_05_95_Y2),type="l",ylab = "Hospitalized cases (incident numbers)",xlab="days")
