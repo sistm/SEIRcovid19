@@ -8,9 +8,9 @@ initializeLixoftConnectors(software="monolix")
 ##########################
 
 path<-"./Monolix_final/"
-nameproject<-"final"
+nameproject<-"final_nomove"
 dataname<-"data_monolix_20200403.txt"
-codename<- "monolix_Estimation_2periode_cov.txt"
+codename<- "monolix_Estimation_2periode_cov_final.txt"
 
 newProject(modelFile = paste(path,codename,sep=""),
            data = list(dataFile = paste(path,dataname,sep=""),

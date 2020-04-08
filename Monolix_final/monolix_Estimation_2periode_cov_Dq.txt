@@ -2,7 +2,7 @@ DESCRIPTION: FIT SEIRAH MODEL 2 PERIOD
 
 [LONGITUDINAL]
 INPUT: 
-parameter = {b1,Dq1,E0,A0,beta,betaDq} 
+parameter = {b1,E0,testing,beta} 
 regressor = {init_I0,init_H0,isolation,popsize,ascertainment}
 
 EQUATION:
@@ -18,11 +18,11 @@ H_0=init_H0
 I_0=init_I0
 E_0=E0
 R_0=0
-A_0=A0
+A_0=testing*E0
 S_0=popsize-E_0-I_0-R_0-A_0-H_0
 
 transmission=b1*exp(beta*isolation)
-Dq=Dq1*exp(betaDq*isolation)
+Dq=2
 dailyMove=(1-isolation)*0.01*popsize
 
 

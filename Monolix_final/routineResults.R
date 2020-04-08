@@ -39,7 +39,7 @@ getSolution<-function(b,
                                    Dq=Dq,
                                    Dh=Dh,
                                    popSize=popSize,
-                                   dailyMove=0.01*popSize,
+                                   dailyMove=0,
                                    timeconf=tconf,
                                    lengthconf=lengthconf,
                                    newdailyMove=newdailyMove,
@@ -291,7 +291,7 @@ plotR0all <- function(R0table,nameproject){
     facet_wrap(~Region, ncol = 3) +
     theme(strip.background = element_rect(fill="white")) +
     xlim(as.Date("2020-03-01"),as.Date("2020-05-01"))+
-    ylab(expression(paste("Effective Reproductive Number ", R[0](t)))) +
+    ylab(expression(paste("Effective Reproductive Number ", R(t)))) +
     #ylim(1,5) +
     #ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax))))
     xlab("Date") +
@@ -317,6 +317,9 @@ getPlotR0all <- function(R0table,nameproject){
 ###### GET INDICATOR TABLE
 getindicators<-function(indivParams){
   indivParamsprint<-indivParams
+  
+  indivParamsprint$id <- full_region_names(indivParamsprint$id )
+  
   indivParamsprint$b1_mode<-round(indivParamsprint$b1_mode,2)
   indivParamsprint$b1_modemin<-round(indivParamsprint$b1_mode-1.96*indivParamsprint$b1_sd,2)
   indivParamsprint$b1_modemmax<-round(indivParamsprint$b1_mode+1.96*indivParamsprint$b1_sd,2)
@@ -348,7 +351,7 @@ getindicators<-function(indivParams){
 
   print(xtable(indivParamsprint[,c("id","b1summary","Dqsummary","E0summary","A0summary","R0summary","R0confsummary")]))
 
-  print(xtable(indivParamsprint[,c("id","timestart","Icumul","Hcumul","popsize","r_sent")]))
+  print(xtable(indivParamsprint[,c("id","timestart","Icumul","Hcumul","popsize","ICUcapacity","r_sent")]))
 
 }
 
@@ -442,3 +445,46 @@ getAsymptomatique<-function(solution,indivParamsreg){
 #
 # mean(((1-indivParams$ascertainment_mode)-(indivParams$ascertainment_mode*indivParams$r_sent)/(1-indivParams$r_sent))/5.2)
 # sd(((1-indivParams$ascertainment_mode)-(indivParams$ascertainment_mode*indivParams$r_sent)/(1-indivParams$r_sent))/5.2)
+
+
+
+
+
+
+
+getpredictionShortterm<-function(predictions,nameproject){
+  datagouv<-read.table("./data/datagouv.txt",header=TRUE)
+  datagouv$time<-as.Date(datagouv$time)
+  
+  datapred<-data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-04-30"), "day"))
+  datapred$i<-seq(0,(length(datapred$time)-1),by=1)
+  for (i in datapred$i){
+    datapred$infected[i+1]<-sum(as.numeric(predictions$infected[which(predictions$i==i)]))
+    datapred$immunised[i+1]<-sum(as.numeric(predictions$immunised[which(predictions$i==i)]))
+    datapred$Iincident[i+1]<-sum(as.numeric(predictions$Iincident[which(predictions$i==i)]))
+    datapred$Iincidentmin[i+1]<-sum(as.numeric(predictions$Iincidentmin[which(predictions$i==i)]))
+    datapred$Iincidentmax[i+1]<-sum(as.numeric(predictions$Iincidentmax[which(predictions$i==i)]))
+    datapred$Hincident[i+1]<-sum(as.numeric(predictions$Hincident[which(predictions$i==i)]))
+    datapred$Hincidentmin[i+1]<-sum(as.numeric(predictions$Hincidentmin[which(predictions$i==i)]))
+    datapred$Hincidentmax[i+1]<-sum(as.numeric(predictions$Hincidentmax[which(predictions$i==i)]))
+    datapred$Dincident[i+1]<-sum(as.numeric(predictions$Dincident[which(predictions$i==i)]))
+    datapred$Dincidentmin[i+1]<-sum(as.numeric(predictions$Dincidentmin[which(predictions$i==i)]))
+    datapred$Dincidentmax[i+1]<-sum(as.numeric(predictions$Dincidentmax[which(predictions$i==i)]))
+    datapred$ICUincident[i+1]<-sum(as.numeric(predictions$ICUincident[which(predictions$i==i)]))
+    datapred$ICUincidentmin[i+1]<-sum(as.numeric(predictions$ICUincidentmin[which(predictions$i==i)]))
+    datapred$ICUincidentmax[i+1]<-sum(as.numeric(predictions$ICUincidentmax[which(predictions$i==i)]))
+  }
+  datapred$time<-as.Date(datapred$time)
+  
+  p1 <- ggplot(datapred, aes(x=time,y=log10(Iincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(Iobs)))+theme_classic()+ylab("Log10 Cumulative number of ascertained cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax)), fill = "red",alpha=0.2)
+  p2 <- ggplot(datapred, aes(x=time,y=log10(Hincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(Hobs)))+theme_classic()+ylab("Log10 Prevalent number of hospitalized cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax)), fill = "red",alpha=0.2)
+  p3 <- ggplot(datapred, aes(x=time,y=log10(ICUincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(ICUobs)))+theme_classic()+ylab("Log10 Prevalent number of ICU cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax)), fill = "red",alpha=0.2)
+  p4 <- ggplot(datapred, aes(x=time,y=log10(Dincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(Dobs)))+theme_classic()+ylab("Log10 Cumulative number of death") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax)), fill = "red",alpha=0.2)
+  
+  
+  jpeg(paste(path,"outputMonolix/",nameproject,"/graphics/shortterm.jpg",sep=""))
+  grid.arrange(p1,p2, ncol=1, nrow = 2)
+  dev.off()
+  
+  
+}
