@@ -281,12 +281,12 @@ for (ind_par_to_var in indice_param_trial){
   
   
   main_title = list_legend_par[[ind_par_to_var]]
-  matplot(t,sol_pert$E/par_pert[6],main = main_title,ylab = "Hospitalized cases (incident numbers)",xlab="days",type="l",col=code_color[1],ylim=c(0,max_val_Y2_ref))
+  matplot(t,sol_pert$I/par_pert[6],main = main_title,ylab = "Hospitalized cases (incident numbers)",xlab="days",type="l",col=code_color[1],ylim=c(0,max_val_Y2_ref))
   for (np in 1:length(val_param_trial)){
     par_pert = par_ini 
     par_pert[ind_par_to_var] = val_param_trial[np]
     sol_pert <- seirah_solve(init, t, par_pert)
-    lines(t,sol_pert$E/par_pert[6],col=code_color[np])
+    lines(t,sol_pert$I/par_pert[6],col=code_color[np])
   }
 }
 
