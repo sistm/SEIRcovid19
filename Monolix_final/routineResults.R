@@ -15,7 +15,7 @@ getSolution<-function(b,
                       lengthconf=1000,
                       newdailyMove=0,
                       pred=FALSE){
-  
+
 
   # i=2
   # initwithdata=TRUE
@@ -162,6 +162,7 @@ full_region_names <- function(x){
 
 
 plotSolutionAll <- function(solutions_list, nameproject){
+  library(dplyr)
   library(patchwork)
   sol_est_list <- lapply(solutions_list,
                          function(x){
@@ -260,7 +261,12 @@ getPlotSolutionAll <- function(solutions_list, nameproject){
 
 
 
-plotR0all <- function(R0table,nameproject){
+plotR0all <- function(R0table,nameproject, facet_scales=c("fixed", "free_y", "free_x", "free")){
+  if(length(facet_scales)>1){
+    facet_scales <- facet_scales[1]
+  }
+  stopfinot(facet_scales %in% c("fixed", "free_y", "free_x", "free"))
+
   R0tableFRANCE<- data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-06-19"), "day"))
   for (i in 1:length(R0tableFRANCE$time)){
     R0tableFRANCE$A[i]<-sum(as.numeric(R0table$A[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
@@ -288,10 +294,10 @@ plotR0all <- function(R0table,nameproject){
     scale_alpha_manual("", values = c(0.3)) +
     guides(color="none", fill="none", alpha=guide_legend(override.aes = list(fill="black", linetype=1))) +
     theme_bw() +
-    facet_wrap(~Region, ncol = 3) +
+    facet_wrap(~Region, ncol = 3, scales = facet_scale) +
     theme(strip.background = element_rect(fill="white")) +
     xlim(as.Date("2020-03-01"),as.Date("2020-05-01"))+
-    ylab(expression(paste("Effective Reproductive Number ", R(t)))) +
+    ylab(expression(paste("Effective Reproductive Number ", R(t, xi)))) +
     #ylim(1,5) +
     #ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax))))
     xlab("Date") +
@@ -305,10 +311,10 @@ plotR0all <- function(R0table,nameproject){
 
 
 
-getPlotR0all <- function(R0table,nameproject){
+getPlotR0all <- function(R0table, nameproject, facet_scales){
   old.loc <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "en_GB.UTF-8")
-  p <- plotR0all(R0table,nameproject)
+  p <- plotR0all(R0table, nameproject, facet_scales)
   ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/R0_all.jpg"),
          device = "jpeg", dpi = 300, width=7, height=5.2)
   Sys.setlocale("LC_TIME",old.loc)
