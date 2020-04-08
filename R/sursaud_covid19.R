@@ -1,7 +1,7 @@
 #' Emergency Covid-19 numbers
 #'
 #'A dataset containing the  Emergency Covid-19 related counts in France during
-#'the Covid epidemics as of 2020-03-23 at 11:55am (Paris time).
+#'the Covid epidemics as of 2020-04-07 at 19:00 (Paris time).
 #'
 #' @format A data frame with 2904 rows and 7 variables:
 #' \describe{
@@ -21,7 +21,7 @@
 #' #library(dplyr)
 #'
 #' ### Regions ----
-#' #sursaud_covid19_reg <- readxl::read_xlsx("data/raw/sursaud-covid19-quotidien-2020-03-21-17h21.xlsx",
+#' #sursaud_covid19_reg <- readxl::read_xlsx("data/raw/sursaud-covid19-quotidien-2020-04-07-19h00.xlsx",
 #' #                                         sheet="reg"
 #' #)
 #' #sursaud_covid19_reg_tot <- sursaud_covid19_reg %>%
@@ -37,7 +37,7 @@
 #' #colnames(sursaud_covid19_reg_tot_ord)[1] <- "maille_code"
 #'
 #' ### Departements ----
-#' #sursaud_covid19_dpt <- readxl::read_xlsx("data/raw/sursaud-covid19-quotidien-2020-03-21-17h21.xlsx",
+#' #sursaud_covid19_dpt <- readxl::read_xlsx("data/raw/sursaud-covid19-quotidien-2020-04-07-17h21.xlsx",
 #' #                                         sheet="dep"
 #' #)
 #' #sursaud_covid19_dpt_tot <- sursaud_covid19_dpt %>%
@@ -56,7 +56,7 @@
 #' #save(sursaud_covid19, file = "data/sursaud_covid19.RData")
 #'
 #'@source SURSAUD database share by Santé Publique France \url{https://www.data.gouv.fr/fr/datasets/r/941ff2b4-ea24-4cdf-b0a7-655f2a332fb2}
-#'stored in \code{'data/raw/sursaud-covid19-quotidien-2020-03-23-11h55.xlsx'}
+#'stored in \code{'data/raw/sursaud-covid19-quotidien-2020-04-07-19h00.xlsx'}
 #'
 #'
 "sursaud_covid19"
