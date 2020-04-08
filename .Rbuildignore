@@ -6,3 +6,4 @@ seirah_longterm_sensitivity_analysis.R
 confidence_interval_seirah_ode_response.R
 seirah_solve_sensitivity_param.R
 
+^README\.Rmd$
