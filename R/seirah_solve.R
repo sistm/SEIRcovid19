@@ -37,7 +37,14 @@
 #   return(solution)
 # }
 
- seirah_solve <- function(init, t, par,pred=TRUE){
+ seirah_solve <- function(init, t, par,pred=TRUE,ns1all=NULL,ns2all=NULL){
+   pargiven<-par
+   print("here")
+   print(ns1all)
+   print(ns2all)
+   if(typecov=="splines"){
+      par<-c(pargiven,ns1all[1],ns2all[1])
+   }
    solution <- deSolve::ode(init, c(0,t[2]), seirah_ode, par)
    result<-as.data.frame(solution)
    #print(result)
@@ -48,6 +55,11 @@
    }
    for (i in 3:length(t)){
      # print(i)
+      if(typecov=="splines"){
+         par<-c(pargiven,ns1all[i],ns2all[i])
+         print(par)
+      }
+      print(c(t[i-1],par))
      temp<- deSolve::ode(as.numeric(result[which(result[,"time"]==t[i-1]),2:7]), c(t[i-1],t[i]), seirah_ode, par)
      if(pred){
         for(comp in 1:6){

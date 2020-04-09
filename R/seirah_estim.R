@@ -66,7 +66,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                          alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
                          popSize=65000000, dailyMove=0.1*popSize,
                          verbose = TRUE, optim_ols = TRUE,timeconf=1000,lengthconf=1000,
-                         newdailyMove=0.00001,factorreductrans=3,obs="1Y",E0given=NULL,A0given=NULL,b2=NULL,pred=FALSE){
+                         newdailyMove=0.00001,factorreductrans=3,obs="1Y",E0given=NULL,A0given=NULL,b2=NULL,pred=FALSE,typecov="splines"){
 
   if((is.null(stateinit))&((is.null(data)))){
     stop("Initial states or data need to be provided")
@@ -130,11 +130,30 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 
   # Optimal solution
 
-  factorreductrans<-ifelse(is.null(b2),factorreductrans,transmission/b2)
-  t <- seq(0,365)
+ # factorreductrans<-ifelse(is.null(b2),factorreductrans,transmission/b2)
+  t <- seq(0,1000)
+  if(typecov=="constant"){
   par <- c(transmission, ascertainment, alpha,
-           De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,factorreductrans)
+           De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,factorreductrans,typecov,b2)
   res_optimal <- seirah_solve(init, t, par,pred)
+  }
+  if(typecov=="parametric"){
+    par <- c(transmission, ascertainment, alpha,
+             De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,factorreductrans,typecov,b2)
+    res_optimal <- seirah_solve(init, t, par,pred)
+  }
+  if(typecov=="splines"){
+    t <- seq(0,max(data$day))
+    par <- c(transmission, ascertainment, alpha,
+             De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,typecov,b2)
+    ns1all<-data$spline1
+    ns2all<-data$spline2
+    print(paste("ns1all",ns1all))
+    print(paste("ns2all",ns2all))
+    stop
+    res_optimal <- seirah_solve(init, t, par,pred,ns1all,ns2all)
+  }
+  
 
   res <- list("solution" = res_optimal,
               "parameters" = list(

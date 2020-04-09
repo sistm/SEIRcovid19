@@ -11,28 +11,69 @@ seirah_ode <- function(t,Y,par){
   A<-Y[5]
   H<-Y[6]
   
-  r<-par[2]
-  alpha<-par[3]
-  De<-par[4]
-  Di<-par[5]
-  Dq<-par[6]
-  Dh<-par[7]
-  popSize<-par[8]
-  dailyMove<-par[9]
-  timeconf<-par[10]
-  lengthconf<-par[11]
-  newdailyMove<-par[12]
-  factorreductrans<-par[13]
+  r<-as.numeric(par[2])
+  alpha<-as.numeric(par[3])
+  De<-as.numeric(par[4])
+  Di<-as.numeric(par[5])
+  Dq<-as.numeric(par[6])
+  Dh<-as.numeric(par[7])
+  popSize<-as.numeric(par[8])
+  dailyMove<-as.numeric(par[9])
+  timeconf<-as.numeric(par[10])
+  lengthconf<-as.numeric(par[11])
+  newdailyMove<-as.numeric(par[12])
+  typecov<- par[13]
+ 
   
-  b<-par[1]
-  if((t>=timeconf)&(t<(timeconf+lengthconf))){
-    dailyMove<-newdailyMove
-    b<- par[1]/factorreductrans
+  if(typecov=="constant"){
+   b<-as.numeric(par[1])
+    if((t>=timeconf)&(t<(timeconf+lengthconf))){
+      dailyMove<-newdailyMove
+      b<- as.numeric(par[1])*exp(b2)
+    }
+    if(t>=timeconf+lengthconf){
+      dailyMove<-newdailyMove
+    }
   }
-  if(t>=timeconf+lengthconf){
-    dailyMove<-newdailyMove
+  if(typecov=="parametric"){
+    b<-as.numeric(par[1])
+    if((t>=timeconf)&(t<(timeconf+lengthconf))){
+      if(t<timeconf+15){
+        dailyMove<-newdailyMove
+        b<- as.numeric(par[1])*exp(b2*(t-timeconf))
+      }else{
+        dailyMove<-newdailyMove
+        b<- as.numeric(par[1])*exp(b2*15)
+      }
+    }
+    if(t>=timeconf+lengthconf){
+      dailyMove<-newdailyMove
+    }
   }
-  
+  if(typecov=="splines"){
+    splinescoeff1<-as.numeric(par[14])
+    splinescoeff2<-as.numeric(par[15])
+    splinescoeff3<-as.numeric(par[16])
+    ns1<-as.numeric(par[17])
+    ns2<-as.numeric(par[18])
+    b<- as.numeric(par[1])
+
+    if((t>=timeconf)&(t<(timeconf+lengthconf))){
+      dailyMove<-newdailyMove
+      b<- as.numeric(par[1])*exp(splinescoeff1+splinescoeff2*ns1+splinescoeff3*ns2)
+      print(paste("t",t,sep=" "))
+      print(paste("all",exp(splinescoeff1+splinescoeff2*ns1+splinescoeff3*ns2),sep=" "))
+      print(paste("splinescoeff1",splinescoeff1,sep=" "))
+      print(paste("splinescoeff2",splinescoeff2,sep=" "))
+      print(paste("splinescoeff3",splinescoeff3,sep=" "))
+      print(paste("ns1",ns1,sep=" "))
+      print(paste("ns2",ns2,sep=" "))
+      pause <- readLines(n=1)
+    }
+    if(t>=timeconf+lengthconf){
+      dailyMove<-newdailyMove
+    }
+  }
   dYdt<-vector(length=6)
   dYdt[1]=-b*S*(I+alpha*A)/popSize+dailyMove-dailyMove*S/(popSize-I-H)
   dYdt[2]=b*S*(I+alpha*A)/popSize-E/De-dailyMove*E/(popSize-I-H)
