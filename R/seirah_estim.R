@@ -134,12 +134,12 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
   t <- seq(0,1000)
   if(typecov=="constant"){
   par <- c(transmission, ascertainment, alpha,
-           De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,factorreductrans,typecov,b2)
+           De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,typecov,b2)
   res_optimal <- seirah_solve(init, t, par,pred)
   }
   if(typecov=="parametric"){
     par <- c(transmission, ascertainment, alpha,
-             De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,factorreductrans,typecov,b2)
+             De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,typecov,b2)
     res_optimal <- seirah_solve(init, t, par,pred)
   }
   if(typecov=="splines"){

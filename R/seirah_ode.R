@@ -24,12 +24,11 @@ seirah_ode <- function(t,Y,par){
   newdailyMove<-as.numeric(par[12])
   typecov<- par[13]
  
-  
   if(typecov=="constant"){
    b<-as.numeric(par[1])
     if((t>=timeconf)&(t<(timeconf+lengthconf))){
       dailyMove<-newdailyMove
-      b<- as.numeric(par[1])*exp(b2)
+      b<- as.numeric(par[1])*exp(par[14])
     }
     if(t>=timeconf+lengthconf){
       dailyMove<-newdailyMove
@@ -40,11 +39,13 @@ seirah_ode <- function(t,Y,par){
     if((t>=timeconf)&(t<(timeconf+lengthconf))){
       if(t<timeconf+15){
         dailyMove<-newdailyMove
-        b<- as.numeric(par[1])*exp(b2*(t-timeconf))
+        b<- as.numeric(par[1])*exp(as.numeric(par[14])*(t-timeconf))
+        print(c(t,b))
       }else{
         dailyMove<-newdailyMove
-        b<- as.numeric(par[1])*exp(b2*15)
-      }
+        b<- as.numeric(par[1])*exp(as.numeric(par[14])*15)
+        print(c("here",t,b))
+        }
     }
     if(t>=timeconf+lengthconf){
       dailyMove<-newdailyMove
