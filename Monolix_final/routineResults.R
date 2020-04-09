@@ -263,9 +263,9 @@ getPlotSolutionAll <- function(solutions_list, nameproject){
 
 plotR0all <- function(R0table,nameproject, facet_scales=c("fixed", "free_y", "free_x", "free")){
   if(length(facet_scales)>1){
-    facet_scales <- facet_scales[1]
+    facet_scale <- facet_scales[1]
   }
-  stopfinot(facet_scales %in% c("fixed", "free_y", "free_x", "free"))
+  stopifnot(facet_scales %in% c("fixed", "free_y", "free_x", "free"))
 
   R0tableFRANCE<- data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-06-19"), "day"))
   for (i in 1:length(R0tableFRANCE$time)){
@@ -311,7 +311,7 @@ plotR0all <- function(R0table,nameproject, facet_scales=c("fixed", "free_y", "fr
 
 
 
-getPlotR0all <- function(R0table, nameproject, facet_scales){
+getPlotR0all <- function(R0table, nameproject, facet_scales=c("fixed", "free_y", "free_x", "free")){
   old.loc <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "en_GB.UTF-8")
   p <- plotR0all(R0table, nameproject, facet_scales)

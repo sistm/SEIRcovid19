@@ -33,7 +33,7 @@ for(i in 1:length(indivParams$id)){
 }
 
 
-
+indivParams[c("R0","R0min","R0max","R0conf","R0minconf","R0maxconf")]<-NA
 R0s_list <- list()
 solutions_list <- list()
 predictions_list <- list()
