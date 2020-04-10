@@ -1,4 +1,4 @@
-#install.packages("./monolix/lixoftConnectors.tar.gz", repos = NULL, type="source", INSTALL_opts ="--no-multiarch")
+#install.packages("/home/ddutartr/Lixoft/MonolixSuite2019R2/lixoftConnectors.tar.gz", repos = NULL, type="source", INSTALL_opts ="--no-multiarch")
 library(lixoftConnectors)
 library(ggplot2)
 initializeLixoftConnectors(software="monolix")
@@ -18,5 +18,22 @@ newProject(modelFile = paste(path,codename,sep=""),
                        observationTypes = list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete"),
                        mapping = list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")))
 
-dir.create(paste(path,"outputMonolix/",sep=""))
-saveProject(projectFile = paste(path,"outputMonolix/",nameproject,".mlxtran",sep=""))
+#Get the parameter of Individual variable
+indivModel = getIndividualParameterModel()
+# Check the distribution
+indivModel$distribution
+# Set the distrution to normal for b1
+setIndividualParameterDistribution(b1="normal")
+
+# Check the modification
+indivModel = getIndividualParameterModel()
+indivModel$distribution
+
+# Save the Project
+saveProject(projectFile = paste(path,"outputMonolix/",'final',".mlxtran",sep=""))
+
+#Load the project
+loadProject(projectFile = paste(path,"outputMonolix/",'final',".mlxtran",sep=""))
+#Confirm the modification of the distribution
+indivModel = getIndividualParameterModel()
+indivModel$distribution
