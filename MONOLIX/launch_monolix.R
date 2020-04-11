@@ -8,7 +8,7 @@ initializeLixoftConnectors(software="monolix")
 ##########################
 
 path<-"./MONOLIX/"
-nameproject<-"constant20200325"
+nameproject<-"Final_20200325"
 dataname<-"data_monolix_20200325.txt"
 codename<- "monolix_constant.txt"
 dir.create(paste(path,"outputMonolix/",sep=""))
