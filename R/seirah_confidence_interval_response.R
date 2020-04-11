@@ -1,6 +1,6 @@
 #' Monte Carlo estimator of  5% and 95% percent quantiles of model response
 #'
-#'
+#'@import pbapply
 #'
 #' @export
 seirah_confidence_interval_response <- function(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,beta,betasd,De,Di,Dh,r,alpha,R0,I0,H0,N,n,time_beg,time_end,time_beg_conf,length_confinment,typecov){
@@ -18,7 +18,7 @@ seirah_confidence_interval_response <- function(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,be
   mat_resp_Y1 = matrix(0,nb_mc,length(Times_integ ))
   mat_resp_Y2 = matrix(0,nb_mc,length(Times_integ ))
 
-  mc_res <- pblapply(X = 1:nb_mc, cl=parallel::detectCores()-1, FUN=function(mc_cur){
+  mc_res <- pbapply::pblapply(X = 1:nb_mc, cl=parallel::detectCores()-1, FUN=function(mc_cur){
     b_cur = max(0.00001,b + bsd*rnorm(1,0))
     Dq_cur = max(0.00001,Dq + Dqsd*rnorm(1,0))
     E0_cur = max(E0 + E0sd*rnorm(1,0),1)
