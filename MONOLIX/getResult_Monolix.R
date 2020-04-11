@@ -38,7 +38,7 @@ popreg$idnames<-c("AURA","BFC","Bretagne","Centre","Corse","GrandEst","HDF","IDF
 for(i in 1:length(indivParams$id)){
     indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i])]
 }
-data[which(data$day==0),c("reg_id","IDname")]
+#data[which(data$day==0),c("reg_id","IDname")]
 ## Get ICU
 load("./data/ICUcapacity_FR.RData")
 ICUcapacity_FR$idnames<-c("G1","G2","G3","G4","G5","IDF","Centre","BFC","Normandie","HDF","GrandEst","PaysLoire","Bretagne","NAquitaine","Occitanie","AURA","PACA","Corse","France")
@@ -166,21 +166,29 @@ for (i in 1:length(indivParams$id)){
     message("Done\n")
 }
 
-### Get Figure Article
 
-#saveRDS(all_R0s_df, file = "./data/all_R0s_df_final20200411.rds")
+
+### Get Figure Article ----
+#saveRDS(R0s_list, file = "./data/all_R0s_df_final20200411.rds")
 #saveRDS(solutions_list, file = "./data/solutions_list20200411.rds")
 #saveRDS(predictions, file = "./data/predictions20200411.rds")
 #saveRDS(predictionsUPDATED, file = "./data/predictionsUPDATED20200411.rds")
 #saveRDS(predictionsNOEFFECT, file = "./data/predictionsNOEFFECT20200411.rds")
 
+R0s_list <- readRDS("data/all_R0s_df_final20200411.rds")
+solutions_list <- readRDS("data/solutions_list20200411.rds")
+predictions_list <- readRDS("data/predictions20200411.rds")
+predictionsUPDATED_list <- readRDS("data/predictionsUPDATED20200411.rds")
+predictionsNOEFFECT_list <- readRDS("data/predictionsNOEFFECT20200411.rds")
+
 getPlotSolutionAll(solutions_list, nameproject = nameproject)
 
 all_R0s_df <- do.call(rbind.data.frame, R0s_list)
-getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov)#,facet_scales = "fixed")
+getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
+          Di=Difixed, alpha=alphafixed,facet_scales = "free_y")
 
 
-### Get Table Article
+### Get Table Article ----
 getindicators(indivParams)
 
 ##################
@@ -190,7 +198,8 @@ getindicators(indivParams)
 predictions <- do.call(rbind.data.frame, predictions_list)
 predictionsUPDATED <- do.call(rbind.data.frame, predictionsUPDATED_list)
 predictionsNOEFFECT <- do.call(rbind.data.frame, predictionsNOEFFECT_list)
-getpredictionShortterm(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject)
+getPlotPredictionShortterm(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject,
+                           logscale=TRUE)
 
 ##################
 ### INDICATEURS
@@ -201,8 +210,8 @@ k<-1
 for (region in unique(result$reg)){
   #  result$immunised0[k]<-as.numeric(predictionsUPDATED$immunised[which((predictionsUPDATED$reg==region)&(predictionsUPDATED$i==7))])/popreg$population[which(popreg$idnames==region)]
     result$infected0[k]<-as.numeric(predictionsUPDATED$infected[which((predictionsUPDATED$reg==region)&(predictionsUPDATED$i==7))])/popreg$population[which(popreg$idnames==region)]
-    result$infected0min[k]<-as.numeric(predictionsUPDATED$infectedmin[which((predictionsUPDATED$reg==region)&(predictionsUPDATED$i==7))])/popreg$population[which(popreg$idnames==region)]  
-    result$infected0max[k]<-as.numeric(predictionsUPDATED$infectedmax[which((predictionsUPDATED$reg==region)&(predictionsUPDATED$i==7))])/popreg$population[which(popreg$idnames==region)]  
+    result$infected0min[k]<-as.numeric(predictionsUPDATED$infectedmin[which((predictionsUPDATED$reg==region)&(predictionsUPDATED$i==7))])/popreg$population[which(popreg$idnames==region)]
+    result$infected0max[k]<-as.numeric(predictionsUPDATED$infectedmax[which((predictionsUPDATED$reg==region)&(predictionsUPDATED$i==7))])/popreg$population[which(popreg$idnames==region)]
     #  result$immunised37[k]<-as.numeric(predictionsUPDATED$immunised[which((predictionsUPDATED$reg==region)&(predictionsUPDATED$i==37))])/popreg$population[which(popreg$idnames==region)]
     result$infected37[k]<-as.numeric(predictionsUPDATED$infected[which((predictionsUPDATED$reg==region)&(predictionsUPDATED$i==35))])/popreg$population[which(popreg$idnames==region)]
     result$infected37min[k]<-as.numeric(predictionsUPDATED$infectedmin[which((predictionsUPDATED$reg==region)&(predictionsUPDATED$i==35))])/popreg$population[which(popreg$idnames==region)]
@@ -313,7 +322,7 @@ for (K in c(10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,100)
                                 lengthconf=dureeconf,
                                 newdailyMove=newdailyMove,
                                 pred=pred,0,0,0,0,0,FALSE,ncores=parallel::detectCores()-1)
-   
+
          nblits<-nbICUplus*ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
 
          nbdeath<-c(nbdeath,tauxD*solution$solution$R[1000])
@@ -394,12 +403,12 @@ result$location<-full_region_names(result$location)
 result$nbdeath<-resultdeath[,"t720"]
 xtable(result[,c("K","location","t45","t60","t90","t340","topt" ,"nbdeath")])
 resultdeath$
-     
-     # result2fois_death<-resultdeath 
-     #   result2fois_end<-resultdeath 
-     #   result2fois_hosto<-resulthospmax 
-     #   result2fois_ICU<-result 
-  
+
+     # result2fois_death<-resultdeath
+     #   result2fois_end<-resultdeath
+     #   result2fois_hosto<-resulthospmax
+     #   result2fois_ICU<-result
+
      resultfois_death<-resultdeath
        resultfois_end<-resultdeath
        resultfois_hosto<-resulthospmax
