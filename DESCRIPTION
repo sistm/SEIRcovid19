@@ -12,6 +12,7 @@ Imports: deSolve,
          ggplot2,
          reshape2,
          lubridate,
+         pbapply,
          tidyr,
          utils,
          stats
