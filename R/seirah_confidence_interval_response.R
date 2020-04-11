@@ -46,21 +46,21 @@ seirah_confidence_interval_response <- function(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,be
   )
 
 
-mat_mean_q_05_95_S <- rbind(apply(sapply(mc_res, "[[", "S"), 1, FUN=quantile, probs = c(0.025, 0.095)),
+mat_mean_q_05_95_S <- rbind(apply(sapply(mc_res, "[[", "S"), 1, FUN=quantile, probs = c(0.025, 0.975)),
                             rowMeans(sapply(mc_res, "[[", "S"), na.rm=TRUE))
-mat_mean_q_05_95_E <- rbind(apply(sapply(mc_res, "[[", "E"), 1, FUN=quantile, probs = c(0.025, 0.095)),
+mat_mean_q_05_95_E <- rbind(apply(sapply(mc_res, "[[", "E"), 1, FUN=quantile, probs = c(0.025, 0.975)),
                             rowMeans(sapply(mc_res, "[[", "E"), na.rm=TRUE))
-mat_mean_q_05_95_I <- rbind(apply(sapply(mc_res, "[[", "I"), 1, FUN=quantile, probs = c(0.025, 0.095)),
+mat_mean_q_05_95_I <- rbind(apply(sapply(mc_res, "[[", "I"), 1, FUN=quantile, probs = c(0.025, 0.975)),
                             rowMeans(sapply(mc_res, "[[", "I"), na.rm=TRUE))
-mat_mean_q_05_95_R <- rbind(apply(sapply(mc_res, "[[", "R"), 1, FUN=quantile, probs = c(0.025, 0.095)),
+mat_mean_q_05_95_R <- rbind(apply(sapply(mc_res, "[[", "R"), 1, FUN=quantile, probs = c(0.025, 0.975)),
                             rowMeans(sapply(mc_res, "[[", "R"), na.rm=TRUE))
-mat_mean_q_05_95_A <- rbind(apply(sapply(mc_res, "[[", "A"), 1, FUN=quantile, probs = c(0.025, 0.095)),
+mat_mean_q_05_95_A <- rbind(apply(sapply(mc_res, "[[", "A"), 1, FUN=quantile, probs = c(0.025, 0.975)),
                            rowMeans(sapply(mc_res, "[[", "A"), na.rm=TRUE))
-mat_mean_q_05_95_H <- rbind(apply(sapply(mc_res, "[[", "H"), 1, FUN=quantile, probs = c(0.025, 0.095)),
+mat_mean_q_05_95_H <- rbind(apply(sapply(mc_res, "[[", "H"), 1, FUN=quantile, probs = c(0.025, 0.975)),
                             rowMeans(sapply(mc_res, "[[", "H"), na.rm=TRUE))
-mat_mean_q_05_95_Y1 <- rbind(apply(sapply(mc_res, "[[", "Y1"), 1, FUN=quantile, probs = c(0.025, 0.095)),
+mat_mean_q_05_95_Y1 <- rbind(apply(sapply(mc_res, "[[", "Y1"), 1, FUN=quantile, probs = c(0.025, 0.975)),
                             rowMeans(sapply(mc_res, "[[", "Y1"), na.rm=TRUE))
-mat_mean_q_05_95_Y2 <- rbind(apply(sapply(mc_res, "[[", "Y2"), 1, FUN=quantile, probs = c(0.025, 0.095)),
+mat_mean_q_05_95_Y2 <- rbind(apply(sapply(mc_res, "[[", "Y2"), 1, FUN=quantile, probs = c(0.025, 0.975)),
                              rowMeans(sapply(mc_res, "[[", "Y2"), na.rm=TRUE))
 
   res_list = list(Times_integ = Times_integ,mat_mean_q_05_95_S = mat_mean_q_05_95_S, mat_mean_q_05_95_E = mat_mean_q_05_95_E,
