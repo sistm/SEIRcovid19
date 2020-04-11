@@ -14,7 +14,7 @@ getSolution<-function(b,
                       tconf,typecov,
                       lengthconf=1000,
                       newdailyMove=0,
-                      pred=FALSE,bsd,Dqsd,E0sd,A0sd,betasd){
+                      pred=FALSE,bsd,Dqsd,E0sd,A0sd,betasd,CI=TRUE){
 
 
   # i=2
@@ -50,9 +50,9 @@ getSolution<-function(b,
                                    A0given=A0given,
                                    b2=b2,
                                    pred=pred,typecov=typecov)
-  temp<-seirah_confidence_interval_response(b,bsd,Dq,Dqsd,E0given,E0sd,A0given,A0sd,b2,betasd,De,Di,Dh,r,alpha,0,dataregion$init_I0[1],dataregion$init_H0[1],popSize,newdailyMove,0,1000,tconf,lengthconf,typecov)
-     temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin)
-     temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin)
+  if(CI){temp<-seirah_confidence_interval_response(b,bsd,Dq,Dqsd,E0given,E0sd,A0given,A0sd,b2,betasd,De,Di,Dh,r,alpha,0,dataregion$init_I0[1],dataregion$init_H0[1],popSize,newdailyMove,0,1000,tconf,lengthconf,typecov)
+    temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin)
+    temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin)
     temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin)
     temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin)
     temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin)
@@ -65,20 +65,20 @@ getSolution<-function(b,
     temp_monolix_estim$solution$Amax<-pmax(0,temp$Amax)
     temp_monolix_estim$solution$Hmax<-pmax(0,temp$Hmax)
   
- # temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
-#  temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
-#  temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
-#  temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
-#  temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
-#  temp_monolix_estim$solution$Hmin<-pmax(0,temp$Hmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
-  
-#  temp_monolix_estim$solution$Smax<-pmax(0,temp$Smax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
-#  temp_monolix_estim$solution$Emax<-pmax(0,temp$Emax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
-#  temp_monolix_estim$solution$Imax<-pmax(0,temp$Imax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
-#  temp_monolix_estim$solution$Rmax<-pmax(0,temp$Rmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
-#  temp_monolix_estim$solution$Amax<-pmax(0,temp$Amax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
-#  temp_monolix_estim$solution$Hmax<-pmax(0,temp$Hmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
-
+  # temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
+  # temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
+  # temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
+  # temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
+  # temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
+  # temp_monolix_estim$solution$Hmin<-pmax(0,temp$Hmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
+  # 
+  # temp_monolix_estim$solution$Smax<-pmax(0,temp$Smax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
+  # temp_monolix_estim$solution$Emax<-pmax(0,temp$Emax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
+  # temp_monolix_estim$solution$Imax<-pmax(0,temp$Imax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
+  # temp_monolix_estim$solution$Rmax<-pmax(0,temp$Rmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
+  # temp_monolix_estim$solution$Amax<-pmax(0,temp$Amax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
+  # temp_monolix_estim$solution$Hmax<-pmax(0,temp$Hmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
+}
   return(temp_monolix_estim)
 
 }
@@ -104,8 +104,8 @@ getPlot<-function(temp_monolix_estim,nameproject,indivParamsreg){
 #indivParamsregUP<-indivParamsUP[i,]
 getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutionUPDATED){
 
-  res<-as.data.frame(matrix(NA,ncol=12,nrow=0))
-  names(res)<-c("reg","date","time","R0","R0ICmin","R0ICmax","I","Imin","Imax","A","Amin","Amax")
+  res<-as.data.frame(matrix(NA,ncol=15,nrow=0))
+  names(res)<-c("reg","date","time","R0","R0ICmin","R0ICmax","R0UP","R0ICminUP","R0ICmaxUP","I","Imin","Imax","A","Amin","Amax")
 
 
   datestart<-solution$data$date[1]
@@ -116,25 +116,24 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
   Dqmin<-as.numeric(indivParamsreg[1,"Dq_mode"])-1.96*as.numeric(indivParamsreg[1,"Dq_sd"])
   Dqmax<-as.numeric(indivParamsreg[1,"Dq_mode"])+1.96*as.numeric(indivParamsreg[1,"Dq_sd"])
 
-  timeupdate<-as.numeric(as.Date("2020-04-06")-solution$data$date[1])
   for (time in 1:365){
   if (typecov=="constant"){
-    if((time>=solution$parameters$timeconf)&(time<timeupdate)){
+    if((time>=solution$parameters$timeconf)&(time<(solution$parameters$timeconf+solution$parameters$lengthconf))){
       b<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"]))
       bmin<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+as.numeric(indivParamsreg[1,"betat1_sd"])**2))
       bmax<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+as.numeric(indivParamsreg[1,"betat1_sd"])**2))
+      bUP<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"]))
+      bminUP<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsregUP[1,"b1_sd"])/as.numeric(indivParamsregUP[1,"b1_mode"]))**2+as.numeric(indivParamsregUP[1,"betat1_sd"])**2))
+      bmaxUP<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsregUP[1,"b1_sd"])/as.numeric(indivParamsregUP[1,"b1_mode"]))**2+as.numeric(indivParamsregUP[1,"betat1_sd"])**2))
     }else{
-      if((time>=timeupdate)&(time<(solution$parameters$timeconf+solution$parameters$lengthconf))){
-        b<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"]))
-        bmin<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsregUP[1,"b1_sd"])/as.numeric(indivParamsregUP[1,"b1_mode"]))**2+as.numeric(indivParamsregUP[1,"betat1_sd"])**2))
-        bmax<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsregUP[1,"b1_sd"])/as.numeric(indivParamsregUP[1,"b1_mode"]))**2+as.numeric(indivParamsregUP[1,"betat1_sd"])**2))
-      }else{
       b<-as.numeric(indivParamsreg[1,"b1_mode"])
       bmin<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
       bmax<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])
-      }
+      bUP<-as.numeric(indivParamsreg[1,"b1_mode"])
+      bminUP<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
+      bmaxUP<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])      }
     }
-  }
+  
   if (typecov=="parametric"){
     
     if((time>=solution$parameters$timeconf)&(time<(solution$parameters$timeconf+timings))){
@@ -166,7 +165,6 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
       
   }
   
-    if(time<timeupdate){
     Aminmax<-solution$solution[which(solution$solution$time==time),"Amin"]
     Amaxmax<-solution$solution[which(solution$solution$time==time),"Amax"]
 
@@ -176,22 +174,27 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
     It<-solution$solution[which(solution$solution$time==time),"I"]
 
     At<-solution$solution[which(solution$solution$time==time),"A"]
-    }else{
-      Aminmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Amin"]
-      Amaxmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Amax"]
+
+      AminmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Amin"]
+      AmaxmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Amax"]
       
-      Iminmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Imin"]
-      Imaxmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Imax"]
+      IminmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Imin"]
+      ImaxmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Imax"]
       
-      It<-solutionUPDATED$solution[which(solution$solution$time==time),"I"]
+      ItUP<-solutionUPDATED$solution[which(solution$solution$time==time),"I"]
       
-      At<-solutionUPDATED$solution[which(solution$solution$time==time),"A"]
-    }
+      AtUP<-solutionUPDATED$solution[which(solution$solution$time==time),"A"]
+
 
     R0minmax<-max(0,Di*bmin/(Amaxmax+Imaxmax)*(alpha*Aminmax+(Dqmin*Iminmax)/(Di+Dqmax)))
     R0maxmax<-max(0,Di*bmax/(Aminmax+Iminmax)*(alpha*Amaxmax+(Dqmax*Imaxmax)/(Di+Dqmin)))
     R0<-Di*b/(It+At)*(alpha*At+Dq*It/(Di+Dq))
-    res[time,]<-c(as.character(indivParamsreg[1,1]),as.character(datestart),time,R0,R0minmax,R0maxmax,It,Iminmax,Imaxmax,At,Aminmax,Amaxmax)
+    R0minmaxUP<-max(0,Di*bminUP/(AmaxmaxUP+ImaxmaxUP)*(alpha*AminmaxUP+(Dqmin*IminmaxUP)/(Di+Dqmax)))
+    R0maxmaxUP<-max(0,Di*bmaxUP/(AminmaxUP+IminmaxUP)*(alpha*AmaxmaxUP+(Dqmax*ImaxmaxUP)/(Di+Dqmin)))
+    R0UP<-Di*bUP/(ItUP+AtUP)*(alpha*AtUP+Dq*ItUP/(Di+Dq))
+    
+    
+    res[time,]<-c(as.character(indivParamsreg[1,1]),as.character(datestart),time,R0,R0minmax,R0maxmax,R0UP,R0minmaxUP,R0maxmaxUP,It,Iminmax,Imaxmax,At,Aminmax,Amaxmax)
   }
 
   return(res)
@@ -639,12 +642,23 @@ getpredictionShortterm<-function(predictions,predictionsUPDATED,predictionsNOEFF
   datapredUPDATED$time<-as.Date(datapredUPDATED$time)
   datapredNOEFFECT$time<-as.Date(datapredNOEFFECT$time)
   
-  p1 <- ggplot(datapred, aes(x=time,y=log10(Iincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Iobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Iincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Iincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Cumulative number of ascertained cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+ geom_vline(xintercept = as.Date("2020-04-06"))+guides(color=guide_legend(title=""))#+geom_ribbon(aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax)), fill = "red",alpha=0.2)
-  p2 <- ggplot(datapred, aes(x=time,y=log10(Hincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Hobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Hincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Hincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Prevalent number of hospitalized cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+ geom_vline(xintercept = as.Date("2020-04-06"))+guides(color=guide_legend(title=""))#+geom_ribbon(aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax)), fill = "red",alpha=0.2)
- 
-   p3 <- ggplot(datapred, aes(x=time,y=log10(ICUincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(ICUobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(ICUincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(ICUincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Prevalent number of ICU cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax)), fill = "red",alpha=0.2)
+  p1 <- ggplot(datapred, aes(x=time,y=log10(Iincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Iobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Iincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Iincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Cumulative number of ascertained cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+ geom_vline(xintercept = as.Date("2020-04-06"))+guides(color=guide_legend(title=""))+geom_ribbon(data=datapred,aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax),fill = "Update 2020-03-25",alpha=0.05))+
+    geom_ribbon(data=datapredNOEFFECT,aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax),fill = "No intervention",alpha=0.05))+
+    geom_ribbon(data=datapredUPDATED,aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax),fill = "Update 2020-04-06",alpha=0.05))
+
+  p2 <- ggplot(datapred, aes(x=time,y=log10(Hincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Hobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Hincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Hincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Prevalent number of hospitalized cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+ geom_vline(xintercept = as.Date("2020-04-06"))+guides(color=guide_legend(title=""))+geom_ribbon(data=datapred,aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax),fill = "Update 2020-03-25",alpha=0.05))+
+  geom_ribbon(data=datapredNOEFFECT,aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax),fill = "No intervention",alpha=0.05))+
+    geom_ribbon(data=datapredUPDATED,aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax),fill = "Update 2020-04-06",alpha=0.05))
   
-  p4 <- ggplot(datapred, aes(x=time,y=log10(Dincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Dobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Dincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Dincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Cumulative number of death") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax)), fill = "red",alpha=0.2)
+   p3 <- ggplot(datapred, aes(x=time,y=log10(ICUincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(ICUobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(ICUincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(ICUincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Prevalent number of ICU cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+geom_ribbon(data=datapred,aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax),fill = "Update 2020-03-25",alpha=0.05))+
+     geom_ribbon(data=datapredNOEFFECT,aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax),fill = "No intervention",alpha=0.05))+
+     geom_ribbon(data=datapredUPDATED,aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax),fill = "Update 2020-04-06",alpha=0.05))
+   
+  
+  p4 <- ggplot(datapred, aes(x=time,y=log10(Dincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Dobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Dincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Dincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Cumulative number of death") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+geom_ribbon(data=datapred,aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax),fill = "Update 2020-03-25",alpha=0.05))+
+    geom_ribbon(data=datapredNOEFFECT,aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax),fill = "No intervention",alpha=0.05))+
+    geom_ribbon(data=datapredUPDATED,aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax),fill = "Update 2020-04-06",alpha=0.05))
+  
   
   
   jpeg(paste(path,"outputMonolix/",nameproject,"/graphics/shortterm.jpg",sep=""))
