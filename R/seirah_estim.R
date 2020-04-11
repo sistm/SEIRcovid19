@@ -192,9 +192,13 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
 plot.seirah_estim <- function(x,type=1){
 
 sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
-names(sol_obstime)<-c("day","Smod","Emod","Imod","Rmod","Amod","Hmod")
-sol_obstime$Hmodest<-sol_obstime$Imod/x$parameters$Dq
-sol_obstime$Imodest<-x$parameters$ascertainment*sol_obstime$Emod/x$parameters$De
+sol_obstime$day<-sol_obstime$time
+sol_obstime$Hmodest<-sol_obstime$I/x$parameters$Dq
+sol_obstime$Imodest<-x$parameters$ascertainment*sol_obstime$E/x$parameters$De
+sol_obstime$Hmodestmin<-sol_obstime$Imin/x$parameters$Dq
+sol_obstime$Hmodestmax<-sol_obstime$Imax/x$parameters$Dq
+sol_obstime$Imodestmin<-x$parameters$ascertainment*sol_obstime$Emin/x$parameters$De
+sol_obstime$Imodestmax<-x$parameters$ascertainment*sol_obstime$Emax/x$parameters$De
 
 temp<-x$data[which(x$data$obs_id==type),]
 data2plot <- merge(temp, sol_obstime, by = "day")
@@ -203,6 +207,7 @@ if(type==1){
   p<-ggplot(data2plot, aes(x=day)) +
   geom_point(aes(y = obs, color = "Observed")) +
   geom_line(aes(y = Imodest, color = "SEIRAH")) +
+  geom_ribbon(aes(ymin=Imodestmin, ymax=Imodestmax,fill="SEIRAH",alpha=0.5)) +
   theme_classic() +
   ylab("Number of incident cases") +
   scale_color_manual("", values=c("black", "blue"))}
@@ -210,6 +215,7 @@ if(type==1){
 if(type==2){p<-ggplot(data2plot, aes(x=day)) +
   geom_point(aes(y = obs, color = "Observed")) +
   geom_line(aes(y = Hmodest, color = "SEIRAH")) +
+  geom_ribbon(aes(ymin=Hmodestmin, ymax=Hmodestmax,fill="SEIRAH",alpha=0.5)) +
   theme_classic() +
   ylab("Number of hospitalization") +
   scale_color_manual("", values=c("black", "blue"))}

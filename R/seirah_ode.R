@@ -28,7 +28,7 @@ seirah_ode <- function(t,Y,par){
    b<-as.numeric(par[1])
     if((t>=timeconf)&(t<(timeconf+lengthconf))){
       dailyMove<-newdailyMove
-      b<- as.numeric(par[1])*exp(par[14])
+      b<- as.numeric(par[1])*exp(as.numeric(par[14]))
     }
     if(t>=timeconf+lengthconf){
       dailyMove<-newdailyMove
@@ -37,14 +37,12 @@ seirah_ode <- function(t,Y,par){
   if(typecov=="parametric"){
     b<-as.numeric(par[1])
     if((t>=timeconf)&(t<(timeconf+lengthconf))){
-      if(t<timeconf+15){
+      if(t<timeconf+as.numeric(par[15])){
         dailyMove<-newdailyMove
         b<- as.numeric(par[1])*exp(as.numeric(par[14])*(t-timeconf))
-        print(c(t,b))
       }else{
         dailyMove<-newdailyMove
-        b<- as.numeric(par[1])*exp(as.numeric(par[14])*15)
-        print(c("here",t,b))
+        b<- as.numeric(par[1])*exp(as.numeric(par[14])*as.numeric(par[15]))
         }
     }
     if(t>=timeconf+lengthconf){

@@ -14,7 +14,7 @@ getSolution<-function(b,
                       tconf,typecov,
                       lengthconf=1000,
                       newdailyMove=0,
-                      pred=FALSE){
+                      pred=FALSE,bsd,Dqsd,E0sd,A0sd,betasd){
 
 
   # i=2
@@ -50,6 +50,34 @@ getSolution<-function(b,
                                    A0given=A0given,
                                    b2=b2,
                                    pred=pred,typecov=typecov)
+  temp<-seirah_confidence_interval_response(b,bsd,Dq,Dqsd,E0given,E0sd,A0given,A0sd,b2,betasd,De,Di,Dh,r,alpha,0,dataregion$init_I0[1],dataregion$init_H0[1],popSize,newdailyMove,0,1000,tconf,lengthconf,typecov)
+     temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin)
+     temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin)
+    temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin)
+    temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin)
+    temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin)
+    temp_monolix_estim$solution$Hmin<-pmax(0,temp$Hmin)
+  
+    temp_monolix_estim$solution$Smax<-pmax(0,temp$Smax)
+    temp_monolix_estim$solution$Emax<-pmax(0,temp$Emax)
+    temp_monolix_estim$solution$Imax<-pmax(0,temp$Imax)
+    temp_monolix_estim$solution$Rmax<-pmax(0,temp$Rmax)
+    temp_monolix_estim$solution$Amax<-pmax(0,temp$Amax)
+    temp_monolix_estim$solution$Hmax<-pmax(0,temp$Hmax)
+  
+ # temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
+#  temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
+#  temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
+#  temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
+#  temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
+#  temp_monolix_estim$solution$Hmin<-pmax(0,temp$Hmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
+  
+#  temp_monolix_estim$solution$Smax<-pmax(0,temp$Smax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
+#  temp_monolix_estim$solution$Emax<-pmax(0,temp$Emax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
+#  temp_monolix_estim$solution$Imax<-pmax(0,temp$Imax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
+#  temp_monolix_estim$solution$Rmax<-pmax(0,temp$Rmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
+#  temp_monolix_estim$solution$Amax<-pmax(0,temp$Amax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
+#  temp_monolix_estim$solution$Hmax<-pmax(0,temp$Hmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
 
   return(temp_monolix_estim)
 
@@ -73,10 +101,11 @@ getPlot<-function(temp_monolix_estim,nameproject,indivParamsreg){
 
 ### GET THE R0
 #indivParamsreg<-indivParams[i,]
-getR0<-function(solution,indivParamsreg,typecov,timings){
+#indivParamsregUP<-indivParamsUP[i,]
+getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutionUPDATED){
 
-  res<-as.data.frame(matrix(NA,ncol=13,nrow=0))
-  names(res)<-c("reg","date","time","R0","R0ICmin","R0ICmax","I","Imin","Imax","A","Amin","Amax","this")
+  res<-as.data.frame(matrix(NA,ncol=12,nrow=0))
+  names(res)<-c("reg","date","time","R0","R0ICmin","R0ICmax","I","Imin","Imax","A","Amin","Amax")
 
 
   datestart<-solution$data$date[1]
@@ -87,16 +116,23 @@ getR0<-function(solution,indivParamsreg,typecov,timings){
   Dqmin<-as.numeric(indivParamsreg[1,"Dq_mode"])-1.96*as.numeric(indivParamsreg[1,"Dq_sd"])
   Dqmax<-as.numeric(indivParamsreg[1,"Dq_mode"])+1.96*as.numeric(indivParamsreg[1,"Dq_sd"])
 
-  for (time in 1:100){
+  timeupdate<-as.numeric(as.Date("2020-04-06")-solution$data$date[1])
+  for (time in 1:365){
   if (typecov=="constant"){
-    if((time>=solution$parameters$timeconf)&(time<(solution$parameters$timeconf+solution$parameters$lengthconf))){
+    if((time>=solution$parameters$timeconf)&(time<timeupdate)){
       b<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"]))
       bmin<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+as.numeric(indivParamsreg[1,"betat1_sd"])**2))
       bmax<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+as.numeric(indivParamsreg[1,"betat1_sd"])**2))
     }else{
+      if((time>=timeupdate)&(time<(solution$parameters$timeconf+solution$parameters$lengthconf))){
+        b<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"]))
+        bmin<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsregUP[1,"b1_sd"])/as.numeric(indivParamsregUP[1,"b1_mode"]))**2+as.numeric(indivParamsregUP[1,"betat1_sd"])**2))
+        bmax<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsregUP[1,"b1_sd"])/as.numeric(indivParamsregUP[1,"b1_mode"]))**2+as.numeric(indivParamsregUP[1,"betat1_sd"])**2))
+      }else{
       b<-as.numeric(indivParamsreg[1,"b1_mode"])
       bmin<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
       bmax<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])
+      }
     }
   }
   if (typecov=="parametric"){
@@ -130,22 +166,32 @@ getR0<-function(solution,indivParamsreg,typecov,timings){
       
   }
   
-    Aminmax<-solution$solution[which(solution$solution$time==time),"A"]-1.96*sqrt(solution$solution[which(solution$solution$time==time),"A"])
-    Amaxmax<-solution$solution[which(solution$solution$time==time),"A"]+1.96*sqrt(solution$solution[which(solution$solution$time==time),"A"])
+    if(time<timeupdate){
+    Aminmax<-solution$solution[which(solution$solution$time==time),"Amin"]
+    Amaxmax<-solution$solution[which(solution$solution$time==time),"Amax"]
 
-    Iminmax<-solution$solution[which(solution$solution$time==time),"I"]-1.96*sqrt(solution$solution[which(solution$solution$time==time),"I"])
-    Imaxmax<-solution$solution[which(solution$solution$time==time),"I"]+1.96*sqrt(solution$solution[which(solution$solution$time==time),"I"])
+    Iminmax<-solution$solution[which(solution$solution$time==time),"Imin"]
+    Imaxmax<-solution$solution[which(solution$solution$time==time),"Imax"]
 
     It<-solution$solution[which(solution$solution$time==time),"I"]
 
     At<-solution$solution[which(solution$solution$time==time),"A"]
+    }else{
+      Aminmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Amin"]
+      Amaxmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Amax"]
+      
+      Iminmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Imin"]
+      Imaxmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Imax"]
+      
+      It<-solutionUPDATED$solution[which(solution$solution$time==time),"I"]
+      
+      At<-solutionUPDATED$solution[which(solution$solution$time==time),"A"]
+    }
 
-
-    R0minmax<-Di*bmin/(Amaxmax+Imaxmax)*(alpha*Aminmax+(Dqmin*Iminmax)/(Di+Dqmax))
-    R0maxmax<-Di*bmax/(Aminmax+Iminmax)*(alpha*Amaxmax+(Dqmax*Imaxmax)/(Di+Dqmin))
+    R0minmax<-max(0,Di*bmin/(Amaxmax+Imaxmax)*(alpha*Aminmax+(Dqmin*Iminmax)/(Di+Dqmax)))
+    R0maxmax<-max(0,Di*bmax/(Aminmax+Iminmax)*(alpha*Amaxmax+(Dqmax*Imaxmax)/(Di+Dqmin)))
     R0<-Di*b/(It+At)*(alpha*At+Dq*It/(Di+Dq))
-    this<-(alpha*At+Dq*It/(Di+Dq))
-    res[time,]<-c(as.character(indivParamsreg[1,1]),as.character(datestart),time,R0,R0minmax,R0maxmax,It,Iminmax,Imaxmax,At,Aminmax,Amaxmax,this)
+    res[time,]<-c(as.character(indivParamsreg[1,1]),as.character(datestart),time,R0,R0minmax,R0maxmax,It,Iminmax,Imaxmax,At,Aminmax,Amaxmax)
   }
 
   return(res)
@@ -161,7 +207,7 @@ getPlotR0<-function(res,nameproject,indivParamsreg){
     geom_ribbon(data=res,aes(ymin=as.numeric(R0ICmin),ymax=as.numeric(R0ICmax)),col="white",alpha=0.3, fill = "blue") +
     geom_hline(yintercept = 1)+
     theme_classic() +
-    ylim(0, min(c(6,max(c(as.numeric(res$R0),as.numeric(res$R0ICmin),as.numeric(res$R0ICmax)))))) + xlim(0, 60) +
+    ylim(0, max(c(as.numeric(res$R0[1:50]),as.numeric(res$R0ICmin[1:50]),as.numeric(res$R0ICmax[1:50])))) + xlim(0, 50) +
     ylab("Effective Reproductive Number")+
     xlab("Time")
   print(p)
@@ -199,9 +245,13 @@ plotSolutionAll <- function(solutions_list, nameproject){
   sol_est_list <- lapply(solutions_list,
                          function(x){
                            sol_obstime <- x$solution[which(x$solution[,"time"] %in% x$data$day), ]
-                           names(sol_obstime)<-c("day","Smod","Emod","Imod","Rmod","Amod","Hmod", "date", "IDname")
-                           sol_obstime$Hmodest<-sol_obstime$Imod/x$parameters$Dq
-                           sol_obstime$Imodest<-x$parameters$ascertainment*sol_obstime$Emod/x$parameters$De
+                           sol_obstime$day<-sol_obstime$time
+                           sol_obstime$Hmodest<-sol_obstime$I/x$parameters$Dq
+                           sol_obstime$Imodest<-x$parameters$ascertainment*sol_obstime$E/x$parameters$De
+                           sol_obstime$Hmodestmin<-sol_obstime$Imin/x$parameters$Dq
+                           sol_obstime$Hmodestmax<-sol_obstime$Imax/x$parameters$Dq
+                           sol_obstime$Imodestmin<-x$parameters$ascertainment*sol_obstime$Emin/x$parameters$De
+                           sol_obstime$Imodestmax<-x$parameters$ascertainment*sol_obstime$Emax/x$parameters$De
                            return(sol_obstime)
                          })
 
@@ -408,12 +458,17 @@ getindicators<-function(indivParams){
   indivParamsprint$R0conf<-round(as.numeric(indivParamsprint$R0conf),1)
   indivParamsprint$R0minconf<-round(as.numeric(indivParamsprint$R0minconf),1)
   indivParamsprint$R0maxconf<-round(as.numeric(indivParamsprint$R0maxconf),1)
+  indivParamsprint$R0conf2<-round(as.numeric(indivParamsprint$R0conf2),1)
+  indivParamsprint$R0minconf2<-round(as.numeric(indivParamsprint$R0minconf2),1)
+  indivParamsprint$R0maxconf2<-round(as.numeric(indivParamsprint$R0maxconf2),1)
+  
   indivParamsprint$R0summary<-paste(indivParamsprint$R0," [",indivParamsprint$R0min,"; ",indivParamsprint$R0max,"]",sep="")
   indivParamsprint$R0confsummary<-paste(indivParamsprint$R0conf," [",indivParamsprint$R0minconf,"; ",indivParamsprint$R0maxconf,"]",sep="")
-
-  print(xtable(indivParamsprint[,c("id","b1summary","Dqsummary","E0summary","A0summary")]))
-  print(xtable(indivParamsprint[,c("id","betatsummary","R0summary","R0confsummary")]))
+  indivParamsprint$R0conf2summary<-paste(indivParamsprint$R0conf2," [",indivParamsprint$R0minconf2,"; ",indivParamsprint$R0maxconf2,"]",sep="")
   
+
+  print(xtable(indivParamsprint[,c("id","b1summary","Dqsummary","E0summary","A0summary","R0summary","R0confsummary","R0conf2summary")]))
+
   print(xtable(indivParamsprint[,c("id","timestart","Icumul","Hcumul","popsize","ICUcapacity","r_sent")]))
 
 }
@@ -421,15 +476,15 @@ getindicators<-function(indivParams){
 #indivParamsreg<-indivParams[i,]
 getIHD<-function(solution,indivParamsreg){
 
-  res<-as.data.frame(matrix(NA,ncol=17,nrow=0))
-  names(res)<-c("reg","i","time","Iincident","Iincidentmin","Iincidentmax","Hincident","Hincidentmin","Hincidentmax","Dincident","Dincidentmin","Dincidentmax","ICUincident","ICUincidentmin","ICUincidentmax","infected","immunised")
+  res<-as.data.frame(matrix(NA,ncol=21,nrow=0))
+  names(res)<-c("reg","i","time","immunised","immunisedmin","immunisedmax","infected","infectedmin","infectedmax","Dincident","Dincidentmin","Dincidentmax","ICUincident","ICUincidentmin","ICUincidentmax","Iincident","Iincidentmin","Iincidentmax","Hincident","Hincidentmin","Hincidentmax" )
 
   timeinterest<-unique(solution$data$day[which(as.character(solution$data$date)=="2020-03-11")])
 
-  tauxICU=6662/(27432+6662) #Au 3/4/2020
+  tauxICU=0.25
   tauxICUmax=6662/(27432+6662)#Au 3/4/2020
   tauxICUmin=6662/(27432+6662)#Au 3/4/2020
-  tauxDEATH=5091/64338#Au 3/4/2020
+  tauxDEATH=0.05
   tauxDEATHmax=5091/64338#Au 3/4/2020
   tauxDEATHmin=5091/64338#Au 3/4/2020
 
@@ -437,28 +492,33 @@ getIHD<-function(solution,indivParamsreg){
     thistime<-timeinterest+i
 
     immunised<-solution$solution$R[which(solution$solution$time==thistime)]
-
+    immunisedmin<-solution$solution$Rmin[which(solution$solution$time==thistime)]
+    immunisedmax<-solution$solution$Rmax[which(solution$solution$time==thistime)]
+      
     infected<-solution$solution$E[which(solution$solution$time==thistime)]+solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$A[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+solution$solution$R[which(solution$solution$time==thistime)]
+    infectedmin<-solution$solution$Emin[which(solution$solution$time==thistime)]+solution$solution$Imin[which(solution$solution$time==thistime)]+solution$solution$Amin[which(solution$solution$time==thistime)]+solution$solution$Hmin[which(solution$solution$time==thistime)]+solution$solution$Rmin[which(solution$solution$time==thistime)]
+    infectedmax<-solution$solution$Emax[which(solution$solution$time==thistime)]+solution$solution$Imax[which(solution$solution$time==thistime)]+solution$solution$Amax[which(solution$solution$time==thistime)]+solution$solution$Hmax[which(solution$solution$time==thistime)]+solution$solution$Rmax[which(solution$solution$time==thistime)]
 
-    Iincident<-solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*((1-tauxDEATH)*solution$solution$R[which(solution$solution$time==thistime)])
-    Iincidentmax<-Iincident+1.96*(sqrt(solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+(indivParamsreg[1,"r_sent"]*(1-tauxDEATHmin))**2*solution$solution$R[which(solution$solution$time==thistime)]))
-    Iincidentmin<-Iincident-1.96*(sqrt(solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+(indivParamsreg[1,"r_sent"]*(1-tauxDEATHmin))**2*solution$solution$R[which(solution$solution$time==thistime)]))
+    ## Cumul
+     Iincident<-solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*solution$solution$R[which(solution$solution$time==thistime)]
+     Iincidentmax<-solution$solution$Imax[which(solution$solution$time==thistime)]+solution$solution$Hmax[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*solution$solution$Rmax[which(solution$solution$time==thistime)]
+     Iincidentmin<-solution$solution$Imin[which(solution$solution$time==thistime)]+solution$solution$Hmin[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*solution$solution$Rmin[which(solution$solution$time==thistime)]
+     
+     Hincident<-solution$solution$H[which(solution$solution$time==thistime)]
+     Hincidentmin<-solution$solution$Hmin[which(solution$solution$time==thistime)]
+     Hincidentmax<-solution$solution$Hmax[which(solution$solution$time==thistime)]
+     
 
-    Hincident<-solution$solution$H[which(solution$solution$time==thistime)]
-    Hincidentmin<-Hincident-1.96*sqrt(Hincident)
-    Hincidentmax<-Hincident+1.96*sqrt(Hincident)
-
-
-    Dincident<-indivParamsreg[1,"r_sent"]*tauxDEATH*solution$solution$R[which(solution$solution$time==thistime)]
-    Dincidentmin<-Dincident-1.96*indivParamsreg[1,"r_sent"]*tauxDEATHmin*sqrt(Dincident)
-    Dincidentmax<-Dincident+1.96*indivParamsreg[1,"r_sent"]*tauxDEATHmax*sqrt(Dincident)
+    Dincident<-tauxDEATH*solution$solution$R[which(solution$solution$time==thistime)]
+    Dincidentmin<-tauxDEATH*solution$solution$Rmin[which(solution$solution$time==thistime)]
+    Dincidentmax<-tauxDEATH*solution$solution$Rmax[which(solution$solution$time==thistime)]
 
 
     ICUincident<-solution$solution$H[which(solution$solution$time==thistime)]*tauxICU
-    ICUincidentmin<-ICUincident-1.96*tauxICUmin*sqrt(ICUincident)
-    ICUincidentmax<-ICUincident+1.96*tauxICUmax*sqrt(ICUincident)
+    ICUincidentmin<-solution$solution$Hmin[which(solution$solution$time==thistime)]*tauxICU
+    ICUincidentmax<-solution$solution$Hmax[which(solution$solution$time==thistime)]*tauxICU
 
-    res[i+1,]<-c(as.character(indivParamsreg[1,1]), i,thistime, Iincident,Iincidentmin,Iincidentmax,Hincident,Hincidentmin,Hincidentmax,Dincident,Dincidentmin,Dincidentmax,ICUincident,ICUincidentmin,ICUincidentmax,infected,immunised)
+    res[i+1,]<-c(as.character(indivParamsreg[1,1]), i,thistime,immunised,immunisedmin,immunisedmax,infected,infectedmin,infectedmax,Dincident,Dincidentmin,Dincidentmax,ICUincident,ICUincidentmin,ICUincidentmax,Iincident,Iincidentmin,Iincidentmax,Hincident,Hincidentmin,Hincidentmax )
 
   }
 
@@ -470,58 +530,65 @@ getIHD<-function(solution,indivParamsreg){
 
 #### GET % ASYMPTOMATIQUE
 #indivParamsreg<-indivParams[1,]
+# 
+# getAsymptomatique<-function(solution,indivParamsreg){
+# 
+#   De<-solution$parameters$De
+#   r<-indivParamsreg[1,"ascertainment_mode"]
+#   sentinelle<-read.table("./data/sentinelle.txt",header=TRUE)
+#   Sent<-sentinelle$I12[which(sentinelle$names==as.character(solution$data$reg_id[1]))]/7
+#   Sentmax<-sentinelle$I12max[which(sentinelle$names==as.character(solution$data$reg_id[1]))]/7
+#   Sentmin<-sentinelle$I12min[which(sentinelle$names==as.character(solution$data$reg_id[1]))]/7
+# 
+#   dayS2<-solution$data$day[which((as.character(solution$data$date)%in%c("2020-03-16","2020-03-17","2020-03-18","2020-03-19","2020-03-20","2020-03-22","2020-03-23"))&(solution$data$obs_id==1))]
+#   Eaverage_S12<-mean(solution$solution$E[which(solution$solution$time%in%dayS2)])
+# 
+#   pctAss<-(Sent-r*Eaverage_S12)/((1-r)*Eaverage_S12)
+# 
+#   #
+#   # incidentI<-r*Eaverage_S12
+#   # incidentA<-(1-r)*Eaverage_S12
+#   # Iaverage_S12<-mean(solution$solution$I[which(solution$solution$time%in%dayS2)])
+#   # Aaverage_S12<-mean(solution$solution$A[which(solution$solution$time%in%dayS2)])
+#   # Iaverage_S12+Aaverage_S12
+#   #
+#   # Eaverage_S12*(1-r)/De
+#   # Eaverage_S12*(r)/De
+#   #
+#   #
+#   # NT<-Sent-r*Eaverage_S12/De
+#   # NTplusAS<-incidentA
+#   #
+#   # pctAss<-(1-NT/Eaverage_S12)
+#   return(pctAss)
+# }
+# 
+# # sd(indivParams$r_sent)
+# #
+# # ((1-indivParams$ascertainment_mode)-(indivParams$ascertainment_mode*indivParams$r_sent)/(1-indivParams$r_sent))/5.2
+# #
+# # mean(((1-indivParams$ascertainment_mode)-(indivParams$ascertainment_mode*indivParams$r_sent)/(1-indivParams$r_sent))/5.2)
+# # sd(((1-indivParams$ascertainment_mode)-(indivParams$ascertainment_mode*indivParams$r_sent)/(1-indivParams$r_sent))/5.2)
+# 
+# 
+# 
+# 
 
-getAsymptomatique<-function(solution,indivParamsreg){
-
-  De<-solution$parameters$De
-  r<-indivParamsreg[1,"ascertainment_mode"]
-  sentinelle<-read.table("./data/sentinelle.txt",header=TRUE)
-  Sent<-sentinelle$I12[which(sentinelle$names==as.character(solution$data$reg_id[1]))]/7
-  Sentmax<-sentinelle$I12max[which(sentinelle$names==as.character(solution$data$reg_id[1]))]/7
-  Sentmin<-sentinelle$I12min[which(sentinelle$names==as.character(solution$data$reg_id[1]))]/7
-
-  dayS2<-solution$data$day[which((as.character(solution$data$date)%in%c("2020-03-16","2020-03-17","2020-03-18","2020-03-19","2020-03-20","2020-03-22","2020-03-23"))&(solution$data$obs_id==1))]
-  Eaverage_S12<-mean(solution$solution$E[which(solution$solution$time%in%dayS2)])
-
-  pctAss<-(Sent-r*Eaverage_S12)/((1-r)*Eaverage_S12)
-
-  #
-  # incidentI<-r*Eaverage_S12
-  # incidentA<-(1-r)*Eaverage_S12
-  # Iaverage_S12<-mean(solution$solution$I[which(solution$solution$time%in%dayS2)])
-  # Aaverage_S12<-mean(solution$solution$A[which(solution$solution$time%in%dayS2)])
-  # Iaverage_S12+Aaverage_S12
-  #
-  # Eaverage_S12*(1-r)/De
-  # Eaverage_S12*(r)/De
-  #
-  #
-  # NT<-Sent-r*Eaverage_S12/De
-  # NTplusAS<-incidentA
-  #
-  # pctAss<-(1-NT/Eaverage_S12)
-  return(pctAss)
-}
-
-# sd(indivParams$r_sent)
-#
-# ((1-indivParams$ascertainment_mode)-(indivParams$ascertainment_mode*indivParams$r_sent)/(1-indivParams$r_sent))/5.2
-#
-# mean(((1-indivParams$ascertainment_mode)-(indivParams$ascertainment_mode*indivParams$r_sent)/(1-indivParams$r_sent))/5.2)
-# sd(((1-indivParams$ascertainment_mode)-(indivParams$ascertainment_mode*indivParams$r_sent)/(1-indivParams$r_sent))/5.2)
 
 
-
-
-
-
-
-getpredictionShortterm<-function(predictions,nameproject){
+getpredictionShortterm<-function(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject){
   datagouv<-read.table("./data/datagouv.txt",header=TRUE)
   datagouv$time<-as.Date(datagouv$time)
   
   datapred<-data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-04-30"), "day"))
   datapred$i<-seq(0,(length(datapred$time)-1),by=1)
+  
+  datapredUPDATED<-data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-04-30"), "day"))
+  datapredUPDATED$i<-seq(0,(length(datapredUPDATED$time)-1),by=1)
+  
+  datapredNOEFFECT<-data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-04-30"), "day"))
+  datapredNOEFFECT$i<-seq(0,(length(datapredNOEFFECT$time)-1),by=1)
+  
   for (i in datapred$i){
     datapred$infected[i+1]<-sum(as.numeric(predictions$infected[which(predictions$i==i)]))
     datapred$immunised[i+1]<-sum(as.numeric(predictions$immunised[which(predictions$i==i)]))
@@ -537,18 +604,55 @@ getpredictionShortterm<-function(predictions,nameproject){
     datapred$ICUincident[i+1]<-sum(as.numeric(predictions$ICUincident[which(predictions$i==i)]))
     datapred$ICUincidentmin[i+1]<-sum(as.numeric(predictions$ICUincidentmin[which(predictions$i==i)]))
     datapred$ICUincidentmax[i+1]<-sum(as.numeric(predictions$ICUincidentmax[which(predictions$i==i)]))
+    
+    datapredNOEFFECT$infected[i+1]<-sum(as.numeric(predictionsNOEFFECT$infected[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$immunised[i+1]<-sum(as.numeric(predictionsNOEFFECT$immunised[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$Iincident[i+1]<-sum(as.numeric(predictionsNOEFFECT$Iincident[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$Iincidentmin[i+1]<-sum(as.numeric(predictionsNOEFFECT$Iincidentmin[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$Iincidentmax[i+1]<-sum(as.numeric(predictionsNOEFFECT$Iincidentmax[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$Hincident[i+1]<-sum(as.numeric(predictionsNOEFFECT$Hincident[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$Hincidentmin[i+1]<-sum(as.numeric(predictionsNOEFFECT$Hincidentmin[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$Hincidentmax[i+1]<-sum(as.numeric(predictionsNOEFFECT$Hincidentmax[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$Dincident[i+1]<-sum(as.numeric(predictionsNOEFFECT$Dincident[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$Dincidentmin[i+1]<-sum(as.numeric(predictionsNOEFFECT$Dincidentmin[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$Dincidentmax[i+1]<-sum(as.numeric(predictionsNOEFFECT$Dincidentmax[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$ICUincident[i+1]<-sum(as.numeric(predictionsNOEFFECT$ICUincident[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$ICUincidentmin[i+1]<-sum(as.numeric(predictionsNOEFFECT$ICUincidentmin[which(predictionsNOEFFECT$i==i)]))
+    datapredNOEFFECT$ICUincidentmax[i+1]<-sum(as.numeric(predictionsNOEFFECT$ICUincidentmax[which(predictionsNOEFFECT$i==i)]))
+    
+    datapredUPDATED$infected[i+1]<-sum(as.numeric(predictionsUPDATED$infected[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$immunised[i+1]<-sum(as.numeric(predictionsUPDATED$immunised[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$Iincident[i+1]<-sum(as.numeric(predictionsUPDATED$Iincident[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$Iincidentmin[i+1]<-sum(as.numeric(predictionsUPDATED$Iincidentmin[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$Iincidentmax[i+1]<-sum(as.numeric(predictionsUPDATED$Iincidentmax[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$Hincident[i+1]<-sum(as.numeric(predictionsUPDATED$Hincident[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$Hincidentmin[i+1]<-sum(as.numeric(predictionsUPDATED$Hincidentmin[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$Hincidentmax[i+1]<-sum(as.numeric(predictionsUPDATED$Hincidentmax[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$Dincident[i+1]<-sum(as.numeric(predictionsUPDATED$Dincident[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$Dincidentmin[i+1]<-sum(as.numeric(predictionsUPDATED$Dincidentmin[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$Dincidentmax[i+1]<-sum(as.numeric(predictionsUPDATED$Dincidentmax[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$ICUincident[i+1]<-sum(as.numeric(predictionsUPDATED$ICUincident[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$ICUincidentmin[i+1]<-sum(as.numeric(predictionsUPDATED$ICUincidentmin[which(predictionsUPDATED$i==i)]))
+    datapredUPDATED$ICUincidentmax[i+1]<-sum(as.numeric(predictionsUPDATED$ICUincidentmax[which(predictionsUPDATED$i==i)]))
   }
   datapred$time<-as.Date(datapred$time)
+  datapredUPDATED$time<-as.Date(datapredUPDATED$time)
+  datapredNOEFFECT$time<-as.Date(datapredNOEFFECT$time)
   
-  p1 <- ggplot(datapred, aes(x=time,y=log10(Iincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(Iobs)))+theme_classic()+ylab("Log10 Cumulative number of ascertained cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax)), fill = "red",alpha=0.2)
-  p2 <- ggplot(datapred, aes(x=time,y=log10(Hincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(Hobs)))+theme_classic()+ylab("Log10 Prevalent number of hospitalized cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax)), fill = "red",alpha=0.2)
-  p3 <- ggplot(datapred, aes(x=time,y=log10(ICUincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(ICUobs)))+theme_classic()+ylab("Log10 Prevalent number of ICU cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax)), fill = "red",alpha=0.2)
-  p4 <- ggplot(datapred, aes(x=time,y=log10(Dincident)))+ geom_line() + geom_point(data=datagouv, aes(x=time,y=log10(Dobs)))+theme_classic()+ylab("Log10 Cumulative number of death") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax)), fill = "red",alpha=0.2)
+  p1 <- ggplot(datapred, aes(x=time,y=log10(Iincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Iobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Iincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Iincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Cumulative number of ascertained cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+ geom_vline(xintercept = as.Date("2020-04-06"))+guides(color=guide_legend(title=""))#+geom_ribbon(aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax)), fill = "red",alpha=0.2)
+  p2 <- ggplot(datapred, aes(x=time,y=log10(Hincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Hobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Hincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Hincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Prevalent number of hospitalized cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+ geom_vline(xintercept = as.Date("2020-04-06"))+guides(color=guide_legend(title=""))#+geom_ribbon(aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax)), fill = "red",alpha=0.2)
+ 
+   p3 <- ggplot(datapred, aes(x=time,y=log10(ICUincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(ICUobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(ICUincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(ICUincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Prevalent number of ICU cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax)), fill = "red",alpha=0.2)
+  
+  p4 <- ggplot(datapred, aes(x=time,y=log10(Dincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Dobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Dincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Dincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Cumulative number of death") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))#+geom_ribbon(aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax)), fill = "red",alpha=0.2)
   
   
   jpeg(paste(path,"outputMonolix/",nameproject,"/graphics/shortterm.jpg",sep=""))
   grid.arrange(p1,p2, ncol=1, nrow = 2)
   dev.off()
   
+  jpeg(paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all.jpg",sep=""))
+  grid.arrange(p1,p2,p3,p4, ncol=2, nrow = 2)
+  dev.off()
   
 }
