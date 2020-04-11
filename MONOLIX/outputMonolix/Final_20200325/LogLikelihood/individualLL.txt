@@ -1,0 +1,13 @@
+id,importanceSampling
+IDF,1530.655
+NAquitaine,464.407
+AURA,861.486
+Centre,222.600
+BFC,837.719
+Normandie,297.131
+HDF,1128.376
+GrandEst,1744.809
+PaysLoire,398.607
+Bretagne,442.522
+Occitanie,532.452
+PACA,824.723
