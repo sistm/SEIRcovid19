@@ -30,14 +30,15 @@
 # Sys.setlocale("LC_TIME", "en_GB.UTF-8")
 # ggplot(data2plot %>% filter(H>0),
 #        aes(x=date, y=H)) +
-#   geom_point(aes(color = source)) +
-#   #geom_col(position = position_dodge2(width = 0.9, preserve = "single"),aes(fill=source)) +
+#   #geom_point(aes(color = source)) +
+#   geom_col(position = position_dodge2(width = 0.9, preserve = "single"),aes(fill=source)) +
 #   #scale_y_log10() +
-#   colorspace::scale_color_discrete_diverging(name="Data source") +
-#   colorspace::scale_fill_discrete_diverging(name="Data source") +
+#   scale_color_manual(name="Data source", values = c("seagreen4", "orange")) +
+#   scale_fill_manual(name="Data source", values = c("seagreen4", "orange")) +
 #   ylab("Cumulative incidence of COVID-19 hospitalizations") +
 #   xlab("Date") +
 #   theme_bw() +
+#   ggtitle("France") +
 #   NULL
 # ggsave("SURSAUDvsSPF.pdf", height=4.5, width=7)
 # Sys.setlocale("LC_TIME",old.loc)

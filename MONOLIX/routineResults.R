@@ -52,9 +52,9 @@ getSolution<-function(b,
                                    pred=pred,typecov=typecov)
 
   if(CI){
-  temp<-seirah_confidence_interval_response(b,bsd,Dq,Dqsd,E0given,E0sd,A0given,A0sd,b2,betasd,De,Di,Dh,r,alpha,0,dataregion$init_I0[1],dataregion$init_H0[1],popSize,newdailyMove,0,1000,tconf,lengthconf,typecov, ncores)
-     temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin)
-     temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin)
+    temp<-seirah_confidence_interval_response(b,bsd,Dq,Dqsd,E0given,E0sd,A0given,A0sd,b2,betasd,De,Di,Dh,r,alpha,0,dataregion$init_I0[1],dataregion$init_H0[1],popSize,newdailyMove,0,1000,tconf,lengthconf,typecov, ncores)
+    temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin)
+    temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin)
 
     temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin)
     temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin)
@@ -68,36 +68,36 @@ getSolution<-function(b,
     temp_monolix_estim$solution$Amax<-pmax(0,temp$Amax)
     temp_monolix_estim$solution$Hmax<-pmax(0,temp$Hmax)
 
-  
+
+    # temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
+    # temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
+    # temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
+    # temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
+    # temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
+    # temp_monolix_estim$solution$Hmin<-pmax(0,temp$Hmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
+    #
+    # temp_monolix_estim$solution$Smax<-pmax(0,temp$Smax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
+    # temp_monolix_estim$solution$Emax<-pmax(0,temp$Emax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
+    # temp_monolix_estim$solution$Imax<-pmax(0,temp$Imax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
+    # temp_monolix_estim$solution$Rmax<-pmax(0,temp$Rmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
+    # temp_monolix_estim$solution$Amax<-pmax(0,temp$Amax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
+    # temp_monolix_estim$solution$Hmax<-pmax(0,temp$Hmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
+  }
+
+
   # temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
-  # temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
-  # temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
-  # temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
-  # temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
-  # temp_monolix_estim$solution$Hmin<-pmax(0,temp$Hmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
-  # 
-  # temp_monolix_estim$solution$Smax<-pmax(0,temp$Smax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
-  # temp_monolix_estim$solution$Emax<-pmax(0,temp$Emax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
-  # temp_monolix_estim$solution$Imax<-pmax(0,temp$Imax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
-  # temp_monolix_estim$solution$Rmax<-pmax(0,temp$Rmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
-  # temp_monolix_estim$solution$Amax<-pmax(0,temp$Amax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
-  # temp_monolix_estim$solution$Hmax<-pmax(0,temp$Hmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
-}
+  #  temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
+  #  temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
+  #  temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
+  #  temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
+  #  temp_monolix_estim$solution$Hmin<-pmax(0,temp$Hmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
 
-
- # temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
-#  temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
-#  temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
-#  temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
-#  temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
-#  temp_monolix_estim$solution$Hmin<-pmax(0,temp$Hmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
-
-#  temp_monolix_estim$solution$Smax<-pmax(0,temp$Smax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
-#  temp_monolix_estim$solution$Emax<-pmax(0,temp$Emax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
-#  temp_monolix_estim$solution$Imax<-pmax(0,temp$Imax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
-#  temp_monolix_estim$solution$Rmax<-pmax(0,temp$Rmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
-#  temp_monolix_estim$solution$Amax<-pmax(0,temp$Amax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
-#  temp_monolix_estim$solution$Hmax<-pmax(0,temp$Hmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
+  #  temp_monolix_estim$solution$Smax<-pmax(0,temp$Smax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
+  #  temp_monolix_estim$solution$Emax<-pmax(0,temp$Emax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
+  #  temp_monolix_estim$solution$Imax<-pmax(0,temp$Imax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
+  #  temp_monolix_estim$solution$Rmax<-pmax(0,temp$Rmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
+  #  temp_monolix_estim$solution$Amax<-pmax(0,temp$Amax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
+  #  temp_monolix_estim$solution$Hmax<-pmax(0,temp$Hmax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
 
   return(temp_monolix_estim)
 
@@ -137,42 +137,42 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
   Dqmax<-as.numeric(indivParamsreg[1,"Dq_mode"])+1.96*as.numeric(indivParamsreg[1,"Dq_sd"])
 
   for (time in 1:365){
-  if (typecov=="constant"){
-    if((time>=solution$parameters$timeconf)&(time<(solution$parameters$timeconf+solution$parameters$lengthconf))){
-      b<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"]))
-      bmin<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+as.numeric(indivParamsreg[1,"betat1_sd"])**2))
-      bmax<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+as.numeric(indivParamsreg[1,"betat1_sd"])**2))
-      bUP<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"]))
-      bminUP<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsregUP[1,"b1_sd"])/as.numeric(indivParamsregUP[1,"b1_mode"]))**2+as.numeric(indivParamsregUP[1,"betat1_sd"])**2))
-      bmaxUP<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsregUP[1,"b1_sd"])/as.numeric(indivParamsregUP[1,"b1_mode"]))**2+as.numeric(indivParamsregUP[1,"betat1_sd"])**2))
-    }else{
-      b<-as.numeric(indivParamsreg[1,"b1_mode"])
-      bmin<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
-      bmax<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])
-      bUP<-as.numeric(indivParamsreg[1,"b1_mode"])
-      bminUP<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
-      bmaxUP<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])      }
-    }
-  
-  if (typecov=="parametric"){
-
-    if((time>=solution$parameters$timeconf)&(time<(solution$parameters$timeconf+timings))){
-      b<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])*(time-solution$parameters$timeconf))
-      bmin<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+(time-solution$parameters$timeconf)*as.numeric(indivParamsreg[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+(time-solution$parameters$timeconf)**2*as.numeric(indivParamsreg[1,"betat1_sd"])**2))
-      bmax<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+(time-solution$parameters$timeconf)*as.numeric(indivParamsreg[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+(time-solution$parameters$timeconf)**2*as.numeric(indivParamsreg[1,"betat1_sd"])**2))
-    }else{
-      if((time>=(solution$parameters$timeconf+timings))&(time<(solution$parameters$timeconf+solution$parameters$lengthconf))){
-        b<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])*timings)
-        bmin<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+timings*as.numeric(indivParamsreg[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+timings**2*as.numeric(indivParamsreg[1,"betat1_sd"])**2))
-        bmax<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+timings*as.numeric(indivParamsreg[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+timings**2*as.numeric(indivParamsreg[1,"betat1_sd"])**2))
+    if (typecov=="constant"){
+      if((time>=solution$parameters$timeconf)&(time<(solution$parameters$timeconf+solution$parameters$lengthconf))){
+        b<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"]))
+        bmin<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+as.numeric(indivParamsreg[1,"betat1_sd"])**2))
+        bmax<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+as.numeric(indivParamsreg[1,"betat1_sd"])**2))
+        bUP<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"]))
+        bminUP<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsregUP[1,"b1_sd"])/as.numeric(indivParamsregUP[1,"b1_mode"]))**2+as.numeric(indivParamsregUP[1,"betat1_sd"])**2))
+        bmaxUP<-exp(log(as.numeric(indivParamsregUP[1,"b1_mode"]))+as.numeric(indivParamsregUP[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsregUP[1,"b1_sd"])/as.numeric(indivParamsregUP[1,"b1_mode"]))**2+as.numeric(indivParamsregUP[1,"betat1_sd"])**2))
       }else{
         b<-as.numeric(indivParamsreg[1,"b1_mode"])
         bmin<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
         bmax<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])
+        bUP<-as.numeric(indivParamsreg[1,"b1_mode"])
+        bminUP<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
+        bmaxUP<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])      }
+    }
+
+    if (typecov=="parametric"){
+
+      if((time>=solution$parameters$timeconf)&(time<(solution$parameters$timeconf+timings))){
+        b<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])*(time-solution$parameters$timeconf))
+        bmin<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+(time-solution$parameters$timeconf)*as.numeric(indivParamsreg[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+(time-solution$parameters$timeconf)**2*as.numeric(indivParamsreg[1,"betat1_sd"])**2))
+        bmax<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+(time-solution$parameters$timeconf)*as.numeric(indivParamsreg[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+(time-solution$parameters$timeconf)**2*as.numeric(indivParamsreg[1,"betat1_sd"])**2))
+      }else{
+        if((time>=(solution$parameters$timeconf+timings))&(time<(solution$parameters$timeconf+solution$parameters$lengthconf))){
+          b<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+as.numeric(indivParamsreg[1,"betat1_mode"])*timings)
+          bmin<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+timings*as.numeric(indivParamsreg[1,"betat1_mode"])-1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+timings**2*as.numeric(indivParamsreg[1,"betat1_sd"])**2))
+          bmax<-exp(log(as.numeric(indivParamsreg[1,"b1_mode"]))+timings*as.numeric(indivParamsreg[1,"betat1_mode"])+1.96*sqrt((as.numeric(indivParamsreg[1,"b1_sd"])/as.numeric(indivParamsreg[1,"b1_mode"]))**2+timings**2*as.numeric(indivParamsreg[1,"betat1_sd"])**2))
+        }else{
+          b<-as.numeric(indivParamsreg[1,"b1_mode"])
+          bmin<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
+          bmax<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])
+        }
       }
     }
-  }
-  if (typecov=="splines"){
+    if (typecov=="splines"){
       if((time>=solution$parameters$timeconf)&(time<(solution$parameters$timeconf+solution$parameters$lengthconf))){
         b<-as.numeric(indivParamsreg[1,"b1_mode"])*exp(as.numeric(indivParamsreg[1,"betat_mode"])*(time-solution$parameters$timeconf))
         bmin<-b-1.96*exp(as.numeric(indivParamsreg[1,"betat_mode"]))*as.numeric(indivParamsreg[1,"b1_sd"])*(time-solution$parameters$timeconf)
@@ -183,7 +183,7 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
         bmax<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])
       }
 
-  }
+    }
 
     Aminmax<-solution$solution[which(solution$solution$time==time),"Amin"]
     Amaxmax<-solution$solution[which(solution$solution$time==time),"Amax"]
@@ -195,15 +195,15 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
 
     At<-solution$solution[which(solution$solution$time==time),"A"]
 
-      AminmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Amin"]
-      AmaxmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Amax"]
-      
-      IminmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Imin"]
-      ImaxmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Imax"]
-      
-      ItUP<-solutionUPDATED$solution[which(solution$solution$time==time),"I"]
-      
-      AtUP<-solutionUPDATED$solution[which(solution$solution$time==time),"A"]
+    AminmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Amin"]
+    AmaxmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Amax"]
+
+    IminmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Imin"]
+    ImaxmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Imax"]
+
+    ItUP<-solutionUPDATED$solution[which(solution$solution$time==time),"I"]
+
+    AtUP<-solutionUPDATED$solution[which(solution$solution$time==time),"A"]
 
 
     R0minmax<-max(0,Di*bmin/(Amaxmax+Imaxmax)*(alpha*Aminmax+(Dqmin*Iminmax)/(Di+Dqmax)))
@@ -212,8 +212,8 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
     R0minmaxUP<-max(0,Di*bminUP/(AmaxmaxUP+ImaxmaxUP)*(alpha*AminmaxUP+(Dqmin*IminmaxUP)/(Di+Dqmax)))
     R0maxmaxUP<-max(0,Di*bmaxUP/(AminmaxUP+IminmaxUP)*(alpha*AmaxmaxUP+(Dqmax*ImaxmaxUP)/(Di+Dqmin)))
     R0UP<-Di*bUP/(ItUP+AtUP)*(alpha*AtUP+Dq*ItUP/(Di+Dq))
-    
-    
+
+
     res[time,]<-c(as.character(indivParamsreg[1,1]),as.character(datestart),time,R0,R0minmax,R0maxmax,R0UP,R0minmaxUP,R0maxmaxUP,It,Iminmax,Imaxmax,At,Aminmax,Amaxmax)
   }
 
@@ -331,23 +331,24 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE){
 
   for(i in unique(dataSim2plot_1$IDname)){
     for (o in unique(dataSim2plot_2$obs_id)){
-    date_obs_min <- dataObs2plot_1 %>% filter(IDname==i, obs_id==o) %>% pull(date) %>% min()
-    dataSim2plot_1 <-  dataSim2plot_1 %>% filter(!(IDname==i & date < date_obs_min & obs_id==o))
+      date_obs_min <- dataObs2plot_1 %>% filter(IDname==i, obs_id==o) %>% pull(date) %>% min()
+      dataSim2plot_1 <-  dataSim2plot_1 %>% filter(!(IDname==i & date < date_obs_min & obs_id==o))
     }
   }
   for(i in unique(dataSim2plot_2$IDname)){
     for (o in unique(dataSim2plot_2$obs_id)){
-    date_obs_min <- dataObs2plot_2 %>% filter(IDname==i, obs_id==o) %>% pull(date) %>% min()
-    dataSim2plot_2 <-  dataSim2plot_2 %>% filter(!(IDname==i & date<date_obs_min & obs_id==o))
+      date_obs_min <- dataObs2plot_2 %>% filter(IDname==i, obs_id==o) %>% pull(date) %>% min()
+      dataSim2plot_2 <-  dataSim2plot_2 %>% filter(!(IDname==i & date<date_obs_min & obs_id==o))
     }
   }
 
   p1 <- ggplot(dataObs2plot_1, aes(x=date, y=obs, group=IDname)) +
+    geom_hline(yintercept = 1)+
     geom_point(aes(color="Observed", shape=show)) +
     geom_line(data = dataSim2plot_1,
-              aes(linetype="Estimate"), color="blue") +
+              aes(linetype="Estimate"), color="red3") +
     geom_ribbon(data = dataSim2plot_1,
-                aes(ymin = obs_min, ymax=obs_max, alpha="95% CI"), fill="blue")+
+                aes(ymin = obs_min, ymax=obs_max, alpha="95% CI"), fill="red3")+
     scale_shape_manual(values=c(NA, 16)) +
     scale_alpha_manual(values=c(0.3)) +
     scale_color_manual(values="black") +
@@ -362,12 +363,12 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE){
           strip.text = element_text(size=8)) +
     NULL
   p2 <- ggplot(dataObs2plot_2, aes(x=date, y=obs, group=IDname)) +
+    geom_hline(yintercept = 1)+
     geom_point(aes(color="Observed", shape=show)) +
     geom_line(data = dataSim2plot_2,
-              aes(linetype="Estimate"), color="blue") +
+              aes(linetype="Estimate"), color="red3") +
     geom_ribbon(data = dataSim2plot_2,
-                aes(ymin = obs_min, ymax=obs_max, alpha="95% CI"), fill="blue")+
-    geom_hline(yintercept = 1)+
+                aes(ymin = obs_min, ymax=obs_max, alpha="95% CI"), fill="red3")+
     scale_shape_manual(values=c(NA, 16)) +
     scale_alpha_manual(values=c(0.3)) +
     scale_color_manual(values="black") +
@@ -402,11 +403,13 @@ getPlotSolutionAll <- function(solutions_list, nameproject){
 
 
 
-plotR0all <- function(R0table,nameproject,path,timingdays,typecov){#, facet_scales=c("fixed", "free_y", "free_x", "free")){
- # if(length(facet_scales)>1){
-#  facet_scales <- facet_scales[1]
- # }
-#  stopfinot(facet_scales %in% c("fixed", "free_y", "free_x", "free"))
+plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
+                      facet_scales=c("fixed", "free_y", "free_x", "free")){
+
+  if(length(facet_scales)>1){
+    facet_scales <- facet_scales[1]
+  }
+  stopifnot(facet_scales %in% c("fixed", "free_y", "free_x", "free"))
 
   R0tableFRANCE<- data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-06-19"), "day"))
   for (i in 1:length(R0tableFRANCE$time)){
@@ -417,51 +420,65 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov){#, facet_scal
     R0tableFRANCE$Amax[i]<-sum(as.numeric(R0table$Amax[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
     R0tableFRANCE$Imax[i]<-sum(as.numeric(R0table$Imax[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
   }
-  R0table$finaltime<-as.Date(R0table$date)+as.numeric(R0table$time)
+  R0table$finaltime <- as.Date(R0table$date)+as.numeric(R0table$time)
   pop <- read.table(paste(path,"outputMonolix/", nameproject,"/populationParameters.txt",sep=""),
                     sep=",",header=TRUE)
   if(typecov=="constant"){
+    b1 <- pop$value[pop$parameter=="b1_pop"]
+    b2 <- pop$value[pop$parameter=="betat1_pop"]
+
+
+    R0tableFRANCE$R0 <- ifelse(as.Date(R0tableFRANCE$time) < as.Date("2020-03-17"),
+                               b1*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di)),
+                               b1*exp(b2)*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di))
+    )
+  }
+  if(typecov=="parametric"){
     b1<-pop$value[pop$parameter=="b1_pop"]
     b2<-pop$value[pop$parameter=="betat1_pop"]
 
 
     R0tableFRANCE$R0<-ifelse(as.Date(R0tableFRANCE$time)<as.Date("2020-03-17"),
                              b1*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di)),
-                             b1*exp(b2)*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di))
-                             )
-  }
-  if(typecov=="parametric"){
-  b1<-pop$value[pop$parameter=="b1_pop"]
-  b2<-pop$value[pop$parameter=="betat1_pop"]
-
-
-  R0tableFRANCE$R0<-ifelse(as.Date(R0tableFRANCE$time)<as.Date("2020-03-17"),
-                           b1*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di)),
-                           ifelse( as.Date(R0tableFRANCE$time)<(as.Date("2020-03-17")+timingdays),
-                                   b1*exp(b2*as.numeric(R0tableFRANCE$time-as.Date("2020-03-17")))*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di)),b1*exp(b2*(timingdays))*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di))
-                                   ))
+                             ifelse( as.Date(R0tableFRANCE$time)<(as.Date("2020-03-17")+timingdays),
+                                     b1*exp(b2*as.numeric(R0tableFRANCE$time-as.Date("2020-03-17")))*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di)),b1*exp(b2*(timingdays))*Di/(R0tableFRANCE$A+R0tableFRANCE$I)*(alpha*R0tableFRANCE$A+pop$value[pop$parameter=="Dq_pop"]*R0tableFRANCE$I/(pop$value[pop$parameter=="Dq_pop"]+Di))
+                             ))
   }
 
   R0table$Region <- full_region_names(R0table$reg)
+  R0table$date <- as.Date(R0table$date)
+  R0table$finaltime <- as.Date(R0table$finaltime)
 
-  p <- ggplot(R0table, aes(x=as.Date(finaltime))) +
-    geom_line(aes(y = as.numeric(R0),color=Region, linetype="Region-wise value")) +
-    geom_ribbon(data=R0table,aes(ymin=as.numeric(R0ICmin),ymax=as.numeric(R0ICmax),fill=Region, alpha="Confidence bound")) +
-    geom_line(data=R0tableFRANCE,aes(x=time, y = as.numeric(R0), linetype="France\nnational average")) +
+  R0table %>% group_by(reg) %>% top_n(-1, finaltime) %>% select(date, finaltime)
+
+  p <- ggplot(R0table %>% filter(finaltime > as.Date("2020-03-01"), finaltime < as.Date("2020-03-25")),
+              aes(x=finaltime)) +
+    geom_hline(aes(yintercept = 1, alpha="France\nnational average"), linetype="dotted", color="grey35") +
+    geom_hline(aes(yintercept = 1), linetype="dotted", color="grey35") +
+    geom_line(aes(y = as.numeric(R0), linetype="Region-wise value\n(95% CI)", color="data up to\n2020-03-25")) +
+    geom_line(data = R0table %>% filter(finaltime > as.Date("2020-03-01"), finaltime < as.Date("2020-04-06")),
+              aes(y = as.numeric(R0UP), linetype="Region-wise value\n(95% CI)", color="data up to\n2020-04-06")) +
+    geom_line(data=R0tableFRANCE %>% filter(time > as.Date("2020-03-01"), time < as.Date("2020-03-25")),
+              aes(x=time, y = as.numeric(R0), linetype="France\nnational average")) +
+    geom_ribbon(aes(ymin=as.numeric(R0ICmin),ymax=as.numeric(R0ICmax), fill="data up to\n2020-03-25",
+                    alpha="Region-wise value\n(95% CI)")) +
+    geom_ribbon(data = R0table %>% filter(finaltime > as.Date("2020-03-01"), finaltime < as.Date("2020-04-06")),
+                aes(ymin=as.numeric(R0ICminUP),ymax=as.numeric(R0ICmaxUP), alpha="Region-wise value\n(95% CI)", fill="data up to\n2020-04-06")) +
     scale_linetype_manual("", values = c(2, 1)) +
-    scale_alpha_manual("", values = c(0.3)) +
-    guides(color="none", fill="none", alpha=guide_legend(override.aes = list(fill="black", linetype=1))) +
+    scale_alpha_manual("", values = c(0, 0.2)) +
+    scale_fill_manual(" ", values=c("red3", "skyblue"))+
+    scale_color_manual(" ", values=c("red3", "skyblue")) +
+    #guides(linetype=guide_legend(override.aes = list(fill=c("white", "grey50")))) +
     theme_bw() +
-    facet_wrap(~Region, ncol = 3)+#, scales = facet_scale) +
+    facet_wrap(~Region, ncol = 3, scales = facet_scales) +
     theme(strip.background = element_rect(fill="white")) +
-    xlim(as.Date("2020-03-01"),as.Date("2020-05-01"))+
     ylab(expression(paste("Effective Reproductive Number ", R(t, xi)))) +
-    #ylim(1,5) +
+    ylim(0,NA) +
     #ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax))))
     xlab("Date") +
     theme(axis.text.x = element_text(angle=45, hjust=1)) +
     theme(panel.grid.minor = element_blank()) +
-    theme(legend.position = "bottom" ) +
+    theme(legend.position = "bottom", legend.direction = "vertical") +
     NULL
 
   return(p)
@@ -469,12 +486,16 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov){#, facet_scal
 
 
 
-getPlotR0all <- function(R0table, nameproject,path,timingdays,typecov){
+getPlotR0all <- function(R0table, nameproject,path,timingdays,typecov, Di, alpha,
+                         facet_scales=c("fixed", "free_y", "free_x", "free")){
+
   old.loc <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "en_GB.UTF-8")
-  p <- plotR0all(R0table, nameproject,path,timingdays,typecov)
+
+  p <- plotR0all(R0table, nameproject,path,timingdays,typecov, Di, alpha, facet_scales)
   ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/R0_all.jpg"),
-         device = "jpeg", dpi = 300, width=7, height=5.2)
+         device = "jpeg", dpi = 500, width=7, height=5.2)
+
   Sys.setlocale("LC_TIME",old.loc)
 }
 
@@ -558,13 +579,13 @@ getIHD<-function(solution,indivParamsreg){
     infectedmax<-solution$solution$Emax[which(solution$solution$time==thistime)]+solution$solution$Imax[which(solution$solution$time==thistime)]+solution$solution$Amax[which(solution$solution$time==thistime)]+solution$solution$Hmax[which(solution$solution$time==thistime)]+solution$solution$Rmax[which(solution$solution$time==thistime)]
 
     ## Cumul
-     Iincident<-solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*solution$solution$R[which(solution$solution$time==thistime)]
-     Iincidentmax<-solution$solution$Imax[which(solution$solution$time==thistime)]+solution$solution$Hmax[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*solution$solution$Rmax[which(solution$solution$time==thistime)]
-     Iincidentmin<-solution$solution$Imin[which(solution$solution$time==thistime)]+solution$solution$Hmin[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*solution$solution$Rmin[which(solution$solution$time==thistime)]
+    Iincident<-solution$solution$I[which(solution$solution$time==thistime)]+solution$solution$H[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*solution$solution$R[which(solution$solution$time==thistime)]
+    Iincidentmax<-solution$solution$Imax[which(solution$solution$time==thistime)]+solution$solution$Hmax[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*solution$solution$Rmax[which(solution$solution$time==thistime)]
+    Iincidentmin<-solution$solution$Imin[which(solution$solution$time==thistime)]+solution$solution$Hmin[which(solution$solution$time==thistime)]+indivParamsreg[1,"r_sent"]*solution$solution$Rmin[which(solution$solution$time==thistime)]
 
-     Hincident<-solution$solution$H[which(solution$solution$time==thistime)]
-     Hincidentmin<-solution$solution$Hmin[which(solution$solution$time==thistime)]
-     Hincidentmax<-solution$solution$Hmax[which(solution$solution$time==thistime)]
+    Hincident<-solution$solution$H[which(solution$solution$time==thistime)]
+    Hincidentmin<-solution$solution$Hmin[which(solution$solution$time==thistime)]
+    Hincidentmax<-solution$solution$Hmax[which(solution$solution$time==thistime)]
 
 
     Dincident<-tauxDEATH*solution$solution$R[which(solution$solution$time==thistime)]
@@ -633,8 +654,7 @@ getIHD<-function(solution,indivParamsreg){
 #
 
 
-
-getpredictionShortterm<-function(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject){
+plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale=TRUE){
   datagouv<-read.table("./data/datagouv.txt",header=TRUE)
   datagouv$time<-as.Date(datagouv$time)
 
@@ -697,6 +717,7 @@ getpredictionShortterm<-function(predictions,predictionsUPDATED,predictionsNOEFF
   datapredUPDATED$time<-as.Date(datapredUPDATED$time)
   datapredNOEFFECT$time<-as.Date(datapredNOEFFECT$time)
 
+<<<<<<< HEAD
   # datapredUPDATED[as.character(datapredUPDATED$time)=="2020-04-11","Hincident"]
   # datapredUPDATED[as.character(datapredUPDATED$time)=="2020-04-11","Hincidentmin"]
   # datapredUPDATED[as.character(datapredUPDATED$time)=="2020-04-11","Hincidentmax"]
@@ -725,9 +746,164 @@ getpredictionShortterm<-function(predictions,predictionsUPDATED,predictionsNOEFF
   jpeg(paste(path,"outputMonolix/",nameproject,"/graphics/shortterm.jpg",sep=""))
   grid.arrange(p1,p2, ncol=1, nrow = 2)
   dev.off()
+=======
+  log_title <- ""
+  if(logscale){
+    log_title <- " (log-scale)"
+  }
+>>>>>>> 6927f49975e998b877ff30236fe185daad3e13ce
 
-  jpeg(paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all.jpg",sep=""))
-  grid.arrange(p1,p2,p3,p4, ncol=2, nrow = 2)
-  dev.off()
+  p1 <- ggplot(datapred, aes(x=time, y=Iincident)) +
+    xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
+    geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
+    geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
+    geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
+    geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
+    geom_ribbon(data=datapredNOEFFECT,aes(ymin = Iincidentmin, ymax = Iincidentmax,
+                                          fill = "no intervention",
+                                          alpha="no intervention"))+
+    geom_ribbon(data=datapredUPDATED,aes(ymin = Iincidentmin, ymax = Iincidentmax,
+                                         fill = "confinement with data\nup to 2020-04-06",
+                                         alpha="confinement with data\nup to 2020-04-06"))+
+    geom_ribbon(data=datapred,aes(ymin = Iincidentmin, ymax = Iincidentmax,
+                                  fill = "confinement with data\nup to 2020-03-25",
+                                  alpha="confinement with data\nup to 2020-03-25")) +
+    geom_point(data=datagouv, aes(x=time,y=Iobs, shape="Source: Santé\nPublique France")) +
+    scale_shape("Observations") +
+    scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
+                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                  "confinement with data\nup to 2020-04-06")) +
+    scale_color_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                  "confinement with data\nup to 2020-04-06")) +
+    scale_fill_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+                      breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                 "confinement with data\nup to 2020-04-06")) +
+    theme_classic() +
+    ylab(paste0("National cumulative incidence\nof ascertained cases", log_title)) +
+    ggtitle("France")
+
+  p2 <- ggplot(datapred, aes(x=time, y=Hincident)) +
+    xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
+    geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
+    geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
+    geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
+    geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
+    geom_ribbon(data=datapredNOEFFECT,aes(ymin = Hincidentmin, ymax = Hincidentmax,
+                                          fill = "no intervention",
+                                          alpha="no intervention"))+
+    geom_ribbon(data=datapredUPDATED,aes(ymin = Hincidentmin, ymax = Hincidentmax,
+                                         fill = "confinement with data\nup to 2020-04-06",
+                                         alpha="confinement with data\nup to 2020-04-06"))+
+    geom_ribbon(data=datapred,aes(ymin = Hincidentmin, ymax = Hincidentmax,
+                                  fill = "confinement with data\nup to 2020-03-25",
+                                  alpha="confinement with data\nup to 2020-03-25")) +
+    geom_point(data=datagouv, aes(x=time,y=Hobs, shape="Source: Santé\nPublique France")) +
+    scale_shape("Observations") +
+    scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
+                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                  "confinement with data\nup to 2020-04-06")) +
+    scale_color_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                  "confinement with data\nup to 2020-04-06")) +
+    scale_fill_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+                      breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                 "confinement with data\nup to 2020-04-06")) +
+    theme_classic() +
+    ylab(paste0("National prevalence\nof hospitalized cases", log_title)) +
+    ggtitle("France")
+
+  p3 <- ggplot(datapred, aes(x=time, y=ICUincident)) +
+    xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
+    geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
+    geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
+    geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
+    geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
+    geom_ribbon(data=datapredNOEFFECT,aes(ymin = ICUincidentmin, ymax = ICUincidentmax,
+                                          fill = "no intervention",
+                                          alpha="no intervention"))+
+    geom_ribbon(data=datapredUPDATED,aes(ymin = ICUincidentmin, ymax = ICUincidentmax,
+                                         fill = "confinement with data\nup to 2020-04-06",
+                                         alpha="confinement with data\nup to 2020-04-06"))+
+    geom_ribbon(data=datapred,aes(ymin = ICUincidentmin, ymax = ICUincidentmax,
+                                  fill = "confinement with data\nup to 2020-03-25",
+                                  alpha="confinement with data\nup to 2020-03-25")) +
+    geom_point(data=datagouv, aes(x=time,y=ICUobs, shape="Source: Santé\nPublique France")) +
+    scale_shape("Observations") +
+    scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
+                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                  "confinement with data\nup to 2020-04-06")) +
+    scale_color_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                  "confinement with data\nup to 2020-04-06")) +
+    scale_fill_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+                      breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                 "confinement with data\nup to 2020-04-06")) +
+    theme_classic() +
+    ylab(paste0("National prevalence\nof ICU cases", log_title)) +
+    ggtitle("France")
+
+  p4 <- ggplot(datapred, aes(x=time, y=Dincident)) +
+    xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
+    geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
+    geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
+    geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
+    geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
+    geom_ribbon(data=datapredNOEFFECT,aes(ymin = Dincidentmin, ymax = Dincidentmax,
+                                          fill = "no intervention",
+                                          alpha="no intervention"))+
+    geom_ribbon(data=datapredUPDATED,aes(ymin = Dincidentmin, ymax = Dincidentmax,
+                                         fill = "confinement with data\nup to 2020-04-06",
+                                         alpha="confinement with data\nup to 2020-04-06"))+
+    geom_ribbon(data=datapred,aes(ymin = Dincidentmin, ymax = Dincidentmax,
+                                  fill = "confinement with data\nup to 2020-03-25",
+                                  alpha="confinement with data\nup to 2020-03-25")) +
+    geom_point(data=datagouv, aes(x=time,y=Dobs, shape="Source: Santé\nPublique France")) +
+    scale_shape("Observations") +
+    scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
+                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                  "confinement with data\nup to 2020-04-06")) +
+    scale_color_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                  "confinement with data\nup to 2020-04-06")) +
+    scale_fill_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+                      breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
+                                 "confinement with data\nup to 2020-04-06")) +
+    theme_classic() +
+    ylab(paste0("National cumulative incidence\nof death", log_title)) +
+    ggtitle("France")
+
+  if(logscale){
+    p1 <- p1 + scale_y_log10()
+    p2 <- p2 + scale_y_log10()
+    p3 <- p3 + scale_y_log10()
+    p4 <- p4 + scale_y_log10()
+  }
+
+  return(list(p1, p2, p3, p4))
+}
+
+getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale=TRUE){
+
+  library(patchwork)
+
+  old.loc <- Sys.getlocale("LC_TIME")
+  Sys.setlocale("LC_TIME", "en_GB.UTF-8")
+
+  plotList <- plotPredictionShortterm(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale)
+  p1 <- plotList[[1]]
+  p2 <- plotList[[2]]
+  p3 <- plotList[[3]]
+  p4 <- plotList[[4]]
+
+  p1 + p2 + plot_layout(guides = "collect")
+  ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm.jpg",sep=""),
+         device = "jpeg", dpi =300, width=11, height=4.5)
+
+  (p1 + p2)/(p3 + p4) + plot_layout(guides = "collect")
+  ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all.jpg",sep=""),
+         device = "jpeg", dpi = 300, width=11, height=9)
+
+  Sys.setlocale("LC_TIME",old.loc)
 
 }
