@@ -1,20 +1,49 @@
 library("viridis")
+library(ggplot2)
+library(dplyr)
+
+
+# seirah_solve <- function(init, t, par){
+#   solution <- deSolve::ode(init, c(0,t[2]), seirah_ode2, par)
+#   result<-as.data.frame(solution)
+#   #print(result)
+#   for(comp in 1:6){
+#     if(result[which(result[,"time"]==t[2]),comp]<1)result[which(result[,"time"]==t[2]),comp]=0
+#   }
+#
+#   for (i in 3:length(t)){
+#     #print(i)
+#     temp<- deSolve::ode(as.numeric(result[which(result[,"time"]==t[i-1]),2:7]), c(t[i-1],t[i]), seirah_ode2, par)
+#     for(comp in 1:6){
+#       if(temp[which(temp[,"time"]==t[i]),comp]<1)temp[which(temp[,"time"]==t[i]),comp]=0
+#     }
+#     result<-rbind(result,temp[2,])
+#   }
+#   solution <- as.data.frame(result)
+#   #print(str(solution))
+#   colnames(solution) <- c("time", "S", "E", "I", "R", "A", "H")
+#   class(solution) <- c("seirah_solve", "deSolve", "data.frame" )
+#   #print(solution)
+#   return(solution)
+# }
+
+
 
 t<-seq(0,365*3)
 
 alpha=1.5
-De=5.2
+De=5.1
 Di=2.3
 Dh=30
 N=65000000
-n=0.01*N
+n=0
 b= 0.8
 r=0.1
 Dq=1.2
 
 time_confinment = 15
 length_confinment = 45
-new_n = 0.001*N
+new_n = 0*N
 strength_confinment = 1.3
 
 
@@ -58,7 +87,7 @@ legend_par_r = "Ascertainement rate (r)"
 legend_par_alpha = "Ratio of transmission between A and I (alpha)"
 legend_par_De = "Latent period (De)"
 legend_par_Di = "Infectious period (Di)"
-legend_par_Dq = "Duration from I onset to H (Dq)"
+legend_par_Dq = "Duration from I\nonset to H (Dq)"
 legend_par_Dh = "Hospitalization period (Dh)"
 legend_par_N = "Population size (N)"
 legend_par_n = "Daily inbound and outbound size (n)"
@@ -71,12 +100,12 @@ list_legend_par = list(legend_par_b ,legend_par_r,legend_par_alpha,legend_par_De
                        ,legend_par_N,legend_par_n,legend_par_beg_cont,legend_par_dur_cont,legend_par_inbound_outbound,legend_par_magn_cont )
 
 
-legend_IC_S0 = "Initial numbers of susceptible (S0)"
-legend_IC_E0 = "Initial numbers of latent (E0)"
-legend_IC_I0 = "Initial numbers of reported infection (I0)"
-legend_IC_R0 = "Initial numbers of removed/recovered (R0)"
-legend_IC_A0 = "Initial numbers of unreported infection (A0)"
-legend_IC_H0 = "Initial numbers of hospitalized (H0)"
+legend_IC_S0 = "Initial number of susceptible (S0)"
+legend_IC_E0 = "Initial number of\nlatent (E0)"
+legend_IC_I0 = "Initial number of reported infection (I0)"
+legend_IC_R0 = "Initial number of removed/recovered (R0)"
+legend_IC_A0 = "Initial number of\nunreported infections (A0)"
+legend_IC_H0 = "Initial number of hospitalized (H0)"
 
 list_legend_IC = list(legend_IC_S0,legend_IC_E0,legend_IC_I0,legend_IC_R0,legend_IC_A0,legend_IC_H0)
 
@@ -86,10 +115,10 @@ list_interval_param  = list(interval_b,interval_r,interval_alpha,interval_De,int
 list_interval_state_ini = list(interval_S0,interval_E0,interval_I0,interval_R0 ,interval_A0,interval_H0 )
 
 #Index of the parameter of interest
-indice_param_trial = c(1,12)
+indice_param_trial = c(1,2, 4:6)
+indice_IC_trial = c(2,5)
 
-repartition_graphe = c(1,2)
-
+# repartition_graphe = c(1,2)
 # GRAPH FOR  LATENT
 #' ODE solution of reference
 #'
@@ -128,31 +157,119 @@ for (v in indice_param_trial){
   }
   sol_pert[[as.character(v)]] <- do.call(rbind.data.frame, temp)
 }
-sol_pert_all <- do.call(rbind.data.frame, sol_pert)
+sol_pert_IC <- list()
+for (v in indice_IC_trial){
+  val_param_trial =  list_interval_state_ini[[v]]
+  temp <- list()
+  for (i in val_param_trial){
+    init_pert <-  init
+    init_pert[v] <-  i
+    temp[[as.character(i)]] <- seirah_solve(init_pert, t, par_ini)
+    temp[[as.character(i)]]$param <- list_legend_IC[[v]]
+    temp[[as.character(i)]]$val_param_trial <- i
+  }
+  sol_pert_IC[[as.character(v)]] <- do.call(rbind.data.frame, temp)
+}
+sol_pert_all <- rbind.data.frame(do.call(rbind.data.frame, sol_pert),
+                                 do.call(rbind.data.frame, sol_pert_IC)
+)
 
 library(reshape2)
 solPert2plot <- melt(sol_pert_all, id.vars=c("time", "param", "val_param_trial"))
+
+solPert2plot$param <- factor(solPert2plot$param,
+       levels=c("Transmission rate of\nascertained cases (b)",
+                "Ascertainement rate (r)",
+                "Latent period (De)",
+                "Infectious period (Di)",
+                "Duration from I\nonset to H (Dq)",
+                "Initial number of\nlatent (E0)",
+                "Initial number of\nunreported infections (A0)"),
+       ordered=TRUE
+         )
 
 library(ggplot2)
 library(ggnewscale)
 ggplot() +
   geom_line(data = solPert2plot %>% filter(param == "Transmission rate of\nascertained cases (b)"),
             aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
-  scale_color_viridis_c("b") +
+  scale_color_viridis_c("b ") +
   new_scale("color") +
-  geom_line(data = solPert2plot %>% filter(param == "Inflow and outflow\nafter containment (n)"),
+  geom_line(data = solPert2plot %>% filter(param == "Ascertainement rate (r)"),
             aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
-  scale_color_viridis_c("n") +
+  scale_color_viridis_c("r ") +
+  new_scale("color") +
+  geom_line(data = solPert2plot %>% filter(param == "Latent period (De)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  scale_color_viridis_c("De, Di, Dq") +
+  geom_line(data = solPert2plot %>% filter(param == "Infectious period (Di)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  geom_line(data = solPert2plot %>% filter(param == "Duration from I\nonset to H (Dq)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  new_scale("color") +
+  geom_line(data = solPert2plot %>% filter(param == "Initial number of\nlatent (E0)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  scale_color_viridis_c("E0, A0") +
+  geom_line(data = solPert2plot %>% filter(param == "Initial number of\nunreported infections (A0)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
   theme_bw() +
   #facet_wrap(~param + variable, scales="free", ncol=6) +
   facet_grid(variable~param , scales="free") +
   #ylim(0, 1.5*10^7) +
   ylab(NULL) +
-  xlab("Day")
-ggsave(height=7.5, width=5.5, filename = "longterm_sensitivity.pdf")
-ggsave(height=7.5, width=5.5, filename = "longterm_sensitivity.jpeg", dev="jpeg")
+  xlab("Day") +
+  #theme(legend.direction = "horizontal") +
+  NULL
+ggsave(height=9, width=12.5, filename = "longterm_sensitivity.pdf")
+ggsave(height=9, width=12.5, filename = "longterm_sensitivity.jpeg", dev="jpeg",
+       dpi=300)
 
 
+solPert2plotshort <- solPert2plot %>% filter(time<31)
+library(ggplot2)
+library(ggnewscale)
+ggplot() +
+  geom_line(data = solPert2plotshort %>% filter(param == "Transmission rate of\nascertained cases (b)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  scale_color_viridis_c("b ") +
+  new_scale("color") +
+  geom_line(data = solPert2plotshort %>% filter(param == "Ascertainement rate (r)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  scale_color_viridis_c("r ") +
+  new_scale("color") +
+  geom_line(data = solPert2plotshort %>% filter(param == "Latent period (De)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  scale_color_viridis_c("De, Di, Dq") +
+  geom_line(data = solPert2plotshort %>% filter(param == "Infectious period (Di)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  geom_line(data = solPert2plotshort %>% filter(param == "Duration from I\nonset to H (Dq)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  new_scale("color") +
+  geom_line(data = solPert2plot %>% filter(param == "Initial number\nof latent (E0)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  scale_color_viridis_c("E0, A0") +
+  geom_line(data = solPert2plot %>% filter(param == "Initial number of\nunreported infections (A0)"),
+            aes(x=time, y=value, color=val_param_trial, group=val_param_trial)) +
+  theme_bw() +
+  #facet_wrap(~param + variable, scales="free", ncol=6) +
+  facet_grid(variable~param , scales="free") +
+  #ylim(0, 1.5*10^7) +
+  #scale_y_log10() +
+  #ylab("log-scale") +
+  ylab(NULL) +
+  xlab("Day") +
+  #theme(legend.direction = "horizontal") +
+  NULL
+ggsave(height=9, width=12.5, filename = "shortterm_sensitivity.pdf")
+ggsave(height=9, width=12.5, filename = "shortterm_sensitivity.jpeg", dev="jpeg",
+       dpi=300)
+
+
+
+
+
+
+# Old code -----
 
 # GRAPH FOR REPORTED INFECTED
 #' ODE solution of reference
@@ -321,29 +438,4 @@ for (ind_par_to_var in indice_param_trial){
 
 
 
-
-
-seirah_solve <- function(init, t, par){
-  solution <- deSolve::ode(init, c(0,t[2]), seirah_ode2, par)
-  result<-as.data.frame(solution)
-  #print(result)
-  for(comp in 1:6){
-    if(result[which(result[,"time"]==t[2]),comp]<1)result[which(result[,"time"]==t[2]),comp]=0
-  }
-
-  for (i in 3:length(t)){
-    #print(i)
-    temp<- deSolve::ode(as.numeric(result[which(result[,"time"]==t[i-1]),2:7]), c(t[i-1],t[i]), seirah_ode2, par)
-    for(comp in 1:6){
-      if(temp[which(temp[,"time"]==t[i]),comp]<1)temp[which(temp[,"time"]==t[i]),comp]=0
-    }
-    result<-rbind(result,temp[2,])
-  }
-  solution <- as.data.frame(result)
-  #print(str(solution))
-  colnames(solution) <- c("time", "S", "E", "I", "R", "A", "H")
-  class(solution) <- c("seirah_solve", "deSolve", "data.frame" )
-  #print(solution)
-  return(solution)
-}
 
