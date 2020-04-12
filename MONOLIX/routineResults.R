@@ -717,41 +717,10 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   datapredUPDATED$time<-as.Date(datapredUPDATED$time)
   datapredNOEFFECT$time<-as.Date(datapredNOEFFECT$time)
 
-<<<<<<< HEAD
-  # datapredUPDATED[as.character(datapredUPDATED$time)=="2020-04-11","Hincident"]
-  # datapredUPDATED[as.character(datapredUPDATED$time)=="2020-04-11","Hincidentmin"]
-  # datapredUPDATED[as.character(datapredUPDATED$time)=="2020-04-11","Hincidentmax"]
-  # datapredUPDATED[as.character(datapredUPDATED$time)=="2020-04-11","Iincident"]
-  # datapredUPDATED[as.character(datapredUPDATED$time)=="2020-04-11","Iincidentmin"]
-  # datapredUPDATED[as.character(datapredUPDATED$time)=="2020-04-11","Iincidentmax"]
-  # 
-  p1 <- ggplot(datapred, aes(x=time,y=log10(Iincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Iobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Iincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Iincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Cumulative number of ascertained cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+ geom_vline(xintercept = as.Date("2020-04-06"))+guides(color=guide_legend(title=""))+geom_ribbon(data=datapred,aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax),fill = "Update 2020-03-25",alpha=0.05))+
-    geom_ribbon(data=datapredNOEFFECT,aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax),fill = "No intervention",alpha=0.05))+
-    geom_ribbon(data=datapredUPDATED,aes(ymin = log10(Iincidentmin), ymax = log10(Iincidentmax),fill = "Update 2020-04-06",alpha=0.05))
-  
-  p2 <- ggplot(datapred, aes(x=time,y=log10(Hincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Hobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Hincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Hincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Prevalent number of hospitalized cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+ geom_vline(xintercept = as.Date("2020-04-06"))+guides(color=guide_legend(title=""))+geom_ribbon(data=datapred,aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax),fill = "Update 2020-03-25",alpha=0.05))+
-  geom_ribbon(data=datapredNOEFFECT,aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax),fill = "No intervention",alpha=0.05))+
-    geom_ribbon(data=datapredUPDATED,aes(ymin = log10(Hincidentmin), ymax = log10(Hincidentmax),fill = "Update 2020-04-06",alpha=0.05))
-  
-   p3 <- ggplot(datapred, aes(x=time,y=log10(ICUincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(ICUobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(ICUincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(ICUincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Prevalent number of ICU cases") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+geom_ribbon(data=datapred,aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax),fill = "Update 2020-03-25",alpha=0.05))+
-     geom_ribbon(data=datapredNOEFFECT,aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax),fill = "No intervention",alpha=0.05))+
-     geom_ribbon(data=datapredUPDATED,aes(ymin = log10(ICUincidentmin), ymax = log10(ICUincidentmax),fill = "Update 2020-04-06",alpha=0.05))
-   
-  
-  p4 <- ggplot(datapred, aes(x=time,y=log10(Dincident)))+ geom_line(aes(col="Update 2020-03-25")) + geom_point(data=datagouv, aes(x=time,y=log10(Dobs)))+ geom_line(data=datapredNOEFFECT, aes(x=time,y=log10(Dincident),col="No intervention"))+ geom_line(data=datapredUPDATED, aes(x=time,y=log10(Dincident),col="Update 2020-04-06"))+theme_classic()+ylab("Log10 Cumulative number of death") +xlab("Time") + geom_vline(xintercept = as.Date("2020-03-25"))+geom_ribbon(data=datapred,aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax),fill = "Update 2020-03-25",alpha=0.05))+
-    geom_ribbon(data=datapredNOEFFECT,aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax),fill = "No intervention",alpha=0.05))+
-    geom_ribbon(data=datapredUPDATED,aes(ymin = log10(Dincidentmin), ymax = log10(Dincidentmax),fill = "Update 2020-04-06",alpha=0.05))
-  
-
-  jpeg(paste(path,"outputMonolix/",nameproject,"/graphics/shortterm.jpg",sep=""))
-  grid.arrange(p1,p2, ncol=1, nrow = 2)
-  dev.off()
-=======
   log_title <- ""
   if(logscale){
     log_title <- " (log-scale)"
   }
->>>>>>> 6927f49975e998b877ff30236fe185daad3e13ce
 
   p1 <- ggplot(datapred, aes(x=time, y=Iincident)) +
     xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +

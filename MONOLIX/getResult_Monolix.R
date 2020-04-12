@@ -186,18 +186,18 @@ for (i in 1:length(indivParams$id)){
 }
 
 
-# saveRDS(R0s_list, file = "./data/all_R0s_df_final20200411.rds")
-# saveRDS(solutions_list, file = "./data/solutions_list20200411.rds")
-# saveRDS(predictions_list, file = "./data/predictions20200411.rds")
-# saveRDS(predictionsUPDATED_list, file = "./data/predictionsUPDATED20200411.rds")
-# saveRDS(predictionsNOEFFECT_list, file = "./data/predictionsNOEFFECT20200411.rds")
-
-
-R0s_list <- readRDS("data/all_R0s_df_final20200411.rds")
-solutions_list <- readRDS("data/solutions_list20200411.rds")
-predictions_list <- readRDS("data/predictions20200411.rds")
-predictionsUPDATED_list <- readRDS("data/predictionsUPDATED20200411.rds")
-predictionsNOEFFECT_list <- readRDS("data/predictionsNOEFFECT20200411.rds")
+saveRDS(R0s_list, file = "./data/all_R0s_df_final20200411.rds")
+saveRDS(solutions_list, file = "./data/solutions_list20200411.rds")
+saveRDS(predictions_list, file = "./data/predictions20200411.rds")
+saveRDS(predictionsUPDATED_list, file = "./data/predictionsUPDATED20200411.rds")
+saveRDS(predictionsNOEFFECT_list, file = "./data/predictionsNOEFFECT20200411.rds")
+saveRDS(predictionsCOMBINED_list, file = "./data/predictionsCOMBINED20200411.rds")
+# 
+# R0s_list <- readRDS("data/all_R0s_df_final20200411.rds")
+# solutions_list <- readRDS("data/solutions_list20200411.rds")
+# predictions_list <- readRDS("data/predictions20200411.rds")
+# predictionsUPDATED_list <- readRDS("data/predictionsUPDATED20200411.rds")
+# predictionsNOEFFECT_list <- readRDS("data/predictionsNOEFFECT20200411.rds")
 
 getPlotSolutionAll(solutions_list, nameproject = nameproject)
 
