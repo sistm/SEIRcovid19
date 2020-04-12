@@ -854,6 +854,13 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
 
 getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale=TRUE){
 
+
+  if(logscale){
+    logindicator <- "_logscale"
+  }else{
+    logindicator <- ""
+  }
+
   library(patchwork)
 
   old.loc <- Sys.getlocale("LC_TIME")
@@ -866,11 +873,11 @@ getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,prediction
   p4 <- plotList[[4]]
 
   p1 + p2 + plot_layout(guides = "collect")
-  ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm.jpg",sep=""),
+  ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm", logindicator, ".jpg",sep=""),
          device = "jpeg", dpi =300, width=11, height=4.5)
 
   (p1 + p2)/(p3 + p4) + plot_layout(guides = "collect")
-  ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all.jpg",sep=""),
+  ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all", logindicator, ".jpg",sep=""),
          device = "jpeg", dpi = 300, width=11, height=9)
 
   Sys.setlocale("LC_TIME",old.loc)

@@ -150,7 +150,7 @@ for (i in 1:length(indivParams$id)){
     solutionCOMBINED$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solutionCOMBINED$solution))
     solutionUPDATED$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solutionUPDATED$solution))
     solutionNOEFFECT$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solutionNOEFFECT$solution))
-    
+
     solutionNOEFFECT$solution$reg <- as.character(indivParams$id[i])
     solutionUPDATED$solution$reg <- as.character(indivParams$id[i])
     solution$solution$reg <- as.character(indivParams$id[i])
@@ -159,7 +159,7 @@ for (i in 1:length(indivParams$id)){
     solutionsNOEFFECT_list[[i]] <- solutionNOEFFECT
     solutionsUPDATED_list[[i]] <- solutionUPDATED
     solutionsCOMBINED_list[[i]] <- solutionCOMBINED
-    
+
     getPlot(solution,nameproject,indivParams[i,])
 
     res<-getR0(solution,indivParams[i,],typecov,timings,indivParamsUP[i,],solutionCOMBINED)
@@ -177,7 +177,7 @@ for (i in 1:length(indivParams$id)){
     resNOEFFECT <- getIHD(solutionNOEFFECT,indivParams[i,])
     resUPDATED <- getIHD(solutionUPDATED,indivParams[i,])
     resCOMBINED <- getIHD(solutionCOMBINED,indivParams[i,])
-    
+
     predictionsCOMBINED_list[[i]] <- resCOMBINED
     predictionsNOEFFECT_list[[i]] <- resNOEFFECT
     predictionsUPDATED_list[[i]] <- resUPDATED
@@ -191,19 +191,20 @@ for (i in 1:length(indivParams$id)){
 # saveRDS(predictions_list, file = "./data/predictions20200411.rds")
 # saveRDS(predictionsUPDATED_list, file = "./data/predictionsUPDATED20200411.rds")
 # saveRDS(predictionsNOEFFECT_list, file = "./data/predictionsNOEFFECT20200411.rds")
-
+# saveRDS(predictionsCOMBINED_list, file = "./data/predictionsCOMBINED20200411.rds")
 
 R0s_list <- readRDS("data/all_R0s_df_final20200411.rds")
 solutions_list <- readRDS("data/solutions_list20200411.rds")
 predictions_list <- readRDS("data/predictions20200411.rds")
 predictionsUPDATED_list <- readRDS("data/predictionsUPDATED20200411.rds")
 predictionsNOEFFECT_list <- readRDS("data/predictionsNOEFFECT20200411.rds")
+predictionsCOMBINED_list <- readRDS("data/predictionsCOMBINED20200411.rds")
 
 getPlotSolutionAll(solutions_list, nameproject = nameproject)
 
 all_R0s_df <- do.call(rbind.data.frame, R0s_list)
 getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
-          Di=Difixed, alpha=alphafixed,facet_scales = "free_y")
+          Di=Difixed, alpha=alphafixed, facet_scales = "free_y")
 
 
 ### Get Table Article ----
@@ -222,6 +223,7 @@ predictionsUPDATED <- do.call(rbind.data.frame, predictionsUPDATED_list)
 predictionsNOEFFECT <- do.call(rbind.data.frame, predictionsNOEFFECT_list)
 predictionsCOMBINED <- do.call(rbind.data.frame, predictionsCOMBINED_list)
 getPlotPredictionShortterm(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale=TRUE)
+getPlotPredictionShortterm(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale=FALSE)
 
 ##################
 ### INDICATEURS
@@ -233,8 +235,8 @@ k<-1
 for (region in unique(result$reg)){
   #  result$immunised0[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]
     result$infected0[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]
-    result$infected0min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]  
-    result$infected0max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]  
+    result$infected0min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]
+    result$infected0max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]
     #  result$immunised37[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==37))])/popreg$population[which(popreg$idnames==region)]
     result$infected37[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==35))])/popreg$population[which(popreg$idnames==region)]
     result$infected37min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==35))])/popreg$population[which(popreg$idnames==region)]
@@ -250,7 +252,7 @@ for (region in unique(result$reg)){
     result$infected67[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==67))])/popreg$population[which(popreg$idnames==region)]
     result$infected67min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==67))])/popreg$population[which(popreg$idnames==region)]
     result$infected67max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==67))])/popreg$population[which(popreg$idnames==region)]
-    
+
     result$infected97[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
     result$infected97min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
     result$infected97max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
