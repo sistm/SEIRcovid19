@@ -192,13 +192,10 @@ for (i in 1:length(indivParams$id)){
 # saveRDS(predictionsUPDATED_list, file = "./data/predictionsUPDATED20200411.rds")
 # saveRDS(predictionsNOEFFECT_list, file = "./data/predictionsNOEFFECT20200411.rds")
 # saveRDS(predictionsCOMBINED_list, file = "./data/predictionsCOMBINED20200411.rds")
+# saveRDS(indivParams, file = "./data/indivParams20200411.rds")
 
 R0s_list <- readRDS("data/all_R0s_df_final20200411.rds")
 solutions_list <- readRDS("data/solutions_list20200411.rds")
-predictions_list <- readRDS("data/predictions20200411.rds")
-predictionsUPDATED_list <- readRDS("data/predictionsUPDATED20200411.rds")
-predictionsNOEFFECT_list <- readRDS("data/predictionsNOEFFECT20200411.rds")
-predictionsCOMBINED_list <- readRDS("data/predictionsCOMBINED20200411.rds")
 
 getPlotSolutionAll(solutions_list, nameproject = nameproject)
 
@@ -208,14 +205,17 @@ getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
 
 
 ### Get Table Article ----
+indivParams <- readRDS("data/indivParams20200411.rds")
 getindicators(indivParams)
 
 
 
 
 ### PREDICTION COURT TERME -----
-
-
+predictions_list <- readRDS("data/predictions20200411.rds")
+predictionsUPDATED_list <- readRDS("data/predictionsUPDATED20200411.rds")
+predictionsNOEFFECT_list <- readRDS("data/predictionsNOEFFECT20200411.rds")
+predictionsCOMBINED_list <- readRDS("data/predictionsCOMBINED20200411.rds")
 
 ###### Get predictions 10 jours
 predictions <- do.call(rbind.data.frame, predictions_list)
