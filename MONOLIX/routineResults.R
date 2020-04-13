@@ -472,7 +472,7 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
     theme_bw() +
     facet_wrap(~Region, ncol = 3, scales = facet_scales) +
     theme(strip.background = element_rect(fill="white")) +
-    ylab(expression(paste("Effective Reproductive Number ", R(t, xi)))) +
+    ylab(expression(paste("Effective Reproductive Number ", R[eff](t, xi)))) +
     ylim(0,NA) +
     #ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax))))
     xlab("Date") +
@@ -501,54 +501,62 @@ getPlotR0all <- function(R0table, nameproject,path,timingdays,typecov, Di, alpha
 
 ###### GET INDICATOR TABLE
 getindicators<-function(indivParams){
-  indivParamsprint<-indivParams
+  library(dplyr)
+  indivParamsprint <- data.frame("id" = full_region_names(indivParams$id))
 
-  indivParamsprint$id <- full_region_names(indivParamsprint$id )
+  indivParamsprint$b1_modemin <- format(round(indivParams$b1_mode-1.96*indivParams$b1_sd,2), nsmall = 2)
+  indivParamsprint$b1_modemmax <- format(round(indivParams$b1_mode+1.96*indivParams$b1_sd,2), nsmall = 2)
+  indivParamsprint$b1_mode <- format(round(indivParams$b1_mode,2), nsmall = 2)
+  indivParamsprint$b1summary <- paste(indivParamsprint$b1_mode," [",indivParamsprint$b1_modemin,";",indivParamsprint$b1_modemmax,"]",sep="")
 
-  indivParamsprint$b1_mode<-round(indivParamsprint$b1_mode,2)
-  indivParamsprint$b1_modemin<-round(indivParamsprint$b1_mode-1.96*indivParamsprint$b1_sd,2)
-  indivParamsprint$b1_modemmax<-round(indivParamsprint$b1_mode+1.96*indivParamsprint$b1_sd,2)
-  indivParamsprint$b1summary<-paste(indivParamsprint$b1_mode," [",indivParamsprint$b1_modemin,"; ",indivParamsprint$b1_modemmax,"]",sep="")
+  indivParamsprint$Dq_modemin <- format(round(indivParams$Dq_mode-1.96*indivParams$Dq_sd,2), nsmall = 2)
+  indivParamsprint$Dq_modemmax <- format(round(indivParams$Dq_mode+1.96*indivParams$Dq_sd,2), nsmall = 2)
+  indivParamsprint$Dq_mode<- format(round(indivParams$Dq_mode,2), nsmall = 2)
+  indivParamsprint$Dqsummary <- paste(indivParamsprint$Dq_mode," [",indivParamsprint$Dq_modemin,";",indivParamsprint$Dq_modemmax,"]",sep="")
 
-  indivParamsprint$Dq_mode<-round(indivParamsprint$Dq_mode,2)
-  indivParamsprint$Dq_modemin<-round(indivParamsprint$Dq_mode-1.96*indivParamsprint$Dq_sd,2)
-  indivParamsprint$Dq_modemmax<-round(indivParamsprint$Dq_mode+1.96*indivParamsprint$Dq_sd,2)
-  indivParamsprint$Dqsummary<-paste(indivParamsprint$Dq_mode," [",indivParamsprint$Dq_modemin,"; ",indivParamsprint$Dq_modemmax,"]",sep="")
+  indivParamsprint$E0_modemin <- format(round(indivParams$E0_mode-1.96*indivParams$E0_sd,0), nsmall = 0, big.mark   = ",")
+  indivParamsprint$E0_modemmax <- format(round(indivParams$E0_mode+1.96*indivParams$E0_sd,0), nsmall = 0, big.mark   = ",")
+  indivParamsprint$E0_mode <- format(round(indivParams$E0_mode,0), nsmall = 0, big.mark   = ",")
+  indivParamsprint$E0summary <- paste(indivParamsprint$E0_mode," [",indivParamsprint$E0_modemin,";",indivParamsprint$E0_modemmax,"]",sep="")
 
-  indivParamsprint$E0_mode<-round(indivParamsprint$E0_mode,0)
-  indivParamsprint$E0_modemin<-round(indivParamsprint$E0_mode-1.96*indivParamsprint$E0_sd,0)
-  indivParamsprint$E0_modemmax<-round(indivParamsprint$E0_mode+1.96*indivParamsprint$E0_sd,0)
-  indivParamsprint$E0summary<-paste(indivParamsprint$E0_mode," [",indivParamsprint$E0_modemin,"; ",indivParamsprint$E0_modemmax,"]",sep="")
+  indivParamsprint$A0_modemin <- format(round(indivParams$A0_mode-1.96*indivParams$A0_sd,0), nsmall = 0, big.mark   = ",")
+  indivParamsprint$A0_modemmax <- format(round(indivParams$A0_mode+1.96*indivParams$A0_sd,0), nsmall = 0, big.mark   = ",")
+  indivParamsprint$A0_mode <- format(round(indivParams$A0_mode,0), nsmall = 0, big.mark   = ",")
+  indivParamsprint$A0summary <- paste(indivParamsprint$A0_mode," [",indivParamsprint$A0_modemin,";",indivParamsprint$A0_modemmax,"]",sep="")
 
-  indivParamsprint$A0_mode<-round(indivParamsprint$A0_mode,0)
-  indivParamsprint$A0_modemin<-round(indivParamsprint$A0_mode-1.96*indivParamsprint$A0_sd,0)
-  indivParamsprint$A0_modemmax<-round(indivParamsprint$A0_mode+1.96*indivParamsprint$A0_sd,0)
-  indivParamsprint$A0summary<-paste(indivParamsprint$A0_mode," [",indivParamsprint$A0_modemin,"; ",indivParamsprint$A0_modemmax,"]",sep="")
-
-  indivParamsprint$betat_mode<-round(indivParamsprint$betat1_mode,2)
-  indivParamsprint$betat_modemin<-round(indivParamsprint$betat1_mode-1.96*indivParamsprint$betat1_sd,2)
-  indivParamsprint$betat_modemmax<-round(indivParamsprint$betat1_mode+1.96*indivParamsprint$betat1_sd,2)
-  indivParamsprint$betatsummary<-paste(indivParamsprint$betat_mode," [",indivParamsprint$betat_modemin,"; ",indivParamsprint$betat_modemmax,"]",sep="")
-
-
-  indivParamsprint$R0<-round(as.numeric(indivParamsprint$R0),1)
-  indivParamsprint$R0min<-round(as.numeric(indivParamsprint$R0min),1)
-  indivParamsprint$R0max<-round(as.numeric(indivParamsprint$R0max),1)
-  indivParamsprint$R0conf<-round(as.numeric(indivParamsprint$R0conf),1)
-  indivParamsprint$R0minconf<-round(as.numeric(indivParamsprint$R0minconf),1)
-  indivParamsprint$R0maxconf<-round(as.numeric(indivParamsprint$R0maxconf),1)
-  indivParamsprint$R0conf2<-round(as.numeric(indivParamsprint$R0conf2),1)
-  indivParamsprint$R0minconf2<-round(as.numeric(indivParamsprint$R0minconf2),1)
-  indivParamsprint$R0maxconf2<-round(as.numeric(indivParamsprint$R0maxconf2),1)
-
-  indivParamsprint$R0summary<-paste(indivParamsprint$R0," [",indivParamsprint$R0min,"; ",indivParamsprint$R0max,"]",sep="")
-  indivParamsprint$R0confsummary<-paste(indivParamsprint$R0conf," [",indivParamsprint$R0minconf,"; ",indivParamsprint$R0maxconf,"]",sep="")
-  indivParamsprint$R0conf2summary<-paste(indivParamsprint$R0conf2," [",indivParamsprint$R0minconf2,"; ",indivParamsprint$R0maxconf2,"]",sep="")
+  indivParamsprint$betat_modemin <- format(round(indivParams$betat1_mode-1.96*indivParams$betat1_sd, 2), nsmall = 2)
+  indivParamsprint$betat_modemmax <- format(round(indivParams$betat1_mode+1.96*indivParams$betat1_sd, 2), nsmall = 2)
+  indivParamsprint$betat_mode <- format(round(indivParams$betat1_mode, 2), nsmall = 2)
+  indivParamsprint$betatsummary <- paste(indivParamsprint$betat_mode," [",indivParamsprint$betat_modemin,";",indivParamsprint$betat_modemmax,"]",sep="")
 
 
-  print(xtable(indivParamsprint[,c("id","b1summary","Dqsummary","E0summary","A0summary","R0summary","R0confsummary","R0conf2summary")]))
+  indivParamsprint$R0 <- format(round(as.numeric(indivParams$R0),1), nsmall=1)
+  indivParamsprint$R0min <- format(round(as.numeric(indivParams$R0min),1), nsmall=1)
+  indivParamsprint$R0max <- format(round(as.numeric(indivParams$R0max),1), nsmall=1)
+  indivParamsprint$R0conf <- format(round(as.numeric(indivParams$R0conf),1), nsmall=1)
+  indivParamsprint$R0minconf <- format(round(as.numeric(indivParams$R0minconf),1), nsmall=1)
+  indivParamsprint$R0maxconf <- format(round(as.numeric(indivParams$R0maxconf),1), nsmall=1)
+  indivParamsprint$R0conf2 <- format(round(as.numeric(indivParams$R0conf2),1), nsmall=1)
+  indivParamsprint$R0minconf2 <- format(round(as.numeric(indivParams$R0minconf2),1), nsmall=1)
+  indivParamsprint$R0maxconf2 <- format(round(as.numeric(indivParams$R0maxconf2),1), nsmall=1)
 
-  print(xtable(indivParamsprint[,c("id","timestart","Icumul","Hcumul","popsize","ICUcapacity","r_sent")]))
+  indivParamsprint$R0summary <- paste(indivParamsprint$R0," [",indivParamsprint$R0min,";",indivParamsprint$R0max,"]",sep="")
+  indivParamsprint$R0confsummary <- paste(indivParamsprint$R0conf," [",indivParamsprint$R0minconf,";",indivParamsprint$R0maxconf,"]",sep="")
+  indivParamsprint$R0conf2summary <- paste(indivParamsprint$R0conf2," [",indivParamsprint$R0minconf2,";",indivParamsprint$R0maxconf2,"]",sep="")
+
+  indivParamsprint <- indivParamsprint %>% arrange(id)
+
+  print(xtable(indivParamsprint[,c("id","b1summary","Dqsummary","E0summary","A0summary","R0summary","R0confsummary","R0conf2summary")]),
+               include.rownames=FALSE)
+  indivParamsprint$timestart <- indivParams$timestart
+  indivParamsprint$Icumul <- format(indivParams$Icumul, nsmall = 0, big.mark   = ",")
+  indivParamsprint$Hcumul <- format(indivParams$Hcumul, nsmall = 0, big.mark   = ",")
+  indivParamsprint$popsize <- format(indivParams$popsize, nsmall = 0, big.mark   = ",")
+  indivParamsprint$ICUcapacity <- format(indivParams$ICUcapacity, nsmall = 0, big.mark   = ",")
+  indivParamsprint$r_sent <- format(round(indivParams$r_sent, digits = 3), nsmall = 3, big.mark   = ",")
+
+  print(xtable(indivParamsprint[,c("id","timestart","Icumul","Hcumul","popsize","ICUcapacity","r_sent")]),
+        include.rownames=FALSE)
 
 }
 

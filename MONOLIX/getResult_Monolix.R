@@ -212,9 +212,9 @@ getindicators(indivParams)
 
 
 
-##################
-### PREDICTION COURT TERME
-#################
+
+### PREDICTION COURT TERME -----
+
 
 
 ###### Get predictions 10 jours
@@ -225,9 +225,9 @@ predictionsCOMBINED <- do.call(rbind.data.frame, predictionsCOMBINED_list)
 getPlotPredictionShortterm(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale=TRUE)
 getPlotPredictionShortterm(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale=FALSE)
 
-##################
-### INDICATEURS
-#################
+
+### INDICATEURS -----
+
 predictionsUSED<-predictionsCOMBINED
 result<-as.data.frame(indivParams$id)
 names(result)<-"reg"
