@@ -245,7 +245,7 @@ getPlotR0<-function(res,nameproject,indivParamsreg){
 full_region_names <- function(x){
   forcats::fct_recode(x,
                       "Île-de-France"="IDF",
-                      "Nouvelle Aquitaine" = "NAquitaine",
+                      "Nouvelle-Aquitaine" = "NAquitaine",
                       "Auvergne-Rhône-Alpes" = "AURA",
                       "Centre-Val de Loire" = "Centre",
                       "Bourgogne-Franche-Comté" = "BFC",
@@ -262,7 +262,7 @@ full_region_names <- function(x){
 
 
 
-plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE){
+plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE, prop_geo=FALSE){
   library(dplyr)
   library(patchwork)
   sol_est_list <- lapply(solutions_list,
@@ -304,6 +304,22 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE){
   all_data_df$IDname <- full_region_names(all_data_df$IDname)
   all_fit_df_2plot$IDname <- full_region_names(all_fit_df_2plot$IDname)
 
+
+  if(prop_geo){
+    all_fit_df_2plot$pop_size <- popreg[match(all_fit_df_2plot$IDname, popreg$maille_nom), "population"]
+    all_data_df$pop_size <- popreg[match(all_data_df$IDname, popreg$maille_nom), "population"]
+    all_data_df <- all_data_df %>% mutate(obs = obs/pop_size)
+    all_fit_df_2plot <- all_fit_df_2plot %>% mutate(obs = obs/pop_size,
+                                                obs_min = obs_min/pop_size,
+                                                obs_max = obs_max/pop_size)
+    ylabel <- "Incidence rate"
+    baseline <- NULL
+
+  }else{
+    ylabel <- "Incidence number"
+    baseline <- geom_hline(yintercept = 1)
+  }
+
   #adding the max value all the time to ensure that scales match
   Imax_obs <- max(all_data_df %>% filter(obs_id == "Incident confirmed cases") %>% pull(obs))
   Imax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident confirmed cases") %>% pull(obs))
@@ -342,8 +358,9 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE){
     }
   }
 
+
   p1 <- ggplot(dataObs2plot_1, aes(x=date, y=obs, group=IDname)) +
-    geom_hline(yintercept = 1)+
+    baseline +
     geom_point(aes(color="Observed", shape=show)) +
     geom_line(data = dataSim2plot_1,
               aes(linetype="Estimate"), color="red3") +
@@ -363,7 +380,7 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE){
           strip.text = element_text(size=8)) +
     NULL
   p2 <- ggplot(dataObs2plot_2, aes(x=date, y=obs, group=IDname)) +
-    geom_hline(yintercept = 1)+
+    baseline +
     geom_point(aes(color="Observed", shape=show)) +
     geom_line(data = dataSim2plot_2,
               aes(linetype="Estimate"), color="red3") +
@@ -377,9 +394,10 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE){
     guides(color=guide_legend(title=""), linetype=guide_legend(title=""),
            alpha=guide_legend(title=""), shape="none") +
     theme(legend.position = "bottom") +
-    ylab("") +
+    ylab(ylabel) +
     xlab("Date") +
-    theme(axis.text.x = element_text(angle=45, hjust=1)) +
+    theme(axis.text.x = element_text(angle=45, hjust=1),
+          axis.title.y = element_text(hjust=1.4)) +
     theme(strip.background = element_rect(fill="white"),
           strip.text = element_text(size=8)) +
     NULL
@@ -392,11 +410,24 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE){
   return(plot_res)
 }
 
-getPlotSolutionAll <- function(solutions_list, nameproject){
+getPlotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE, prop_geo = FALSE){
+
+  if(log_scale){
+    logindicator <- "_logscale"
+  }else{
+    logindicator <- ""
+  }
+
+  if(prop_geo){
+    rateindicator <- "_rate"
+  }else{
+    rateindicator <- ""
+  }
+
   old.loc <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "en_GB.UTF-8")
-  p <- plotSolutionAll(solutions_list,nameproject)
-  ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/fit_all.jpg"),
+  p <- plotSolutionAll(solutions_list,nameproject, log_scale, prop_geo)
+  ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/fit_all", logindicator, rateindicator, ".jpg"),
          device = "jpeg", dpi = 300, width=10, height=8)
   Sys.setlocale("LC_TIME",old.loc)
 }
@@ -880,13 +911,13 @@ getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,prediction
   p3 <- plotList[[3]]
   p4 <- plotList[[4]]
 
-  p1 + p2 + plot_layout(guides = "collect")
+  p1 + (p2 +ggtitle("")) + plot_layout(guides = "collect")
   ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm", logindicator, ".jpg",sep=""),
-         device = "jpeg", dpi =300, width=11, height=4.5)
+         device = "jpeg", dpi =300, width=11, height=4)
 
-  (p1 + p2)/(p3 + p4) + plot_layout(guides = "collect")
+  (p1 + (p2+ggtitle("")))/((p3+ggtitle("")) + (p4+ggtitle(""))) + plot_layout(guides = "collect")
   ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all", logindicator, ".jpg",sep=""),
-         device = "jpeg", dpi = 300, width=11, height=9)
+         device = "jpeg", dpi = 300, width=11, height=8)
 
   Sys.setlocale("LC_TIME",old.loc)
 

@@ -194,11 +194,14 @@ for (i in 1:length(indivParams$id)){
 # saveRDS(predictionsCOMBINED_list, file = "./data/predictionsCOMBINED20200411.rds")
 # saveRDS(indivParams, file = "./data/indivParams20200411.rds")
 
-R0s_list <- readRDS("data/all_R0s_df_final20200411.rds")
-solutions_list <- readRDS("data/solutions_list20200411.rds")
+#### FITs ----
 
+solutions_list <- readRDS("data/solutions_list20200411.rds")
 getPlotSolutionAll(solutions_list, nameproject = nameproject)
 
+
+#### REFF ----
+R0s_list <- readRDS("data/all_R0s_df_final20200411.rds")
 all_R0s_df <- do.call(rbind.data.frame, R0s_list)
 getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
           Di=Difixed, alpha=alphafixed, facet_scales = "free_y")
@@ -217,7 +220,7 @@ predictionsUPDATED_list <- readRDS("data/predictionsUPDATED20200411.rds")
 predictionsNOEFFECT_list <- readRDS("data/predictionsNOEFFECT20200411.rds")
 predictionsCOMBINED_list <- readRDS("data/predictionsCOMBINED20200411.rds")
 
-###### Get predictions 10 jours
+# predictions 10 jours
 predictions <- do.call(rbind.data.frame, predictions_list)
 predictionsUPDATED <- do.call(rbind.data.frame, predictionsUPDATED_list)
 predictionsNOEFFECT <- do.call(rbind.data.frame, predictionsNOEFFECT_list)
@@ -228,7 +231,7 @@ getPlotPredictionShortterm(predictions,predictionsUPDATED,predictionsNOEFFECT,na
 
 ### INDICATEURS -----
 
-predictionsUSED<-predictionsCOMBINED
+predictionsUSED <- predictionsCOMBINED
 result<-as.data.frame(indivParams$id)
 names(result)<-"reg"
 k<-1
@@ -292,12 +295,15 @@ result$summary97<- paste(result$infected97," [",result$infected97min,"; ",result
 result$reg<-full_region_names(result$reg)
 result<-result[,c("reg","summary0","summary37","summary52","summary67","summary97")]
 xtable(result)
-############
 
 
-##################
-### PREDICTION LONG TERME
-#################
+
+
+
+
+
+### PREDICTION LONG TERME ----
+
 tauxICU=0.25
 tauxD=0.05
 nbICUplus<-1
@@ -451,9 +457,8 @@ resultdeath$
        resultfois_ICU<-result
 
 
-#############################
-### PERCENTAGE OF ASYMTOMATIC
-#############################
+
+### PERCENTAGE OF ASYMTOMATIC ----
 mean(indivParams$r_sent)
 quantile(indivParams$r_sent,0.025)
 quantile(indivParams$r_sent,0.975)
@@ -462,9 +467,8 @@ quantile(indivParams$r_sent,0.975)
 (1-(2*quantile(indivParams$r_sent,0.95))/(1-quantile(indivParams$r_sent,0.95)))/5.1
 
 
-#############################
-### GLOBAL DESC. EPIDDEMICS WITHOUT INTERVENTION
-#############################
+### GLOBAL DESC. EPIDDEMICS WITHOUT INTERVENTION ----
+
 pop<-read.table(file="MONOLIX/outputMonolix/Final_20200325/populationParameters.txt",header=TRUE,sep=",")
 b<-pop[1,"value"]
 r<-mean(indivParams[,c("r_sent")])
