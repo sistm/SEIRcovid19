@@ -1,8 +1,8 @@
 mlxtran_solve_simulx<-function(pk.model,time,param,init,model_name){
   #Initialisation of the solution
   C <- list(name=c(model_name), time=time[1:2])
-  param_and_init<-c(par,init)
-  number_param_exept_init<-length(par)
+  param_and_init<-c(param,init)
+  number_param_exept_init<-length(param)
   #Predict the estimation
   solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init)
   #Output format of mlxR is : time obs_1,time obs_2 ... time obs_n
