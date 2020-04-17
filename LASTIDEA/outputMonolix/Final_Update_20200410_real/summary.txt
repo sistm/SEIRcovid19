@@ -1,0 +1,104 @@
+********************************************************************************
+*                      Final_Update_20200410_real.mlxtran                      *
+*                      April 17, 2020 at 18:28:43                              *
+*                      Monolix version : 5.1.1                                 *
+********************************************************************************
+
+
+POPULATION PARAMETERS ESTIMATION _______________________________________________
+
+Fixed Effects ----------------------------     se_sa    rse(%)
+b1_pop                         :      2.04    0.0627      3.07
+Dq_pop                         :      1.02     0.372      36.5
+E0_pop                         :       825       217      26.3
+betat1_pop                     :    -0.185    0.0102       5.5
+betat2_pop                     :     -1.11    0.0276      2.48
+
+Standard Deviation of the Random Effects -
+omega_b1                       :     0.105    0.0214      20.4
+omega_Dq                       :      1.24     0.303      24.3
+omega_E0                       :     0.885     0.194      21.9
+
+Elapsed time (seconds) :   3.9e+3
+CPU time     (seconds) :   1.1e+4
+
+ _______________________________________________________________________________
+
+
+
+CORRELATION MATRIX OF THE ESTIMATES ____________________________________________
+
+
+Fisher by Stochastic Approximation ---------------------------------------------
+Correlation Matrix :
+    b1_pop         1
+    Dq_pop 0.0014733         1
+    E0_pop -0.030846 0.0022262         1
+betat1_pop -0.099686 0.0030619  0.045181         1
+betat2_pop  0.019324 0.0061432  0.015508  -0.70659         1
+  omega_b1  0.0142980.00069235 -0.014207 0.0080895 -0.016159         1
+  omega_Dq 0.0054336 -0.083056 -0.010023 -0.018782 0.0071522 0.0018667         1
+  omega_E0  0.021742-0.0019831  -0.07375 -0.002251 -0.021744  0.040139  0.013122         1
+                               min       max   max/min
+Eigen values           :      0.29       1.7         6
+
+Elapsed time (seconds) :      35
+CPU time     (seconds) :      78
+
+ -------------------------------------------------------------------------------
+
+ _______________________________________________________________________________
+
+
+
+INDIVIDUAL PARAMETERS ESTIMATION _______________________________________________
+
+
+Individual Parameters Estimation by Conditional Mean ---------------------------
+               min        Q1    median        Q3       max
+b1     :      1.78      1.88      2.01      2.21      2.42
+Dq     :    0.0324     0.678      1.28      2.31      4.36
+E0     :       231       443       871   1.43e+3   3.91e+3
+betat1 :    -0.185    -0.185    -0.185    -0.185    -0.185
+betat2 :     -1.11     -1.11     -1.11     -1.11     -1.11
+
+Elapsed time (seconds) :  2.9e+2
+CPU time     (seconds) :  6.6e+2
+
+ -------------------------------------------------------------------------------
+
+
+Individual Parameters Estimation by Conditional Mode ---------------------------
+               min        Q1    median        Q3       max
+b1     :      1.78      1.88         2      2.21      2.42
+Dq     :    0.0344     0.684      1.28      2.31      4.38
+E0     :       233       449       867   1.41e+3   3.92e+3
+betat1 :    -0.185    -0.185    -0.185    -0.185    -0.185
+betat2 :     -1.11     -1.11     -1.11     -1.11     -1.11
+
+Elapsed time (seconds) :     3.3
+CPU time     (seconds) :       5
+
+ -------------------------------------------------------------------------------
+
+ _______________________________________________________________________________
+
+
+
+LOG-LIKELIHOOD ESTIMATION ______________________________________________________
+                                                            (is)
+
+-2 x log-likelihood                             :       11482.78
+Akaike Information Criteria               (AIC) :       11498.78
+Corrected Bayesian Information Criteria  (BICc) :       11522.69
+Bayesian Information Criteria             (BIC) :       11502.66
+
+Elapsed time                          (seconds) :         611.88
+CPU time                              (seconds) :         773.00
+
+
+[Importance Sampling] Standard error        : 0.068
+                      Sampling distribution : T-distribution with 5 degrees of freedom
+
+ _______________________________________________________________________________
+

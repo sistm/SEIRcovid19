@@ -26,10 +26,14 @@ seirah_ode <- function(t,Y,par){
  
   if(typecov=="constant"){
    b<-as.numeric(par[1])
-    if((t>=timeconf)&(t<(timeconf+lengthconf))){
+    if((t>=timeconf)&(t<(timeconf+8))){
       dailyMove<-newdailyMove
       b<- as.numeric(par[1])*exp(as.numeric(par[14]))
     }
+   if((t>=timeconf+8)&(t<(timeconf+lengthconf))){
+     dailyMove<-newdailyMove
+     b<- as.numeric(par[1])*exp(as.numeric(par[14]))*exp(as.numeric(par[15]))
+   }
     if(t>=timeconf+lengthconf){
       dailyMove<-newdailyMove
     }
