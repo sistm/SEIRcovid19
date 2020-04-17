@@ -3,7 +3,7 @@
 #'@import pbapply
 #'
 #' @export
-seirah_confidence_interval_response <- function(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,beta,betasd,De,Di,Dh,r,alpha,R0,I0,H0,N,n,time_beg,time_end,time_beg_conf,length_confinment,typecov,
+seirah_confidence_interval_response <- function(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,beta,betasd,b3,beta2sd,De,Di,Dh,r,alpha,R0,I0,H0,N,n,time_beg,time_end,time_beg_conf,length_confinment,typecov,
                                                 ncores=1){
 
   Times_integ = seq(time_beg,time_end,1)
@@ -23,13 +23,14 @@ seirah_confidence_interval_response <- function(b,bsd,Dq,Dqsd,E0,E0sd,A0,A0sd,be
     b_cur = max(0.00001,b + bsd*rnorm(1,0))
     Dq_cur = max(0.00001,Dq + Dqsd*rnorm(1,0))
     E0_cur = max(E0 + E0sd*rnorm(1,0),1)
-    A0_cur = max(A0 + A0sd*rnorm(1,0),1)
+    A0_cur = I0*(1-r)/r
     beta_cur = beta + betasd*rnorm(1,0)
-
+    beta2_cur = b3 + beta2sd*rnorm(1,0)
+    
     S0=N-E0_cur-I0-R0-A0_cur-H0
 
     init_cur <-c(S0, E0_cur, I0, R0, A0_cur, H0)
-    par_cur <- c(b_cur, r, alpha, De, Di, Dq_cur, Dh, N, n,time_beg_conf,length_confinment,0, typecov,beta_cur)
+    par_cur <- c(b_cur, r, alpha, De, Di, Dq_cur, Dh, N, n,time_beg_conf,length_confinment,0, typecov,beta_cur,beta2_cur)
 
     res_ode_cur = ode(init_cur,Times_integ,seirah_ode,par_cur)
 

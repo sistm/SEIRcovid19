@@ -66,7 +66,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
                          alpha=1,De=5.2,Di=2.3,Dq=10,Dh=30,
                          popSize=65000000, dailyMove=0.1*popSize,
                          verbose = TRUE, optim_ols = TRUE,timeconf=1000,lengthconf=1000,
-                         newdailyMove=0.00001,factorreductrans=3,obs="1Y",E0given=NULL,A0given=NULL,b2=NULL,pred=FALSE,typecov="splines"){
+                         newdailyMove=0.00001,factorreductrans=3,obs="1Y",E0given=NULL,A0given=NULL,b2=NULL,pred=FALSE,typecov="splines",b3){
 
   if((is.null(stateinit))&((is.null(data)))){
     stop("Initial states or data need to be provided")
@@ -88,7 +88,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
         E0 <- ifelse(is.null(E0given),2*data[1, "init_I0"],E0given)#data[1, "cas_confirmes_incident"]*2 # Twice the number of cases
         I0 <- data[1, "init_I0"]#data[1, "cas_confirmes_incident"]-H0 # Numbers of cases
         R0 <- 0 #(0 ref)
-        A0 <- ifelse(is.null(A0given),data[1, "init_I0"],A0given) #I0 # A=I
+        A0 <- ifelse(is.null(A0given),data[1, "init_I0"],data[1, "init_I0"]*(1-binit[2])/binit[2]) #I0 # A=I
         S0 <- popSize - E0 - I0 - A0 - H0 - R0 #N-E-I-A-H-R
         init <- c(S0, E0, I0, R0, A0, H0)
     }else{
@@ -134,7 +134,7 @@ seirah_estim <- function(binit, data=NULL,stateinit=NULL,initwithdata=TRUE,
   t <- seq(0,1000)
   if(typecov=="constant"){
   par <- c(transmission, ascertainment, alpha,
-           De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,typecov,b2)
+           De, Di, Dq, Dh, popSize, dailyMove,timeconf,lengthconf,newdailyMove,typecov,b2,b3)
   res_optimal <- seirah_solve(init, t, par,pred)
   }
   if(typecov=="parametric"){
