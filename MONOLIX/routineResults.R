@@ -149,9 +149,7 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
         b<-as.numeric(indivParamsreg[1,"b1_mode"])
         bmin<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
         bmax<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])
-        bUP<-as.numeric(indivParamsreg[1,"b1_mode"])
-        bminUP<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
-        bmaxUP<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])      }
+    }
     }
 
     if (typecov=="parametric"){
@@ -185,6 +183,28 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
 
     }
 
+    if((time>=solution$parameters$timeconf)&(time<(solution$parameters$timeconf+solution$parameters$lengthconf))){
+      AminmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Amin"]
+      AmaxmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Amax"]
+      
+      IminmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Imin"]
+      ImaxmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Imax"]
+      
+      ItUP<-solutionUPDATED$solution[which(solution$solution$time==time),"I"]
+      
+      AtUP<-solutionUPDATED$solution[which(solution$solution$time==time),"A"]
+    }else{
+      AminmaxUP<-solution$solution[which(solution$solution$time==time),"Amin"]
+      AmaxmaxUP<-solution$solution[which(solution$solution$time==time),"Amax"]
+      
+      IminmaxUP<-solution$solution[which(solution$solution$time==time),"Imin"]
+      ImaxmaxUP<-solution$solution[which(solution$solution$time==time),"Imax"]
+      
+      ItUP<-solution$solution[which(solution$solution$time==time),"I"]
+      
+      AtUP<-solution$solution[which(solution$solution$time==time),"A"]
+    }
+    
     Aminmax<-solution$solution[which(solution$solution$time==time),"Amin"]
     Amaxmax<-solution$solution[which(solution$solution$time==time),"Amax"]
 
@@ -195,15 +215,7 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
 
     At<-solution$solution[which(solution$solution$time==time),"A"]
 
-    AminmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Amin"]
-    AmaxmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Amax"]
 
-    IminmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Imin"]
-    ImaxmaxUP<-solutionUPDATED$solution[which(solution$solution$time==time),"Imax"]
-
-    ItUP<-solutionUPDATED$solution[which(solution$solution$time==time),"I"]
-
-    AtUP<-solutionUPDATED$solution[which(solution$solution$time==time),"A"]
 
 
     R0minmax<-max(0,Di*bmin/(Amaxmax+Imaxmax)*(alpha*Aminmax+(Dqmin*Iminmax)/(Di+Dqmax)))

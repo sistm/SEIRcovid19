@@ -236,3 +236,15 @@ for(i in unique(SPF_I_SURSAUD_H_covid19fr$reg_id)){
 }
 
 
+
+############## MONOLIX UPDATE
+# date<-"20200410"
+# SPF_I_SURSAUD_H_covid19fr<-read.table(file="./MONOLIX/data_monolix_20200410.txt",header=TRUE)
+# indivparams<-read.table(file="./MONOLIX/outputMonolix/Final_20200325/IndividualParameters/estimatedIndividualParameters.txt",header=TRUE,sep=",")
+# for (i in 1:length(SPF_I_SURSAUD_H_covid19fr$day)){
+#   SPF_I_SURSAUD_H_covid19fr$b[i]<-indivparams$b1_mode[which(indivparams$id==SPF_I_SURSAUD_H_covid19fr$IDname[i])]
+#   SPF_I_SURSAUD_H_covid19fr$Dq[i]<-indivparams$Dq_mode[which(indivparams$id==SPF_I_SURSAUD_H_covid19fr$IDname[i])]
+#   SPF_I_SURSAUD_H_covid19fr$A0[i]<-indivparams$A0_mode[which(indivparams$id==SPF_I_SURSAUD_H_covid19fr$IDname[i])]
+#   SPF_I_SURSAUD_H_covid19fr$E0[i]<-indivparams$E0_mode[which(indivparams$id==SPF_I_SURSAUD_H_covid19fr$IDname[i])]
+# }
+# write.table(SPF_I_SURSAUD_H_covid19fr,file=paste("./MONOLIX/data_monolix_update_",date,".txt",sep=""),sep="\t",row.names = F,quote=F)
