@@ -107,7 +107,7 @@ getSolution<-function(b,
 
 
 #### PLOT THE SOLUTION
-getPlot<-function(temp_monolix_estim,nameproject,indivParamsreg){
+getPlot<-function(temp_monolix_estim,nameproject,indivParamsreg,path){
   jpeg(paste(path,"outputMonolix/",nameproject,"/graphics/FitI_",as.character(indivParamsreg[1,1]),".jpg",sep=""))
   print(plot(temp_monolix_estim,type=1))
   dev.off()
@@ -149,6 +149,9 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
         b<-as.numeric(indivParamsreg[1,"b1_mode"])
         bmin<-as.numeric(indivParamsreg[1,"b1_mode"])-1.96*as.numeric(indivParamsreg[1,"b1_sd"])
         bmax<-as.numeric(indivParamsreg[1,"b1_mode"])+1.96*as.numeric(indivParamsreg[1,"b1_sd"])
+        bminUP<-bmin
+        bmaxUP<-bmax
+        bUP<-b
     }
     }
 
@@ -256,18 +259,18 @@ getPlotR0<-function(res,nameproject,indivParamsreg){
 
 full_region_names <- function(x){
   forcats::fct_recode(x,
-                      "Île-de-France"="IDF",
-                      "Nouvelle-Aquitaine" = "NAquitaine",
-                      "Auvergne-Rhône-Alpes" = "AURA",
-                      "Centre-Val de Loire" = "Centre",
-                      "Bourgogne-Franche-Comté" = "BFC",
-                      "Normandie" = "Normandie",
-                      "Hauts-de-France" = "HDF",
-                      "Grand Est" = "GrandEst",
-                      "Pays de la Loire" = "PaysLoire",
-                      "Bretagne" = "Bretagne",
-                      "Occitanie" = "Occitanie",
-                      "Provence-Alpes-Côte d'Azur" = "PACA"
+                      "\textit{Île-de-France}"="IDF",
+                      "\textit{Nouvelle-Aquitaine}" = "NAquitaine",
+                      "\textit{Auvergne-Rhône-Alpes}" = "AURA",
+                      "\textit{Centre-Val de Loire}" = "Centre",
+                      "\textit{Bourgogne-Franche-Comté}" = "BFC",
+                      "\textit{Normandie}" = "Normandie",
+                      "\textit{Hauts-de-France}" = "HDF",
+                      "\textit{Grand Est}" = "GrandEst",
+                      "\textit{Pays de la Loire}" = "PaysLoire",
+                      "\textit{Bretagne}" = "Bretagne",
+                      "\textit{Occitanie}" = "Occitanie",
+                      "\textit{Provence-Alpes-Côte d'Azur}" = "PACA"
   )
 }
 
@@ -619,6 +622,7 @@ getIHD<-function(solution,indivParamsreg){
   tauxDEATHmin=5091/64338#Au 3/4/2020
 
   for (i in (0:800)){
+    i=1
     thistime<-timeinterest+i
 
     immunised<-solution$solution$R[which(solution$solution$time==thistime)]

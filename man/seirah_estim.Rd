@@ -22,19 +22,29 @@ seirah_estim(
   lengthconf = 1000,
   newdailyMove = 1e-05,
   factorreductrans = 3,
-  obs = "1Y"
+  obs = "1Y",
+  E0given = NULL,
+  A0given = NULL,
+  b2 = NULL,
+  pred = FALSE,
+  typecov = "splines",
+  b3
 )
 }
 \description{
 Fitting a SEIRAH by OLS
 }
 \examples{
+
+
 data_FRA <- get_data_covid19(maille_cd = "FRA",
                              source_ch = "sante-publique-france")
-fit_FRA <- seirah_estim(binit = c(1.75, 0.41),
-                        data = data_FRA)
+fit_FRA <- seirah_estim(binit = c(1.0, 0.99),stateinit=c(64999999,1,1,0,5,1),initwithdata=FALSE,obs="2Y",
+                        data = data_FRA,optim_ols =TRUE)
 print(plot(fit_FRA))
 
+
+H_0=1
 data_75 <- get_data_covid19(maille_cd = "REG-75",
                              source_ch = "sante-publique-france")
 fit_75<- seirah_estim(binit = c(1.75, 0.41),

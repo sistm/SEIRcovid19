@@ -196,29 +196,27 @@ for (i in 1:length(indivParams$id)){
 # saveRDS(predictionsNOEFFECT_list, file = "./data/predictionsNOEFFECT20200411.rds")
 # saveRDS(predictionsCOMBINED_list, file = "./data/predictionsCOMBINED20200411.rds")
 
-
-R0s_list<-readRDS(file = "./data/all_R0s_df_final20200411.rds")
-solutions_list<-readRDS(file = "./data/solutions_list20200411.rds")
-solutionsUPDATED_list<-readRDS(file = "./data/solutionsUPDATED_list20200411.rds")
-solutionsNOEFFECT_list<-readRDS(file = "./data/solutionsNOEFFECT_list20200411.rds")
-solutionsCOMBINED_list<-readRDS(file = "./data/solutionsCOMBINED_list20200411.rds")
-predictions_list<-readRDS(file = "./data/predictions20200411.rds")
-predictionsUPDATED_list<-readRDS(file = "./data/predictionsUPDATED20200411.rds")
-predictionsNOEFFECT_list<-readRDS(file = "./data/predictionsNOEFFECT20200411.rds")
-predictionsCOMBINED_list<-readRDS(file = "./data/predictionsCOMBINED20200411.rds")
+# 
+# R0s_list<-readRDS(file = "./data/all_R0s_df_final20200411.rds")
+# solutions_list<-readRDS(file = "./data/solutions_list20200411.rds")
+# solutionsUPDATED_list<-readRDS(file = "./data/solutionsUPDATED_list20200411.rds")
+# solutionsNOEFFECT_list<-readRDS(file = "./data/solutionsNOEFFECT_list20200411.rds")
+# solutionsCOMBINED_list<-readRDS(file = "./data/solutionsCOMBINED_list20200411.rds")
+# predictions_list<-readRDS(file = "./data/predictions20200411.rds")
+# predictionsUPDATED_list<-readRDS(file = "./data/predictionsUPDATED20200411.rds")
+# predictionsNOEFFECT_list<-readRDS(file = "./data/predictionsNOEFFECT20200411.rds")
+# predictionsCOMBINED_list<-readRDS(file = "./data/predictionsCOMBINED20200411.rds")
 
 getPlotSolutionAll(solutions_list, nameproject = nameproject)
 
 
 #### REFF ----
-R0s_list <- readRDS("data/all_R0s_df_final20200411.rds")
 all_R0s_df <- do.call(rbind.data.frame, R0s_list)
 getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
           Di=Difixed, alpha=alphafixed, facet_scales = "free_y")
 
 
 ### Get Table Article ----
-indivParams <- readRDS("data/indivParams20200411.rds")
 getindicators(indivParams)
 
 
@@ -241,34 +239,40 @@ getPlotPredictionShortterm(predictions,predictionsUPDATED,predictionsNOEFFECT,na
 
 ### INDICATEURS -----
 
+# 6=17/03
+# 33=13/04
+# 61 11/05
+# 89 8/06
+# 103 22/06
+
 predictionsUSED <- predictionsCOMBINED
 result<-as.data.frame(indivParams$id)
 names(result)<-"reg"
 k<-1
 for (region in unique(result$reg)){
   #  result$immunised0[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]
-    result$infected0[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]
-    result$infected0min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]
-    result$infected0max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]
+    result$infected0[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==6))])/popreg$population[which(popreg$idnames==region)]
+    result$infected0min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==6))])/popreg$population[which(popreg$idnames==region)]
+    result$infected0max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==6))])/popreg$population[which(popreg$idnames==region)]
     #  result$immunised37[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==37))])/popreg$population[which(popreg$idnames==region)]
-    result$infected37[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==35))])/popreg$population[which(popreg$idnames==region)]
-    result$infected37min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==35))])/popreg$population[which(popreg$idnames==region)]
-    result$infected37max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==35))])/popreg$population[which(popreg$idnames==region)]
+    result$infected37[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==33))])/popreg$population[which(popreg$idnames==region)]
+    result$infected37min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==33))])/popreg$population[which(popreg$idnames==region)]
+    result$infected37max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==33))])/popreg$population[which(popreg$idnames==region)]
     # result$immunised21[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==28))])/popreg$population[which(popreg$idnames==region)]
-    result$infected52[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==52))])/popreg$population[which(popreg$idnames==region)]
-    result$infected52min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==52))])/popreg$population[which(popreg$idnames==region)]
-    result$infected52max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==52))])/popreg$population[which(popreg$idnames==region)]
+    result$infected52[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==61))])/popreg$population[which(popreg$idnames==region)]
+    result$infected52min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==61))])/popreg$population[which(popreg$idnames==region)]
+    result$infected52max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==61))])/popreg$population[which(popreg$idnames==region)]
     # result$immunised90[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
     #result$infected90[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
    # result$immunised1000[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==700))])/popreg$population[which(popreg$idnames==region)]
     #result$infected1000[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==700))])/popreg$population[which(popreg$idnames==region)]
-    result$infected67[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==67))])/popreg$population[which(popreg$idnames==region)]
-    result$infected67min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==67))])/popreg$population[which(popreg$idnames==region)]
-    result$infected67max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==67))])/popreg$population[which(popreg$idnames==region)]
+    result$infected67[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
+    result$infected67min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
+    result$infected67max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
 
-    result$infected97[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
-    result$infected97min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
-    result$infected97max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
+    result$infected97[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
+    result$infected97min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
+    result$infected97max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
     k<-k+1
 }
 sizeFR<-popreg$population[which(popreg$maille_code=="FRA")]
@@ -277,7 +281,7 @@ sizeFR<-popreg$population[which(popreg$maille_code=="FRA")]
 # Dates are 17/03 14/04 1/05 15/05
 names(result)
 result$reg<-as.character(result$reg)
-result<-rbind(result,c("France",sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==7)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==7)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==7)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==37)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==37)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==37)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==52)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==52)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==52)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==67)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==67)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==67)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==97)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==97)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==97)]))/sizeFR))
+result<-rbind(result,c("France",sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==103)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==103)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==103)]))/sizeFR))
 
 result$infected0<-round(as.numeric(result$infected0)*100,1)
 result$infected0min<-pmax(0,round(as.numeric(result$infected0min)*100,1))
@@ -303,6 +307,7 @@ result$summary67<- paste(result$infected67," [",result$infected67min,"; ",result
 result$summary97<- paste(result$infected97," [",result$infected97min,"; ",result$infected97max,"]",sep="")
 
 result$reg<-full_region_names(result$reg)
+result<-result[order(result$reg),]
 result<-result[,c("reg","summary0","summary37","summary52","summary67","summary97")]
 xtable(result)
 
@@ -314,157 +319,111 @@ xtable(result)
 
 ### PREDICTION LONG TERME ----
 
+indivParams$fullname<-full_region_names(indivParams$id)
+indivParams<-indivParams[order(indivParams$fullname),]
+
 tauxICU=0.25
 tauxD=0.05
 nbICUplus<-1
 load("./data/ICUcapacity_FR.RData")
-result<-as.data.frame(matrix(NA,ncol=10,nrow=1))
-names(result)<-c("K","location","t30","t45","t60","t90","t180","t340","t720","topt")
-resultdeath<-as.data.frame(matrix(NA,ncol=9,nrow=1))
-names(resultdeath)<-c("K","location","t30","t45","t60","t90","t180","t340","t720")
-resulthospmax<-as.data.frame(matrix(NA,ncol=9,nrow=1))
-names(resulthospmax)<-c("K","location","t30","t45","t60","t90","t180","t340","t720")
-resultfinepidemics<-as.data.frame(matrix(NA,ncol=9,nrow=1))
-names(resultfinepidemics)<-c("K","location","t30","t45","t60","t90","t180","t340","t720")
+result<-as.data.frame(matrix(NA,ncol=9,nrow=1))
+names(result)<-c("K","location","I","A","E","topt","timeMAXICU","ICU","Death")
 typecov="constant"
 k<-1
-for (K in c(10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,100)
+
+for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,100)
     print(paste("K",K,sep=" "))
     for (i in 1:length(indivParams$id)){
         print(as.character(indivParams$id[i]))
-        toprint<-c()
-        nbhospmax<-c()
-        datefin<-c()
-        FIRST<-TRUE
-        topt<-NA
-        nbdeath<-c()
-        timings<-c(30,45,60,90,180,365,730)
-        for (dureeconf in timings){
-            # print(paste("dureeconf",dureeconf,sep=" "))
-            b<-as.numeric(indivParams[i,c("b1_mode")])
-            r<-as.numeric(indivParams[i,c("r_sent")])
-            dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
-            alpha<-alphafixed
-            De<-Defixed
-            Di<-Difixed
-            Dq<-as.numeric(indivParams[i,c("Dq_mode")])
-            Dh<-Dhfixed
-            popSize<-dataregion$popsize[1]
-            E0given<-as.numeric(indivParams[i,c("E0_mode")])
-            A0given<-as.numeric(indivParams[i,c("A0_mode")])
-            b2<--log(K)
-            tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
-            lengthconf=dureeconf
-            newdailyMove=0
-            pred=TRUE
+        
+        dureeconf=2000
+        b<-as.numeric(indivParams[i,c("b1_mode")])
+        r<-as.numeric(indivParams[i,c("r_sent")])
+        dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
+        alpha<-alphafixed
+        De<-Defixed
+        Di<-Difixed
+        Dq<-as.numeric(indivParams[i,c("Dq_mode")])
+        Dh<-Dhfixed
+        popSize<-dataregion$popsize[1]
+        E0given<-as.numeric(indivParams[i,c("E0_mode")])
+        A0given<-as.numeric(indivParams[i,c("A0_mode")])
+        b2<--log(K)
+        tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
+        lengthconf=dureeconf
+        newdailyMove=0
+        pred=TRUE
+        bsd<-as.numeric(indivParams[i,"b1_sd"])
+        Dqsd<-as.numeric(indivParams[i,"Dq_sd"])
+        E0sd<-as.numeric(indivParams[i,"E0_sd"])
+        A0sd<-as.numeric(indivParams[i,"A0_sd"])
+        betasd<-as.numeric(indivParams[i,"betat1_sd"])
+        
+        solution<-getSolution( b,
+                               r,
+                               dataregion,
+                               alpha,
+                               De,
+                               Di,
+                               Dq,
+                               Dh,
+                               popSize,
+                               E0given,
+                               A0given,
+                               b2,
+                               tconf,typecov,
+                               lengthconf=dureeconf,
+                               newdailyMove=newdailyMove,
+                               pred=FALSE,bsd,Dqsd,E0sd,A0sd,betasd,TRUE,ncores=parallel::detectCores()-1)
+        
+        mai11<-tconf+55
+        temp<-solution$solution$time[which((solution$solution$I+solution$solution$E+solution$solution$A)<3)]
+        tempmin<-solution$solution$time[which((solution$solution$Imin+solution$solution$Emin+solution$solution$Amin)<3)]
+        tempmax<-solution$solution$time[which((solution$solution$Imax+solution$solution$Emax+solution$solution$Amax)<3)]
+        topt<-paste(min(temp)," [",min(tempmin),"; ",min(tempmax),"]",sep="")
+        
+        E<-round(solution$solution$E[mai11],0)
+        Emin<-round(solution$solution$Emin[mai11],0)
+        Emax<-round(solution$solution$Emax[mai11],0)
+        E11mai<-paste(E," [",Emin,"; ",Emax,"]",sep="")
 
-         solution<-getSolution( b,
-                                r,
-                                dataregion,
-                                alpha,
-                                De,
-                                Di,
-                                Dq,
-                                Dh,
-                                popSize,
-                                E0given,
-                                A0given,
-                                b2,
-                                tconf,typecov,
-                                lengthconf=dureeconf,
-                                newdailyMove=newdailyMove,
-                                pred=pred,0,0,0,0,0,FALSE,ncores=parallel::detectCores()-1)
-
-         nblits<-nbICUplus*ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
-
-         nbdeath<-c(nbdeath,tauxD*solution$solution$R[1000])
-         nbhospmax<-c(nbhospmax,max(solution$solution$H))
-         datefin<-c(datefin,as.character(dataregion$date[1]+min(solution$solution$time[which(solution$solution$I==0)])))
-
-         timeout<-min(solution$solution$time[which(solution$solution$H*tauxICU>nblits)])
-         dateout<-dataregion$date[1]+timeout
-         # print(dateout)
-             toprint<-c(toprint,as.character(dateout))
-
-        topt<-min(solution$solution$time[which((solution$solution$I+solution$solution$A)==0)])
-    }
-
-        # if(length(which(is.na(toprint)))!=0){
-        # for (dureeconf in seq(min(0,timings[which(is.na(toprint))[1]-1],na.rm = TRUE),max(timings[which(is.na(toprint))[1]],365,na.rm = TRUE),by=1)){
-        #     # print(paste("dureeconf",dureeconf,sep=" "))
-        #     b<-as.numeric(indivParams[i,c("b1_mode")])
-        #     r<-as.numeric(indivParams[i,c("r_sent")])
-        #     dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
-        #     alpha<-alphafixed
-        #     De<-Defixed
-        #     Di<-Difixed
-        #     Dq<-as.numeric(indivParams[i,c("Dq_mode")])
-        #     Dh<-Dhfixed
-        #     popSize<-dataregion$popsize[1]
-        #     E0given<-as.numeric(indivParams[i,c("E0_mode")])
-        #     A0given<-as.numeric(indivParams[i,c("A0_mode")])
-        #     b2<--log(K)
-        #     tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
-        #     lengthconf=dureeconf
-        #     newdailyMove=0
-        #     pred=TRUE
-        #
-        #         solution<-getSolution( b,
-        #                                r,
-        #                                dataregion,
-        #                                alpha,
-        #                                De,
-        #                                Di,
-        #                                Dq,
-        #                                Dh,
-        #                                popSize,
-        #                                E0given,
-        #                                A0given,tconf,typecov,lengthconf,newdailyMove,pred)
-        #
-        #         nblits<-ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
-        #         # par(mfrow=c(2,2))
-        #         # plot(solution$solution$time,solution$solution$E)
-        #         # plot(solution$solution$time,solution$solution$A)
-        #         # plot(solution$solution$time,solution$solution$I,ylim=c(0,100))
-        #         # plot(solution$solution$time,solution$solution$H)
-        #
-        #
-        #         timeout<-min(solution$solution$time[which(solution$solution$H*tauxICU>nblits)])
-        #         dateout<-dataregion$date[1]+timeout
-        #         # print(dateout)
-        #         if((FIRST)&!is.finite(timeout)){
-        #             topt<-dureeconf-1
-        #             FIRST<-FALSE
-        #             break
-        #         }
-        #     }
-        # }
-        result[k,]<-c(K,as.character(indivParams$id[i]),toprint,topt)
-        resultdeath[k,]<-c(K,as.character(indivParams$id[i]),round(nbdeath,0))
-        resulthospmax[k,]<-c(K,as.character(indivParams$id[i]),round(nbhospmax,0))
-        resultfinepidemics[k,]<-c(K,as.character(indivParams$id[i]),datefin)
-
+        A<-round(solution$solution$A[mai11],0)
+        Amin<-round(solution$solution$Amin[mai11],0)
+        Amax<-round(solution$solution$Amax[mai11],0)
+        A11mai<-paste(A," [",Amin,"; ",Amax,"]",sep="")
+        
+        I<-round(solution$solution$I[mai11],0)
+        Imin<-round(solution$solution$Imin[mai11],0)
+        Imax<-round(solution$solution$Imax[mai11],0)
+        I11mai<-paste(I," [",Imin,"; ",Imax,"]",sep="")
+        
+        nbdeath<-paste(round(tauxD*solution$solution$R[1000],0)," [",round(tauxD*solution$solution$Rmin[1000],0),"; ",round(tauxD*solution$solution$Rmax[1000],0),"]",sep="")
+        
+        min(solution$solution$time[which(tauxICU*solution$solution$H)>=)]]
+        timemaxICU<-solution$data$date[1]+solution$solution$time[which(solution$solution$H==max(solution$solution$H))]
+        
+        maxICU<-paste(round(max(tauxICU*solution$solution$H),0)," [",round(max(tauxICU*solution$solution$Hmin),0),"; ",round(max(tauxICU*solution$solution$Hmax),0),"]",sep="")
+        
+          
+        result[k,]<-c(K,as.character(indivParams$id[i]),I11mai,A11mai,E11mai,topt,as.character(timemaxICU),maxICU,nbdeath)
+        
         print(result[k,])
-        print(resultdeath[k,])
-        print(resulthospmax[k,])
-        print(resultfinepidemics[k,])
         k<-k+1
     }
 }
-result$location<-full_region_names(result$location)
-result$nbdeath<-resultdeath[,"t720"]
-xtable(result[,c("K","location","t45","t60","t90","t340","topt" ,"nbdeath")])
-resultdeath$
+#result$nbdeath<-resultdeath[,"t720"]
+#resultfois_ICU$location2<-full_region_names(resultfois_ICU$location)
+xtable(result)
 
-     # result2fois_death<-resultdeath
-     #   result2fois_end<-resultdeath
-     #   result2fois_hosto<-resulthospmax
-     #   result2fois_ICU<-result
+ resultfois_death2<-resultdeath
+   resultfois_end2<-resultfinepidemics
+   resultfois_hosto2<-resulthospmax
+  resultfois_ICU2<-result
 
-     resultfois_death<-resultdeath
-       resultfois_end<-resultdeath
-       resultfois_hosto<-resulthospmax
-       resultfois_ICU<-result
+     # resultfois_death<-resultdeath
+     #   resultfois_end<-resultfinepidemics
+     #   resultfois_hosto<-resulthospmax
+     #   resultfois_ICU<-result
 
 
 

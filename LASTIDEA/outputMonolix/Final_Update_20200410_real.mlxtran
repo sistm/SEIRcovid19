@@ -21,42 +21,39 @@ march25 = {use=regressor}
 <MODEL>
 
 [INDIVIDUAL]
-input = {Dq_pop, omega_Dq, E0_pop, omega_E0, b1_pop, omega_b1, betat1_pop, omega_betat1, betat2_pop, omega_betat2}
+input = {Dq_pop, omega_Dq, E0_pop, omega_E0, b1_pop, omega_b1, betat1_pop, betat2_pop}
 
 DEFINITION:
 Dq = {distribution=logNormal, typical=Dq_pop, sd=omega_Dq}
 E0 = {distribution=logNormal, typical=E0_pop, sd=omega_E0}
 b1 = {distribution=logNormal, typical=b1_pop, sd=omega_b1}
-betat1 = {distribution=logNormal, typical=betat1_pop, sd=omega_betat1}
-betat2 = {distribution=logNormal, typical=betat2_pop, sd=omega_betat2}
+betat1 = {distribution=normal, typical=betat1_pop, no-variability}
+betat2 = {distribution=normal, typical=betat2_pop, no-variability}
 
 [LONGITUDINAL]
 file = '../monolix_constant_update.txt'
-
 <FIT>
 data = {cas_confirmes_incident, hospitalisation_incident}
 model = {Y1, Y2}
 
 <PARAMETER>
 Dq_pop = {value=1, method=MLE}
-E0_pop = {value=1, method=MLE}
+E0_pop = {value=800, method=MLE}
 b1_pop = {value=1, method=MLE}
-betat1_pop = {value=1, method=MLE}
-betat2_pop = {value=1, method=MLE}
+betat1_pop = {value=0, method=MLE}
+betat2_pop = {value=0, method=MLE}
 omega_Dq = {value=1, method=MLE}
 omega_E0 = {value=1, method=MLE}
 omega_b1 = {value=1, method=MLE}
-omega_betat1 = {value=1, method=MLE}
-omega_betat2 = {value=1, method=MLE}
 
 <MONOLIX>
 
 [TASKS]
 populationParameters()
 individualParameters(method = {conditionalMean, conditionalMode })
-fim(run = false,method = StochasticApproximation)
-logLikelihood(run = false,method = ImportanceSampling)
-plotResult(method = {outputplot, indfits, obspred, parameterdistribution, covariatemodeldiagnosis, randomeffects, covariancemodeldiagnosis, residualsscatter, residualsdistribution, saemresults })
+fim(method = StochasticApproximation)
+logLikelihood(method = ImportanceSampling)
+plotResult(method = {outputplot, indfits, obspred, residualsscatter, residualsdistribution, parameterdistribution, covariatemodeldiagnosis, randomeffects, covariancemodeldiagnosis, saemresults })
 
 [SETTINGS]
 GLOBAL:
