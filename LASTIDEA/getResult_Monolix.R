@@ -90,7 +90,7 @@ for (i in 1:length(indivParams$id)){
     A0sd<-0
     betasd<-as.numeric(popParams[which(popParams$parameter=="betat1_pop"),"se_sa"])
     beta2sd<-0
-    
+
     solution <- getSolution( b,
                              r,
                              dataregion,
@@ -103,7 +103,7 @@ for (i in 1:length(indivParams$id)){
                              E0given,
                              A0given,b2,b3,tconf,typecov,1000,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sd, CI=TRUE,ncores=parallel::detectCores()-1)
 
-    
+
     solutionNOEFFECT <- getSolution( b,
                                      r,
                                      dataregion,
@@ -115,7 +115,7 @@ for (i in 1:length(indivParams$id)){
                                      popSize,
                                      E0given,
                                      A0given,0.0,0.0,tconf,typecov,1000,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sd, CI=TRUE,ncores=parallel::detectCores()-1)
-    
+
     bUP<-as.numeric(indivParamsUP[i,c("b1_mode")])
     DqUP<-as.numeric(indivParamsUP[i,c("Dq_mode")])
     E0givenUP<-as.numeric(indivParamsUP[i,c("E0_mode")])
@@ -125,7 +125,7 @@ for (i in 1:length(indivParams$id)){
       b3UP<-as.numeric(indivParamsUP[i,"betat2_mode"])
     }
     beta2sdUP<-as.numeric(popParamsUP[which(popParamsUP$parameter=="betat2_pop"),"se_sa"])
-    
+
 
     solutionUPDATED <- getSolution( bUP,
                              r,
@@ -190,7 +190,7 @@ for (i in 1:length(indivParams$id)){
     message("Done\n")
 }
 
-# 
+#
 # saveRDS(R0s_list, file = "./LASTIDEA/data/all_R0s_df_final20200416.rds")
 # saveRDS(solutions_list, file = "./LASTIDEA/data/solutions_list20200416.rds")
 # saveRDS(solutionsUPDATED_list, file = "./LASTIDEA/data/solutionsUPDATED_list20200416.rds")
@@ -201,7 +201,7 @@ for (i in 1:length(indivParams$id)){
 # saveRDS(predictionsNOEFFECT_list, file = "./LASTIDEA/data/predictionsNOEFFECT20200416.rds")
 # saveRDS(predictionsCOMBINED_list, file = "./LASTIDEA/data/predictionsCOMBINED20200416.rds")
 
-# # 
+# #
   R0s_list<-readRDS(file = "./data/all_R0s_df_final20200416.rds")
   solutions_list<-readRDS(file = "./data/solutions_list20200416.rds")#
   solutionsUPDATED_list<-readRDS(file = "./data/solutionsUPDATED_list20200416.rds")
@@ -217,8 +217,8 @@ getPlotSolutionAll(solutions_list, nameproject = nameproject)
 
 #### REFF ----
 all_R0s_df <- do.call(rbind.data.frame, R0s_list)
-getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
-          Di=Difixed, alpha=alphafixed, facet_scales = "free_y",nameprojectupdate)
+plotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
+          Di=Difixed, alpha=alphafixed, facet_scales = "fixed", nameprojectupdate)
 
 ### %INFECTED // ATTACK RATES
 getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
@@ -287,7 +287,7 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
     print(paste("K",K,sep=" "))
     for (i in 1:length(indivParams$id)){
         print(as.character(indivParams$id[i]))
-        
+
         dureeconf=2000
         b<-as.numeric(indivParams[i,c("b1_mode")])
         r<-as.numeric(indivParams[i,c("r_sent")])
@@ -312,7 +312,7 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
         A0sd<-as.numeric(indivParams[i,"A0_sd"])
         betasd<-as.numeric(popParams[which(popParams$parameter=="betat1_pop"),"se_sa"])
         beta2sd<-as.numeric(popParams[which(popParamsUP$parameter=="betat2_pop"),"se_sa"])
-        
+
         solution<-getSolution( b,
                                r,
                                dataregion,
@@ -329,14 +329,14 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
                                lengthconf=dureeconf,
                                newdailyMove=newdailyMove,
                                pred=FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sd,TRUE,ncores=parallel::detectCores()-1)
-        
+
         mai11<-tconf+55
         temp<-solution$solution$time[which((solution$solution$I+solution$solution$E+solution$solution$A)<3)]
         tempmin<-solution$solution$time[which((solution$solution$Imin+solution$solution$Emin+solution$solution$Amin)<3)]
         tempmax<-solution$solution$time[which((solution$solution$Imax+solution$solution$Emax+solution$solution$Amax)<3)]
         tempmax<-ifelse(is.finite(tempmax),tempmax,1000)
         topt<-paste(min(temp)," [",min(tempmin),"; ",min(tempmax),"]",sep="")
-        
+
         E<-round(solution$solution$E[mai11],0)
         Emin<-round(solution$solution$Emin[mai11],0)
         Emax<-round(solution$solution$Emax[mai11],0)
@@ -346,26 +346,26 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
         Amin<-round(solution$solution$Amin[mai11],0)
         Amax<-round(solution$solution$Amax[mai11],0)
         A11mai<-paste(A," [",Amin,"; ",Amax,"]",sep="")
-        
+
         I<-round(solution$solution$I[mai11],0)
         Imin<-round(solution$solution$Imin[mai11],0)
         Imax<-round(solution$solution$Imax[mai11],0)
         I11mai<-paste(I," [",Imin,"; ",Imax,"]",sep="")
-        
+
         nbdeath<-paste(round(tauxD*solution$solution$R[1000],0)," [",round(tauxD*solution$solution$Rmin[1000],0),"; ",round(tauxD*solution$solution$Rmax[1000],0),"]",sep="")
-        
+
         nblits<-nbICUplus*ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
-        
-        
+
+
         overload<-solution$data$date[1]+as.numeric(min(solution$solution$time[which(tauxICU*solution$solution$H>=nblits)]))
-        
-        
+
+
         timemax<-which(solution$solution$H==max(solution$solution$H))
         maxICU<-paste(round((tauxICU*solution$solution$H[timemax])/nblits*100,0),"% [",round(max(tauxICU*solution$solution$Hmin[timemax])/nblits*100,0),"%; ",round(max(tauxICU*solution$solution$Hmax[timemax])/nblits*100,0),"%]",sep="")
-        
-          
+
+
         result[k,]<-c(K,as.character(indivParams$id[i]),I11mai,A11mai,E11mai,topt,as.character(overload),maxICU,nbdeath)
-        
+
         print(result[k,])
         k<-k+1
     }
@@ -476,7 +476,7 @@ for (i in 1:length(indivParams$id)){
     b2<-c(as.numeric(indivParams[i,"beta1_mode"]),as.numeric(indivParams[i,"beta2_mode"]),as.numeric(indivParams[i,"beta3_mode"]))
   }
   tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
-  
+
   bsd<-sqrt(as.numeric(indivParams[i,"b1_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="b1_pop"),"se_sa"])**2)
   Dqsd<-sqrt(as.numeric(indivParams[i,"Dq_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="Dq_pop"),"se_sa"])**2)
   E0sd<-sqrt(as.numeric(indivParams[i,"E0_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="E0_pop"),"se_sa"])**2)
@@ -487,8 +487,8 @@ for (i in 1:length(indivParams$id)){
     b3UP<-as.numeric(indivParamsUP[i,"betat2_mode"])
   }
   beta2sdUP<-as.numeric(popParamsUP[which(popParamsUP$parameter=="betat2_pop"),"se_sa"])
-  
-  
+
+
   solutionREBOUND <- getSolution( b,
                                    r,
                                    dataregion,
@@ -510,7 +510,7 @@ for (i in 1:length(indivParams$id)){
   plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$H),xlim=c(0,400))
   solutionsREBOUND_list[[i]] <- solutionREBOUND$solution
   solutionsREBOUND_list[[i]]$reg<-as.character(indivParams$id[i])
-  
+
 }
 solutionsREBOUND_all <- do.call(rbind.data.frame, solutionsREBOUND_list)
 p1 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=S, x=time, colour = reg))+

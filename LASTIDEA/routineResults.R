@@ -409,28 +409,28 @@ getR0France<-function(R0table,nameproject,nameprojectupdate,alpha,Di){
                     sep=",",header=TRUE)
   popUP <- read.table(paste(path,"outputMonolix/", nameprojectupdate,"/populationParameters.txt",sep=""),
                       sep=",",header=TRUE)
-  
+
   Dq<-pop$value[pop$parameter=="Dq_pop"]
   Dqmin<-pop$value[pop$parameter=="Dq_pop"]-1.96*pop$se_sa[pop$parameter=="Dq_pop"]
   Dqmax<-pop$value[pop$parameter=="Dq_pop"]+1.96*pop$se_sa[pop$parameter=="Dq_pop"]
-  
+
   R0tableFRANCE<- data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-06-19"), "day"))
   for (i in 1:length(R0tableFRANCE$time)){
-  
+
     R0tableFRANCE$A[i]<-sum(as.numeric(R0table$A[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
     R0tableFRANCE$I[i]<-sum(as.numeric(R0table$I[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
     R0tableFRANCE$Amin[i]<-sum(as.numeric(R0table$Amin[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
     R0tableFRANCE$Imin[i]<-sum(as.numeric(R0table$Imin[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
     R0tableFRANCE$Amax[i]<-sum(as.numeric(R0table$Amax[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
     R0tableFRANCE$Imax[i]<-sum(as.numeric(R0table$Imax[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
-    
+
     At<-R0tableFRANCE$A[i]
     It<-R0tableFRANCE$I[i]
     Amin<-R0tableFRANCE$Amin[i]
     Amax<-R0tableFRANCE$Amax[i]
     Imin<-R0tableFRANCE$Imin[i]
     Imax<-R0tableFRANCE$Imax[i]
-    
+
     if((i>=7)&(i<(7+8))){
       b<-exp(log(as.numeric(pop$value[pop$parameter=="b1_pop"]))+as.numeric(pop$value[pop$parameter=="betat1_pop"]))
       bmin<-exp(log(as.numeric(pop$value[pop$parameter=="b1_pop"]))+as.numeric(pop$value[pop$parameter=="betat1_pop"])-1.96*sqrt((as.numeric(pop$se_sa[pop$parameter=="b1_pop"])/as.numeric(pop$value[pop$parameter=="b1_pop"]))**2+as.numeric(pop$se_sa[pop$parameter=="betat1_pop"])**2))
@@ -447,15 +447,15 @@ getR0France<-function(R0table,nameproject,nameprojectupdate,alpha,Di){
       }
     }
 
- 
+
   R0tableFRANCE$R0min[i]<-max(0,Di*bmin/(At+It)*(alpha*At+(Dqmin*It)/(Di+Dqmax)))
   R0tableFRANCE$R0max[i]<-max(0,Di*bmax/(At+It)*(alpha*At+(Dqmax*It)/(Di+Dqmin)))
   R0tableFRANCE$R0[i]<-Di*b/(It+At)*(alpha*At+Dq*It/(Di+Dq))
   }
     return(R0tableFRANCE)
   }
-  
-  
+
+
 
 
 plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
@@ -467,7 +467,7 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
   stopifnot(facet_scales %in% c("fixed", "free_y", "free_x", "free"))
 
   R0tableFRANCE<-getR0France(R0table,nameproject,nameprojectupdate,alpha,Di)
-  
+
   R0table$finaltime <- as.Date(R0table$date)+as.numeric(R0table$time)
 
   R0table$Region <- full_region_names(R0table$reg)
@@ -548,12 +548,12 @@ getPlotR0all <- function(R0table, nameproject,path,timingdays,typecov, Di, alpha
 
 ###### GET INDICATOR TABLE
 getindicators<-function(indivParams,ROfrance,path,nameproject,nameprojectupdate,attackinfnothingdoneFRANCE){
-  
+
   pop <- read.table(paste(path,"outputMonolix/", nameproject,"/populationParameters.txt",sep=""),
                     sep=",",header=TRUE)
   popUP <- read.table(paste(path,"outputMonolix/", nameprojectupdate,"/populationParameters.txt",sep=""),
                       sep=",",header=TRUE)
-  
+
   library(dplyr)
   indivParamsprint <- data.frame("id" = full_region_names(indivParams$id))
   indivParamsprint$attackinfnothingdone<-indivParams$attackinfnothingdone
@@ -610,25 +610,25 @@ getindicators<-function(indivParams,ROfrance,path,nameproject,nameprojectupdate,
   para3<-format(round(as.numeric(pop$value[which(pop$parameter=="E0_pop")]),0), nsmall=0)
   paramin3<-format(max(0,round(as.numeric(pop$value[which(pop$parameter=="E0_pop")])-1.96*sqrt(as.numeric(pop$se_sa[which(pop$parameter=="E0_pop")])**2+as.numeric(pop$value[which(pop$parameter=="omega_E0")])**2),0)), nsmall=0)
   paramax3<-format(round(as.numeric(pop$value[which(pop$parameter=="E0_pop")])+1.96*sqrt(as.numeric(pop$se_sa[which(pop$parameter=="E0_pop")])**2+as.numeric(pop$value[which(pop$parameter=="omega_E0")])**2),0), nsmall=0)
-  E0pop<-paste(para3," [",paramin3,";",paramax3,"]",sep="")  
+  E0pop<-paste(para3," [",paramin3,";",paramax3,"]",sep="")
   para4<-format(round(as.numeric(R0france[6,"R0"]),1), nsmall=1)
   paramin4<-format(max(0,round(as.numeric(R0france[6,"R0min"]),1)), nsmall=1)
   paramax4<-format(max(0,round(as.numeric(R0france[6,"R0max"]),1)), nsmall=1)
-  R0pop<-paste(para4," [",paramin4,";",paramax4,"]",sep="")  
+  R0pop<-paste(para4," [",paramin4,";",paramax4,"]",sep="")
   para4<-format(round(as.numeric(R0france[9,"R0"]),1), nsmall=1)
   paramin4<-format(max(0,round(as.numeric(R0france[9,"R0min"]),1)), nsmall=1)
   paramax4<-format(max(0,round(as.numeric(R0france[9,"R0max"]),1)), nsmall=1)
-  R0confpop<-paste(para4," [",paramin4,";",paramax4,"]",sep="")  
+  R0confpop<-paste(para4," [",paramin4,";",paramax4,"]",sep="")
   para4<-format(round(as.numeric(R0france[27,"R0"]),1), nsmall=1)
   paramin4<-format(max(0,round(as.numeric(R0france[27,"R0min"]),1)), nsmall=1)
   paramax4<-format(max(0,round(as.numeric(R0france[27,"R0max"]),1)), nsmall=1)
-  R0conf2pop<-paste(para4," [",paramin4,";",paramax4,"]",sep="")  
-  
-  indivParamsprint$id<-as.character(indivParamsprint$id)
- 
-  
+  R0conf2pop<-paste(para4," [",paramin4,";",paramax4,"]",sep="")
 
-  
+  indivParamsprint$id<-as.character(indivParamsprint$id)
+
+
+
+
   indivParamsprint$timestart <- indivParams$timestart
   cumulIfrance<-sum(as.numeric(indivParams$Icumul))
   cumulHfrance<-sum(as.numeric(indivParams$Hcumul))
@@ -637,8 +637,8 @@ getindicators<-function(indivParams,ROfrance,path,nameproject,nameprojectupdate,
   para4<-format(round(mean(as.numeric(indivParams$r_sent)),2), nsmall=2)
   paramin4<-format(round(quantile(as.numeric(indivParams$r_sent),0.025),2), nsmall=2)
   paramax4<-format(round(quantile(as.numeric(indivParams$r_sent),0.975),2), nsmall=2)
-  rsentfr<-paste(para4," [",paramin4,";",paramax4,"]",sep="")  
-  
+  rsentfr<-paste(para4," [",paramin4,";",paramax4,"]",sep="")
+
   indivParamsprint$Icumul <- format(indivParams$Icumul, nsmall = 0, big.mark   = ",")
   indivParamsprint$Hcumul <- format(indivParams$Hcumul, nsmall = 0, big.mark   = ",")
   indivParamsprint$popsize <- format(indivParams$popsize, nsmall = 0, big.mark   = ",")
@@ -646,7 +646,7 @@ getindicators<-function(indivParams,ROfrance,path,nameproject,nameprojectupdate,
   indivParamsprint$r_sent <- format(round(indivParams$r_sent, digits = 3), nsmall = 3, big.mark   = ",")
 
   indivParamsprint[length(indivParamsprint$id)+1,]<-c("France",attackinfnothingdoneFRANCE,NA,NA,NA,b1pop,NA,NA,NA,Dqpop,NA,NA,NA,E0pop,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,R0pop,R0confpop,R0conf2pop,"2020-03-11",cumulIfrance,cumulHfrance,popsizefrance,icufrance,rsentfr)
-  
+
   print(xtable(indivParamsprint[,c("id","b1summary","Dqsummary","E0summary","attackinfnothingdone")]),
         include.rownames=FALSE)
   print(xtable(indivParamsprint[,c("id","R0summary","R0confsummary","R0conf2summary")]),
@@ -976,7 +976,7 @@ getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,prediction
   p3 <- plotList[[3]]
   p4 <- plotList[[4]]
 
-  p1 + (p2 +ggtitle("")) + plot_layout(guides = "collect")
+  p1 / (p2 +ggtitle("")) + plot_layout(guides = "collect")
   ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm", logindicator, ".jpg",sep=""),
          device = "jpeg", dpi =300, width=11, height=4)
 
