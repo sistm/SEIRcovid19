@@ -190,16 +190,16 @@ for (i in 1:length(indivParams$id)){
     message("Done\n")
 }
 
-
-saveRDS(R0s_list, file = "./LASTIDEA/data/all_R0s_df_final20200416.rds")
-saveRDS(solutions_list, file = "./LASTIDEA/data/solutions_list20200416.rds")
-saveRDS(solutionsUPDATED_list, file = "./LASTIDEA/data/solutionsUPDATED_list20200416.rds")
-saveRDS(solutionsNOEFFECT_list, file = "./LASTIDEA/data/solutionsNOEFFECT_list20200416.rds")
-saveRDS(solutionsCOMBINED_list, file = "./LASTIDEA/data/solutionsCOMBINED_list20200416.rds")
-saveRDS(predictions_list, file = "./LASTIDEA/data/predictions20200416.rds")
-saveRDS(predictionsUPDATED_list, file = "./LASTIDEA/data/predictionsUPDATED20200416.rds")
-saveRDS(predictionsNOEFFECT_list, file = "./LASTIDEA/data/predictionsNOEFFECT20200416.rds")
-saveRDS(predictionsCOMBINED_list, file = "./LASTIDEA/data/predictionsCOMBINED20200416.rds")
+# 
+# saveRDS(R0s_list, file = "./LASTIDEA/data/all_R0s_df_final20200416.rds")
+# saveRDS(solutions_list, file = "./LASTIDEA/data/solutions_list20200416.rds")
+# saveRDS(solutionsUPDATED_list, file = "./LASTIDEA/data/solutionsUPDATED_list20200416.rds")
+# saveRDS(solutionsNOEFFECT_list, file = "./LASTIDEA/data/solutionsNOEFFECT_list20200416.rds")
+# saveRDS(solutionsCOMBINED_list, file = "./LASTIDEA/data/solutionsCOMBINED_list20200416.rds")
+# saveRDS(predictions_list, file = "./LASTIDEA/data/predictions20200416.rds")
+# saveRDS(predictionsUPDATED_list, file = "./LASTIDEA/data/predictionsUPDATED20200416.rds")
+# saveRDS(predictionsNOEFFECT_list, file = "./LASTIDEA/data/predictionsNOEFFECT20200416.rds")
+# saveRDS(predictionsCOMBINED_list, file = "./LASTIDEA/data/predictionsCOMBINED20200416.rds")
 
 # # 
   R0s_list<-readRDS(file = "./data/all_R0s_df_final20200416.rds")
@@ -218,7 +218,7 @@ getPlotSolutionAll(solutions_list, nameproject = nameproject)
 #### REFF ----
 all_R0s_df <- do.call(rbind.data.frame, R0s_list)
 getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
-          Di=Difixed, alpha=alphafixed, facet_scales = "free_y")
+          Di=Difixed, alpha=alphafixed, facet_scales = "free_y",nameprojectupdate)
 
 ### %INFECTED // ATTACK RATES
 getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
@@ -226,9 +226,12 @@ attackinfnothingdone<-getAttackrates(predictionsNOEFFECT,indivParams,inf=TRUE)
 for (i in 1:length(indivParams$id)){
 indivParams$attackinfnothingdone[i]<-attackinfnothingdone$summaryinf[which(attackinfnothingdone$reg==indivParams$id[i])]
 }
+attackinfnothingdoneFRANCE<-attackinfnothingdone[which(attackinfnothingdone$reg=="France"),"summaryinf"]
 
 ### Get Table Article ----
-getindicators(indivParams)
+R0france<-getR0France(all_R0s_df,nameproject,nameprojectupdate,alpha,Di)
+getindicators(indivParams,R0france,path,nameproject,nameprojectupdate,attackinfnothingdoneFRANCE)
+
 
 
 
