@@ -424,6 +424,8 @@ getR0France<-function(R0table,nameproject,nameprojectupdate,alpha,Di){
     R0tableFRANCE$Amax[i]<-sum(as.numeric(R0table$Amax[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
     R0tableFRANCE$Imax[i]<-sum(as.numeric(R0table$Imax[which((as.Date(R0table$date)+as.numeric(R0table$time))==as.Date(R0tableFRANCE$time[i])   )]))
     
+    
+    
     At<-R0tableFRANCE$A[i]
     It<-R0tableFRANCE$I[i]
     Amin<-R0tableFRANCE$Amin[i]
@@ -953,7 +955,7 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
     p4 <- p4 + scale_y_log10()
   }
 
-  return(list(p1, p2, p3, p4))
+  return(list(p1, p2, p3, p4,datapredNOEFFECT,datapred,datapredUPDATED))
 }
 
 getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale=TRUE){
@@ -976,9 +978,9 @@ getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,prediction
   p3 <- plotList[[3]]
   p4 <- plotList[[4]]
 
-  p1 + (p2 +ggtitle("")) + plot_layout(guides = "collect")
+  p1 + (p2 +ggtitle("")) + plot_layout(ncol=1,nrow=2,guides = "collect")
   ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm", logindicator, ".jpg",sep=""),
-         device = "jpeg", dpi =300, width=11, height=4)
+         device = "jpeg", dpi =300, width=6, height=8)
 
   (p1 + (p2+ggtitle("")))/((p3+ggtitle("")) + (p4+ggtitle(""))) + plot_layout(guides = "collect")
   ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all", logindicator, ".jpg",sep=""),
