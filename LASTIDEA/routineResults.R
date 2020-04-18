@@ -54,14 +54,14 @@ getSolution<-function(b,
 
   if(CI){
     temp<-seirah_confidence_interval_response(b,bsd,Dq,Dqsd,E0given,E0sd,A0given,A0sd,b2,betasd,b3,beta2sd,De,Di,Dh,r,alpha,0,dataregion$init_I0[1],dataregion$init_H0[1],popSize,newdailyMove,0,1000,tconf,lengthconf,typecov, ncores)
-   
+
     #  temp_monolix_estim$solution$Smin<-pmax(0,temp$Smin)
     # temp_monolix_estim$solution$Emin<-pmax(0,temp$Emin)
     # temp_monolix_estim$solution$Imin<-pmax(0,temp$Imin)
     # temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin)
     # temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin)
     # temp_monolix_estim$solution$Hmin<-pmax(0,temp$Hmin)
-    # 
+    #
     # temp_monolix_estim$solution$Smax<-pmax(0,temp$Smax)
     # temp_monolix_estim$solution$Emax<-pmax(0,temp$Emax)
     # temp_monolix_estim$solution$Imax<-pmax(0,temp$Imax)
@@ -76,7 +76,7 @@ getSolution<-function(b,
      temp_monolix_estim$solution$Rmin<-pmax(0,temp$Rmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$R)))
      temp_monolix_estim$solution$Amin<-pmax(0,temp$Amin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$A)))
      temp_monolix_estim$solution$Hmin<-pmax(0,temp$Hmin-1.96*sqrt(pmax(0,temp_monolix_estim$solution$H)))
-    
+
      temp_monolix_estim$solution$Smax<-pmax(0,temp$Smax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$S)))
      temp_monolix_estim$solution$Emax<-pmax(0,temp$Emax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$E)))
      temp_monolix_estim$solution$Imax<-pmax(0,temp$Imax+1.96*sqrt(pmax(0,temp_monolix_estim$solution$I)))
@@ -156,26 +156,26 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
     }
     }
 
-   
+
     if((time>=solution$parameters$timeconf+8)){
       Aminmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Amin"]
       Amaxmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Amax"]
-      
+
       Iminmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Imin"]
       Imaxmax<-solutionUPDATED$solution[which(solution$solution$time==time),"Imax"]
-      
+
       It<-solutionUPDATED$solution[which(solution$solution$time==time),"I"]
-      
+
       At<-solutionUPDATED$solution[which(solution$solution$time==time),"A"]
     }else{
       Aminmax<-solution$solution[which(solution$solution$time==time),"Amin"]
       Amaxmax<-solution$solution[which(solution$solution$time==time),"Amax"]
-      
+
       Iminmax<-solution$solution[which(solution$solution$time==time),"Imin"]
       Imaxmax<-solution$solution[which(solution$solution$time==time),"Imax"]
-      
+
       It<-solution$solution[which(solution$solution$time==time),"I"]
-      
+
       At<-solution$solution[which(solution$solution$time==time),"A"]
     }
 
@@ -184,7 +184,7 @@ getR0<-function(solution,indivParamsreg,typecov,timings,indivParamsregUP,solutio
     R0minmax<-max(0,Di*bmin/(Amaxmax+Imaxmax)*(alpha*Aminmax+(Dqmin*Iminmax)/(Di+Dqmax)))
     R0maxmax<-max(0,Di*bmax/(Aminmax+Iminmax)*(alpha*Amaxmax+(Dqmax*Imaxmax)/(Di+Dqmin)))
     R0<-Di*b/(It+At)*(alpha*At+Dq*It/(Di+Dq))
-    
+
 
     res[time,]<-c(as.character(indivParamsreg[1,1]),as.character(datestart),time,R0,R0minmax,R0maxmax,It,Iminmax,Imaxmax,At,Aminmax,Amaxmax)
   }
@@ -454,34 +454,56 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
 
   R0table %>% group_by(reg) %>% top_n(-1, finaltime) %>% select(date, finaltime)
 
-  p <- ggplot(R0table %>% filter(finaltime > as.Date("2020-03-01"), finaltime < as.Date("2020-03-25")),
+  # R0table1 <- R0table %>% filter(finaltime > as.Date("2020-03-01"), finaltime < as.Date("2020-03-17")) %>%
+  #   mutate(Rglobal = R0, Rglobal = R0, RglobalICmin = R0ICmin, RglobalICmax = R0ICmax, Inter="Before lockdown")
+  # R0table2 <- R0table %>% filter(finaltime > as.Date("2020-03-15"), finaltime < as.Date("2020-03-26")) %>%
+  #   mutate(Rglobal = R0, Rglobal = R0UP, RglobalICmin = R0ICminUP, RglobalICmax = R0ICmaxUP, Inter="After lockdown\ndata up to 2020-03-25")
+  # R0table2plot <- rbind(R0table1, R0table2)
+  # R0table2plot$Inter <- factor(R0table2plot$Inter, levels=c("Before lockdown", "After lockdown\ndata up to 2020-03-25"), ordered = TRUE)
+
+  R0table$Inter <- "Before lock-down"
+  temp <- R0table[R0table$finaltime == as.Date("2020-03-16"), ]
+  R0table$Inter[R0table$finaltime > as.Date("2020-03-15")] <- "After lock-down\ndata up to 2020-03-25"
+  R0table <- bind_rows(R0table, temp)
+  temp <- R0table[R0table$finaltime == as.Date("2020-03-24"), ]
+  R0table$Inter[R0table$finaltime > as.Date("2020-03-23")] <- "After lock-down\ndata up to 2020-04-06"
+  R0table <- bind_rows(R0table, temp)
+  R0table$Inter <- factor(R0table$Inter, levels=c("Before lock-down",
+                                                  "After lock-down\ndata up to 2020-03-25",
+                                                  "After lock-down\ndata up to 2020-04-06"),
+                          ordered = TRUE)
+
+  p <- ggplot(R0table %>% filter(finaltime > as.Date("2020-03-01"), finaltime < as.Date("2020-04-07")),
               aes(x=finaltime)) +
+    theme_bw() +
+    facet_wrap(~Region, ncol = 3, scales = facet_scales) +
     geom_hline(aes(yintercept = 1, alpha="France\nnational average"), linetype="dotted", color="grey35") +
     geom_hline(aes(yintercept = 1), linetype="dotted", color="grey35") +
-    geom_line(aes(y = as.numeric(R0), linetype="Region-wise value\n(95% CI)", color="data up to\n2020-03-25")) +
-    geom_line(data = R0table %>% filter(finaltime > as.Date("2020-03-01"), finaltime < as.Date("2020-04-06")),
-              aes(y = as.numeric(R0UP), linetype="Region-wise value\n(95% CI)", color="data up to\n2020-04-06")) +
-    geom_line(data=R0tableFRANCE %>% filter(time > as.Date("2020-03-01"), time < as.Date("2020-03-25")),
+    geom_line(aes(y = as.numeric(R0), linetype="Region-wise value\n(95% CI)", color=Inter)) +
+    geom_line(data=R0tableFRANCE %>% filter(time > as.Date("2020-03-01"), time < as.Date("2020-04-07")),
               aes(x=time, y = as.numeric(R0), linetype="France\nnational average")) +
-    geom_ribbon(aes(ymin=as.numeric(R0ICmin),ymax=as.numeric(R0ICmax), fill="data up to\n2020-03-25",
+    geom_ribbon(aes(ymin=as.numeric(R0ICmin),ymax=as.numeric(R0ICmax), fill=Inter,
                     alpha="Region-wise value\n(95% CI)")) +
-    geom_ribbon(data = R0table %>% filter(finaltime > as.Date("2020-03-01"), finaltime < as.Date("2020-04-06")),
-                aes(ymin=as.numeric(R0ICminUP),ymax=as.numeric(R0ICmaxUP), alpha="Region-wise value\n(95% CI)", fill="data up to\n2020-04-06")) +
     scale_linetype_manual("", values = c(2, 1)) +
     scale_alpha_manual("", values = c(0, 0.2)) +
-    scale_fill_manual(" ", values=c("red3", "skyblue"))+
-    scale_color_manual(" ", values=c("red3", "skyblue")) +
+    scale_fill_manual(" ", values=c("purple4","red3", "skyblue"))+
+    scale_color_manual(" ", values=c("purple4","red3", "skyblue")) +
     #guides(linetype=guide_legend(override.aes = list(fill=c("white", "grey50")))) +
     theme_bw() +
     facet_wrap(~Region, ncol = 3, scales = facet_scales) +
     theme(strip.background = element_rect(fill="white")) +
     ylab(expression(paste("Effective Reproductive Number ", R[eff](t, xi)))) +
-    ylim(0,NA) +
-    #ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax))))
+    #ylim(0,NA) +
+    #ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax)))) +
+    scale_y_continuous(breaks=0:7, limits = c(0, NA)) +
     xlab("Date") +
     theme(axis.text.x = element_text(angle=45, hjust=1)) +
-    theme(panel.grid.minor = element_blank()) +
-    theme(legend.position = "bottom", legend.direction = "vertical") +
+    theme(axis.text.y = element_text(size=8)) +
+    #theme(panel.grid.minor = element_blank()) +
+    guides(fill=guide_legend(keyheight=0.85, keywidth=0.85, default.unit = "cm"),
+           linetype=guide_legend(keyheight=0.85, keywidth=0.85, default.unit = "cm")) +
+    theme(legend.position = "bottom", legend.direction = "vertical",
+          legend.spacing.y = unit(0, "cm"), legend.text = element_text(size=9)) +
     NULL
 
   return(p)
@@ -497,7 +519,7 @@ getPlotR0all <- function(R0table, nameproject,path,timingdays,typecov, Di, alpha
 
   p <- plotR0all(R0table, nameproject,path,timingdays,typecov, Di, alpha, facet_scales)
   ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/R0_all.jpg"),
-         device = "jpeg", dpi = 500, width=7, height=5.2)
+         device = "jpeg", dpi = 500, width=7, height=7)
 
   Sys.setlocale("LC_TIME",old.loc)
 }
@@ -755,10 +777,10 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
                        breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                   "confinement with data\nup to 2020-04-06")) +
-    scale_color_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+    scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
                        breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                   "confinement with data\nup to 2020-04-06")) +
-    scale_fill_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+    scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                  "confinement with data\nup to 2020-04-06")) +
     theme_classic() +
@@ -785,10 +807,10 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
                        breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                   "confinement with data\nup to 2020-04-06")) +
-    scale_color_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+    scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
                        breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                   "confinement with data\nup to 2020-04-06")) +
-    scale_fill_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+    scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                  "confinement with data\nup to 2020-04-06")) +
     theme_classic() +
@@ -815,10 +837,10 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
                        breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                   "confinement with data\nup to 2020-04-06")) +
-    scale_color_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+    scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
                        breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                   "confinement with data\nup to 2020-04-06")) +
-    scale_fill_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+    scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                  "confinement with data\nup to 2020-04-06")) +
     theme_classic() +
@@ -845,10 +867,10 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
                        breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                   "confinement with data\nup to 2020-04-06")) +
-    scale_color_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+    scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
                        breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                   "confinement with data\nup to 2020-04-06")) +
-    scale_fill_manual("Estimate (95% CI)", values=c("purple", "red3", "skyblue"),
+    scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
                                  "confinement with data\nup to 2020-04-06")) +
     theme_classic() +
@@ -900,7 +922,7 @@ getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,prediction
 
 
 getAttackrates<-function(predictionsUSED,indivParams,inf){
-  
+
   result<-as.data.frame(indivParams$id)
   names(result)<-"reg"
   k<-1
@@ -924,24 +946,24 @@ getAttackrates<-function(predictionsUSED,indivParams,inf){
     result$infected67[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
     result$infected67min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
     result$infected67max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
-    
+
     result$infected97[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
     result$infected97min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
     result$infected97max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
-    
+
     result$infectedinf[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==800))])/popreg$population[which(popreg$idnames==region)]
     result$infectedinfmin[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==800))])/popreg$population[which(popreg$idnames==region)]
     result$infectedinfmax[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==800))])/popreg$population[which(popreg$idnames==region)]
     k<-k+1
   }
   sizeFR<-popreg$population[which(popreg$maille_code=="FRA")]
-  
-  
+
+
   # Dates are 17/03 14/04 1/05 15/05
   names(result)
   result$reg<-as.character(result$reg)
   result<-rbind(result,c("France",sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==103)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==103)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==103)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==800)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==800)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==800)]))/sizeFR))
-  
+
   result$infected0<-round(as.numeric(result$infected0)*100,1)
   result$infected0min<-pmax(0,round(as.numeric(result$infected0min)*100,1))
   result$infected0max<-pmin(100,round(as.numeric(result$infected0max)*100,1))
@@ -954,22 +976,22 @@ getAttackrates<-function(predictionsUSED,indivParams,inf){
   result$infected67<-round(as.numeric(result$infected67)*100,1)
   result$infected67min<-pmax(0,round(as.numeric(result$infected67min)*100,1))
   result$infected67max<-pmin(100,round(as.numeric(result$infected67max)*100,1))
-  
+
   result$infected97<-round(as.numeric(result$infected97)*100,1)
   result$infected97min<-pmax(0,round(as.numeric(result$infected97min)*100,1))
   result$infected97max<-pmin(100,round(as.numeric(result$infected97max)*100,1))
-  
+
   result$infectedinf<-round(as.numeric(result$infectedinf)*100,1)
   result$infectedinfmin<-pmax(0,round(as.numeric(result$infectedinfmin)*100,1))
   result$infectedinfmax<-pmin(100,round(as.numeric(result$infectedinfmax)*100,1))
-  
+
   result$summary0<- paste(result$infected0," [",result$infected0min,"; ",result$infected0max,"]",sep="")
   result$summary37<- paste(result$infected37," [",result$infected37min,"; ",result$infected37max,"]",sep="")
   result$summary52<- paste(result$infected52," [",result$infected52min,"; ",result$infected52max,"]",sep="")
   result$summary67<- paste(result$infected67," [",result$infected67min,"; ",result$infected67max,"]",sep="")
   result$summary97<- paste(result$infected97," [",result$infected97min,"; ",result$infected97max,"]",sep="")
   result$summaryinf<- paste(result$infectedinf," [",result$infectedinfmin,"; ",result$infectedinfmax,"]",sep="")
-  
+
   result2<-result
   result2$reg<-full_region_names(result$reg)
   if(inf){
