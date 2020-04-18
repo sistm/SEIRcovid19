@@ -506,7 +506,7 @@ getPlotR0all <- function(R0table, nameproject,path,timingdays,typecov, Di, alpha
 getindicators<-function(indivParams){
   library(dplyr)
   indivParamsprint <- data.frame("id" = full_region_names(indivParams$id))
-
+  indivParamsprint$attackinfnothingdone<-indivParams$attackinfnothingdone
   indivParamsprint$b1_modemin <- format(round(indivParams$b1_mode-1.96*indivParams$b1_sd,2), nsmall = 2)
   indivParamsprint$b1_modemmax <- format(round(indivParams$b1_mode+1.96*indivParams$b1_sd,2), nsmall = 2)
   indivParamsprint$b1_mode <- format(round(indivParams$b1_mode,2), nsmall = 2)
@@ -549,7 +549,9 @@ getindicators<-function(indivParams){
 
   indivParamsprint <- indivParamsprint %>% arrange(id)
 
-  print(xtable(indivParamsprint[,c("id","b1summary","Dqsummary","E0summary","R0summary","R0confsummary","R0conf2summary")]),
+  print(xtable(indivParamsprint[,c("id","b1summary","Dqsummary","E0summary","attackinfnothingdone")]),
+        include.rownames=FALSE)
+  print(xtable(indivParamsprint[,c("id","R0summary","R0confsummary","R0conf2summary")]),
                include.rownames=FALSE)
   indivParamsprint$timestart <- indivParams$timestart
   indivParamsprint$Icumul <- format(indivParams$Icumul, nsmall = 0, big.mark   = ",")
@@ -893,4 +895,88 @@ getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,prediction
 
   Sys.setlocale("LC_TIME",old.loc)
 
+}
+
+
+
+getAttackrates<-function(predictionsUSED,indivParams,inf){
+  
+  result<-as.data.frame(indivParams$id)
+  names(result)<-"reg"
+  k<-1
+  for (region in unique(result$reg)){
+    #  result$immunised0[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]
+    result$infected0[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==6))])/popreg$population[which(popreg$idnames==region)]
+    result$infected0min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==6))])/popreg$population[which(popreg$idnames==region)]
+    result$infected0max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==6))])/popreg$population[which(popreg$idnames==region)]
+    #  result$immunised37[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==37))])/popreg$population[which(popreg$idnames==region)]
+    result$infected37[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==33))])/popreg$population[which(popreg$idnames==region)]
+    result$infected37min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==33))])/popreg$population[which(popreg$idnames==region)]
+    result$infected37max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==33))])/popreg$population[which(popreg$idnames==region)]
+    # result$immunised21[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==28))])/popreg$population[which(popreg$idnames==region)]
+    result$infected52[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==61))])/popreg$population[which(popreg$idnames==region)]
+    result$infected52min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==61))])/popreg$population[which(popreg$idnames==region)]
+    result$infected52max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==61))])/popreg$population[which(popreg$idnames==region)]
+    # result$immunised90[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
+    #result$infected90[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
+    # result$immunised1000[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==700))])/popreg$population[which(popreg$idnames==region)]
+    #result$infected1000[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==700))])/popreg$population[which(popreg$idnames==region)]
+    result$infected67[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
+    result$infected67min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
+    result$infected67max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
+    
+    result$infected97[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
+    result$infected97min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
+    result$infected97max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
+    
+    result$infectedinf[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==800))])/popreg$population[which(popreg$idnames==region)]
+    result$infectedinfmin[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==800))])/popreg$population[which(popreg$idnames==region)]
+    result$infectedinfmax[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==800))])/popreg$population[which(popreg$idnames==region)]
+    k<-k+1
+  }
+  sizeFR<-popreg$population[which(popreg$maille_code=="FRA")]
+  
+  
+  # Dates are 17/03 14/04 1/05 15/05
+  names(result)
+  result$reg<-as.character(result$reg)
+  result<-rbind(result,c("France",sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==103)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==103)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==103)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==800)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==800)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==800)]))/sizeFR))
+  
+  result$infected0<-round(as.numeric(result$infected0)*100,1)
+  result$infected0min<-pmax(0,round(as.numeric(result$infected0min)*100,1))
+  result$infected0max<-pmin(100,round(as.numeric(result$infected0max)*100,1))
+  result$infected37<-round(as.numeric(result$infected37)*100,1)
+  result$infected37min<-pmax(0,round(as.numeric(result$infected37min)*100,1))
+  result$infected37max<-pmin(100,round(as.numeric(result$infected37max)*100,1))
+  result$infected52<-round(as.numeric(result$infected52)*100,1)
+  result$infected52min<-pmax(0,round(as.numeric(result$infected52min)*100,1))
+  result$infected52max<-pmin(100,round(as.numeric(result$infected52max)*100,1))
+  result$infected67<-round(as.numeric(result$infected67)*100,1)
+  result$infected67min<-pmax(0,round(as.numeric(result$infected67min)*100,1))
+  result$infected67max<-pmin(100,round(as.numeric(result$infected67max)*100,1))
+  
+  result$infected97<-round(as.numeric(result$infected97)*100,1)
+  result$infected97min<-pmax(0,round(as.numeric(result$infected97min)*100,1))
+  result$infected97max<-pmin(100,round(as.numeric(result$infected97max)*100,1))
+  
+  result$infectedinf<-round(as.numeric(result$infectedinf)*100,1)
+  result$infectedinfmin<-pmax(0,round(as.numeric(result$infectedinfmin)*100,1))
+  result$infectedinfmax<-pmin(100,round(as.numeric(result$infectedinfmax)*100,1))
+  
+  result$summary0<- paste(result$infected0," [",result$infected0min,"; ",result$infected0max,"]",sep="")
+  result$summary37<- paste(result$infected37," [",result$infected37min,"; ",result$infected37max,"]",sep="")
+  result$summary52<- paste(result$infected52," [",result$infected52min,"; ",result$infected52max,"]",sep="")
+  result$summary67<- paste(result$infected67," [",result$infected67min,"; ",result$infected67max,"]",sep="")
+  result$summary97<- paste(result$infected97," [",result$infected97min,"; ",result$infected97max,"]",sep="")
+  result$summaryinf<- paste(result$infectedinf," [",result$infectedinfmin,"; ",result$infectedinfmax,"]",sep="")
+  
+  result2<-result
+  result2$reg<-full_region_names(result$reg)
+  if(inf){
+    result2<-result2[,c("reg","summary0","summary37","summary52","summary67","summary97","summaryinf")]
+  }else{
+    result2<-result2[,c("reg","summary0","summary37","summary52","summary67","summary97")]
+  }
+  print(xtable(result2))
+  return(result)
 }

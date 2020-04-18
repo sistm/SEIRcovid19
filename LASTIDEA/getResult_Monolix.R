@@ -220,6 +220,12 @@ all_R0s_df <- do.call(rbind.data.frame, R0s_list)
 getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
           Di=Difixed, alpha=alphafixed, facet_scales = "free_y")
 
+### %INFECTED // ATTACK RATES
+getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
+attackinfnothingdone<-getAttackrates(predictionsNOEFFECT,indivParams,inf=TRUE)
+for (i in 1:length(indivParams$id)){
+indivParams$attackinfnothingdone[i]<-attackinfnothingdone$summaryinf[which(attackinfnothingdone$reg==indivParams$id[i])]
+}
 
 ### Get Table Article ----
 getindicators(indivParams)
@@ -250,71 +256,9 @@ getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,n
 # 89 8/06
 # 103 22/06
 
-predictionsUSED <- predictionsCOMBINED
-result<-as.data.frame(indivParams$id)
-names(result)<-"reg"
-k<-1
-for (region in unique(result$reg)){
-  #  result$immunised0[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==7))])/popreg$population[which(popreg$idnames==region)]
-    result$infected0[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==6))])/popreg$population[which(popreg$idnames==region)]
-    result$infected0min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==6))])/popreg$population[which(popreg$idnames==region)]
-    result$infected0max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==6))])/popreg$population[which(popreg$idnames==region)]
-    #  result$immunised37[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==37))])/popreg$population[which(popreg$idnames==region)]
-    result$infected37[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==33))])/popreg$population[which(popreg$idnames==region)]
-    result$infected37min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==33))])/popreg$population[which(popreg$idnames==region)]
-    result$infected37max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==33))])/popreg$population[which(popreg$idnames==region)]
-    # result$immunised21[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==28))])/popreg$population[which(popreg$idnames==region)]
-    result$infected52[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==61))])/popreg$population[which(popreg$idnames==region)]
-    result$infected52min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==61))])/popreg$population[which(popreg$idnames==region)]
-    result$infected52max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==61))])/popreg$population[which(popreg$idnames==region)]
-    # result$immunised90[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
-    #result$infected90[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==97))])/popreg$population[which(popreg$idnames==region)]
-   # result$immunised1000[k]<-as.numeric(predictionsUSED$immunised[which((predictionsUSED$reg==region)&(predictionsUSED$i==700))])/popreg$population[which(popreg$idnames==region)]
-    #result$infected1000[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==700))])/popreg$population[which(popreg$idnames==region)]
-    result$infected67[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
-    result$infected67min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
-    result$infected67max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==89))])/popreg$population[which(popreg$idnames==region)]
-
-    result$infected97[k]<-as.numeric(predictionsUSED$infected[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
-    result$infected97min[k]<-as.numeric(predictionsUSED$infectedmin[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
-    result$infected97max[k]<-as.numeric(predictionsUSED$infectedmax[which((predictionsUSED$reg==region)&(predictionsUSED$i==103))])/popreg$population[which(popreg$idnames==region)]
-    k<-k+1
-}
-sizeFR<-popreg$population[which(popreg$maille_code=="FRA")]
 
 
-# Dates are 17/03 14/04 1/05 15/05
-names(result)
-result$reg<-as.character(result$reg)
-result<-rbind(result,c("France",sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==6)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==33)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==61)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==89)]))/sizeFR,sum(as.numeric(predictionsUSED$infected[which(predictionsUSED$i==103)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmin[which(predictionsUSED$i==103)]))/sizeFR,sum(as.numeric(predictionsUSED$infectedmax[which(predictionsUSED$i==103)]))/sizeFR))
-
-result$infected0<-round(as.numeric(result$infected0)*100,1)
-result$infected0min<-pmax(0,round(as.numeric(result$infected0min)*100,1))
-result$infected0max<-pmin(100,round(as.numeric(result$infected0max)*100,1))
-result$infected37<-round(as.numeric(result$infected37)*100,1)
-result$infected37min<-pmax(0,round(as.numeric(result$infected37min)*100,1))
-result$infected37max<-pmin(100,round(as.numeric(result$infected37max)*100,1))
-result$infected52<-round(as.numeric(result$infected52)*100,1)
-result$infected52min<-pmax(0,round(as.numeric(result$infected52min)*100,1))
-result$infected52max<-pmin(100,round(as.numeric(result$infected52max)*100,1))
-result$infected67<-round(as.numeric(result$infected67)*100,1)
-result$infected67min<-pmax(0,round(as.numeric(result$infected67min)*100,1))
-result$infected67max<-pmin(100,round(as.numeric(result$infected67max)*100,1))
-
-result$infected97<-round(as.numeric(result$infected97)*100,1)
-result$infected97min<-pmax(0,round(as.numeric(result$infected97min)*100,1))
-result$infected97max<-pmin(100,round(as.numeric(result$infected97max)*100,1))
-
-result$summary0<- paste(result$infected0," [",result$infected0min,"; ",result$infected0max,"]",sep="")
-result$summary37<- paste(result$infected37," [",result$infected37min,"; ",result$infected37max,"]",sep="")
-result$summary52<- paste(result$infected52," [",result$infected52min,"; ",result$infected52max,"]",sep="")
-result$summary67<- paste(result$infected67," [",result$infected67min,"; ",result$infected67max,"]",sep="")
-result$summary97<- paste(result$infected97," [",result$infected97min,"; ",result$infected97max,"]",sep="")
-
-result$reg<-full_region_names(result$reg)
-result<-result[order(result$reg),]
-result<-result[,c("reg","summary0","summary37","summary52","summary67","summary97")]
-xtable(result)
+predictionsUSED <- predictionsNOEFFECT
 
 
 
@@ -352,7 +296,7 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
         Dh<-Dhfixed
         popSize<-dataregion$popsize[1]
         E0given<-as.numeric(indivParams[i,c("E0_mode")])
-        A0given<-as.numeric(indivParams[i,c("pctA0_mode")])*E0given
+        A0given<-10000
         b2<-as.numeric(indivParams[i,c("betat1_mode")])
         b3<--log(K)-b2
         tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
@@ -425,6 +369,9 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
 }
 #result$nbdeath<-resultdeath[,"t720"]
 #resultfois_ICU$location2<-full_region_names(resultfois_ICU$location)
+result_save<-result
+result$location<-full_region_names(result$location)
+result<-result[order(result$K, result$location),]
 xtable(result)
 
  resultfois_death2<-resultdeath
@@ -498,3 +445,97 @@ solution$solution$R[800]/popSize
 solution$solution$Rmin[800]/popSize
 solution$solution$Rmax[800]/popSize
 
+
+
+###################
+solutionsREBOUND_list <- list()
+for (i in 1:length(indivParams$id)){
+  message(as.character(indivParams$id[i]), " (",i,"/",length(indivParams$id),") ...")
+  b<-as.numeric(indivParams[i,c("b1_mode")])
+  r<-as.numeric(indivParams[i,c("r_sent")])
+  dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
+  alpha<-alphafixed
+  De<-Defixed
+  Di<-Difixed
+  Dq<-as.numeric(indivParams[i,c("Dq_mode")])
+  Dh<-Dhfixed
+  b3<-0
+  popSize<-dataregion$popsize[1]
+  E0given<-as.numeric(indivParams[i,c("E0_mode")])
+  A0given<-10000
+  if(typecov=="constant"){
+    b2<-as.numeric(indivParams[i,"betat1_mode"])
+  }
+  if(typecov=="parametric"){
+    b2<-c(as.numeric(indivParams[i,"betat1_mode"]),timings)
+  }
+  if(typecov=="splines"){
+    b2<-c(as.numeric(indivParams[i,"beta1_mode"]),as.numeric(indivParams[i,"beta2_mode"]),as.numeric(indivParams[i,"beta3_mode"]))
+  }
+  tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
+  
+  bsd<-sqrt(as.numeric(indivParams[i,"b1_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="b1_pop"),"se_sa"])**2)
+  Dqsd<-sqrt(as.numeric(indivParams[i,"Dq_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="Dq_pop"),"se_sa"])**2)
+  E0sd<-sqrt(as.numeric(indivParams[i,"E0_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="E0_pop"),"se_sa"])**2)
+  A0sd<-0
+  betasd<-as.numeric(popParams[which(popParams$parameter=="betat1_pop"),"se_sa"])
+  beta2sd<-0
+  if(typecov=="constant"){
+    b3UP<-as.numeric(indivParamsUP[i,"betat2_mode"])
+  }
+  beta2sdUP<-as.numeric(popParamsUP[which(popParamsUP$parameter=="betat2_pop"),"se_sa"])
+  
+  
+  solutionREBOUND <- getSolution( b,
+                                   r,
+                                   dataregion,
+                                   alpha,
+                                   De,
+                                   Di,
+                                   Dq,
+                                   Dh,
+                                   popSize,
+                                   E0given,
+                                   A0given,b2UP,b3UP,tconf,typecov,tconf+55,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sdUP, CI=TRUE,ncores=parallel::detectCores()-1)
+
+  par(mfrow=c(2,3))
+  plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$S),xlim=c(0,400))
+  plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$E),xlim=c(0,400))
+  plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$I),xlim=c(0,400))
+  plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$R),xlim=c(0,400))
+  plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$A),xlim=c(0,400))
+  plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$H),xlim=c(0,400))
+  solutionsREBOUND_list[[i]] <- solutionREBOUND$solution
+  solutionsREBOUND_list[[i]]$reg<-as.character(indivParams$id[i])
+  
+}
+solutionsREBOUND_all <- do.call(rbind.data.frame, solutionsREBOUND_list)
+p1 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=S, x=time, colour = reg))+
+  geom_ribbon(aes(ymin=Smin, ymax=Smax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+p2 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=E, x=time, colour = reg))+
+  geom_ribbon(aes(ymin=Emin, ymax=Emax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+p3 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=I, x=time, colour = reg))+
+  geom_ribbon(aes(ymin=Imin, ymax=Imax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+p4 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=R, x=time, colour = reg))+
+  geom_ribbon(aes(ymin=Rmin, ymax=Rmax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+p5 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=A, x=time, colour = reg))+
+  geom_ribbon(aes(ymin=Amin, ymax=Amax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+
+
+
+p6 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=H, x=time, colour = reg))+
+  geom_ribbon(aes(ymin=Hmin, ymax=Hmax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+grid.arrange(p1,p2,p3,p4,p5,p6,ncol=3,nrow=2)
+
+for (i in 1:length(solutionsREBOUND_all$popsize)){
+solutionsREBOUND_all$popsize[i]<-indivParams$popsize[which(indivParams$id==solutionsREBOUND_all$reg[i])]
+}
+
+
+p7 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=(H+I+E+A)/popsize, x=time, colour = reg))+
+  geom_ribbon(aes(ymin=(Hmin+Imin+Emin+Amin)/popsize, ymax=(Hmax+Imax+Emax+Amax)/popsize, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+p7
+
+p8 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=(R)/popsize, x=time, colour = reg))+
+  geom_ribbon(aes(ymin=(Rmin)/popsize, ymax=(Rmax)/popsize, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+p8
