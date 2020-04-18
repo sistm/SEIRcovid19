@@ -778,20 +778,22 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   }
 
   p1 <- ggplot(datapred, aes(x=time, y=Iincident)) +
-    xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
+    xlab("Date") +
+    geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
+    geom_vline(xintercept = as.Date("2020-03-17"), linetype=2, color="purple") +
     geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
     geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
-    geom_ribbon(data=datapredNOEFFECT,aes(ymin = Iincidentmin, ymax = Iincidentmax,
-                                          fill = "no intervention",
-                                          alpha="no intervention"))+
     geom_ribbon(data=datapredUPDATED,aes(ymin = Iincidentmin, ymax = Iincidentmax,
                                          fill = "confinement with data\nup to 2020-04-06",
                                          alpha="confinement with data\nup to 2020-04-06"))+
     geom_ribbon(data=datapred,aes(ymin = Iincidentmin, ymax = Iincidentmax,
                                   fill = "confinement with data\nup to 2020-03-25",
                                   alpha="confinement with data\nup to 2020-03-25")) +
+    geom_ribbon(data=datapredNOEFFECT,aes(ymin = Iincidentmin, ymax = Iincidentmax,
+                                          fill = "no intervention",
+                                          alpha="no intervention"))+
     geom_point(data=datagouv, aes(x=time,y=Iobs, shape="Source: Santé\nPublique France")) +
     scale_shape("Observations") +
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
@@ -808,8 +810,10 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
     ggtitle("France")
 
   p2 <- ggplot(datapred, aes(x=time, y=Hincident)) +
-    xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
+    xlab("Date") +
+    geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
+    geom_vline(xintercept = as.Date("2020-03-17"), linetype=2, color="purple") +
     geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
     geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
@@ -838,8 +842,10 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
     ggtitle("France")
 
   p3 <- ggplot(datapred, aes(x=time, y=ICUincident)) +
-    xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
+    xlab("Date") +
+    geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
+    geom_vline(xintercept = as.Date("2020-03-17"), linetype=2, color="purple") +
     geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
     geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
@@ -868,8 +874,10 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
     ggtitle("France")
 
   p4 <- ggplot(datapred, aes(x=time, y=Dincident)) +
-    xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
+    xlab("Date") +
+    geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
+    geom_vline(xintercept = as.Date("2020-03-17"), linetype=2, color="purple") +
     geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
     geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
