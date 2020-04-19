@@ -221,17 +221,19 @@ getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
           Di=Difixed, alpha=alphafixed, facet_scales = "fixed", nameprojectupdate)
 
 ### %INFECTED // ATTACK RATES
-getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
+attack<-getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
 attackinfnothingdone<-getAttackrates(predictionsNOEFFECT,indivParams,inf=TRUE)
 for (i in 1:length(indivParams$id)){
 indivParams$attackinfnothingdone[i]<-attackinfnothingdone$summaryinf[which(attackinfnothingdone$reg==indivParams$id[i])]
 }
 attackinfnothingdoneFRANCE<-attackinfnothingdone[which(attackinfnothingdone$reg=="France"),"summaryinf"]
 
+
 ### Get Table Article ----
 R0france<-getR0France(all_R0s_df,nameproject,nameprojectupdate,alpha,Di)
 getindicators(indivParams,R0france,path,nameproject,nameprojectupdate,attackinfnothingdoneFRANCE)
 
+R0france$I[which(R0france$time=="2020-04-15")]+0.033*R0france$R[which(R0france$time=="2020-04-15")]+R0france$H[which(R0france$time=="2020-04-15")]
 
 
 
@@ -250,6 +252,13 @@ predictionsCOMBINED <- do.call(rbind.data.frame, predictionsCOMBINED_list)
 getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,nameproject, logscale=TRUE)
 getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,nameproject, logscale=FALSE)
 
+### No intervention what if 
+solutionNOEFFECT$solution
+fo
+
+maxepidemics<-max(predictionnoint$Iincident)
+predictionnoint$time[which(predictionnoint$Iincident==maxepidemics)]
+predictionnoint$time[which(predictionnoint$Iincident<5)]
 
 ### INDICATEURS -----
 
@@ -278,8 +287,8 @@ tauxICU=0.25
 tauxD=0.05
 nbICUplus<-1
 load("./data/ICUcapacity_FR.RData")
-result<-as.data.frame(matrix(NA,ncol=9,nrow=1))
-names(result)<-c("K","location","I","A","E","topt","timeMAXICU","ICU","Death")
+result<-as.data.frame(matrix(NA,ncol=27,nrow=1))
+names(result)<-  c("K","location","I","A","E","topt","timeMAXICU","ICU","Death","toptval","toptvalmin","toptvalmax","Eval","Evalmin","Evalmax","Aval","Avalmin","Avalmax","Ival","Ivalmin","Ivalmax","dval","dvalmin","dvalmax","icuval","icuvalmin","icuvalmax")
 typecov="constant"
 k<-1
 
@@ -331,11 +340,11 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
                                pred=FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sd,TRUE,ncores=parallel::detectCores()-1)
 
         mai11<-tconf+55
-        temp<-solution$solution$time[which((solution$solution$I+solution$solution$E+solution$solution$A)<3)]
-        tempmin<-solution$solution$time[which((solution$solution$Imin+solution$solution$Emin+solution$solution$Amin)<3)]
+        temp<-min(solution$solution$time[which((solution$solution$I+solution$solution$E+solution$solution$A)<3)])
+        tempmin<-min(solution$solution$time[which((solution$solution$Imin+solution$solution$Emin+solution$solution$Amin)<3)])
         tempmax<-solution$solution$time[which((solution$solution$Imax+solution$solution$Emax+solution$solution$Amax)<3)]
-        tempmax<-ifelse(is.finite(tempmax),tempmax,1000)
-        topt<-paste(min(temp)," [",min(tempmin),"; ",min(tempmax),"]",sep="")
+        tempmax<-min(ifelse(is.finite(tempmax),tempmax,1000))
+        topt<-paste(temp," [",tempmin,"; ",tempmax,"]",sep="")
 
         E<-round(solution$solution$E[mai11],0)
         Emin<-round(solution$solution$Emin[mai11],0)
@@ -352,6 +361,11 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
         Imax<-round(solution$solution$Imax[mai11],0)
         I11mai<-paste(I," [",Imin,"; ",Imax,"]",sep="")
 
+
+        death<-round(tauxD*solution$solution$R[1000],0)
+        deathmin<-round(tauxD*solution$solution$Rmin[1000],0)
+        deathmax<-round(tauxD*solution$solution$Rmax[1000],0)
+
         nbdeath<-paste(round(tauxD*solution$solution$R[1000],0)," [",round(tauxD*solution$solution$Rmin[1000],0),"; ",round(tauxD*solution$solution$Rmax[1000],0),"]",sep="")
 
         nblits<-nbICUplus*ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
@@ -361,17 +375,41 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
 
 
         timemax<-which(solution$solution$H==max(solution$solution$H))
+        
+        ICUpct<-round((tauxICU*solution$solution$H[timemax])/nblits*100,0)
+        ICUpctmin<-round(max(tauxICU*solution$solution$Hmin[timemax])/nblits*100,0)
+        ICUpctmax<-round(max(tauxICU*solution$solution$Hmax[timemax])/nblits*100,0)
         maxICU<-paste(round((tauxICU*solution$solution$H[timemax])/nblits*100,0),"% [",round(max(tauxICU*solution$solution$Hmin[timemax])/nblits*100,0),"%; ",round(max(tauxICU*solution$solution$Hmax[timemax])/nblits*100,0),"%]",sep="")
 
-
-        result[k,]<-c(K,as.character(indivParams$id[i]),I11mai,A11mai,E11mai,topt,as.character(overload),maxICU,nbdeath)
+        
+        result[k,]<-c(K,as.character(indivParams$id[i]),I11mai,A11mai,E11mai,topt,as.character(overload),maxICU,nbdeath,temp,tempmin,tempmax,E,Emin,Emax,A,Amin,Amax,I,Imin,Imax,death,deathmin,deathmax,ICUpct,ICUpctmin,ICUpctmax)
+        
 
         print(result[k,])
         k<-k+1
     }
 }
-#result$nbdeath<-resultdeath[,"t720"]
-#resultfois_ICU$location2<-full_region_names(resultfois_ICU$location)
+result_save<-result
+#saveRDS(result_save, file = "./LASTIDEA/data/result_lockdown20200416.rds")
+result_save$location<-full_region_names(result_save$location)
+xtable(result_save[,c("location","I","A","E")],include.rownames=FALSE)
+
+result_save$R<-as.numeric(result_save$dval)/0.05
+result_save$Rmin<-as.numeric(result_save$dvalmin)/0.05
+result_save$Rmax<-as.numeric(result_save$dvalmax)/0.05
+for (i in 1:length(result_save$location)){
+  result_save$popsize[i]<-indivParams$popsize[which(full_region_names(indivParams$id)==result_save$location[i])]
+}
+result_save$attack<-format(round(result_save$R/result_save$popsize*100,1),nsmall = 1)
+result_save$attackmin<-format(round(result_save$Rmin/result_save$popsize*100,1),nsmall = 1)
+result_save$attackmax<-format(round(result_save$Rmax/result_save$popsize*100,1),nsmall = 1)
+result_save$attack<-paste(result_save$attack,"% [",result_save$attackmin,"%; ",result_save$attackmax,"%]",sep="")
+
+xtable(result_save[,c("location","topt","timeMAXICU","ICU","Death","attack")],include.rownames=FALSE)
+strsplit(result_save$Death, split=c(" ",";"))
+
+?xtable
+
 result_save<-result
 result$location<-full_region_names(result$location)
 result<-result[order(result$K, result$location),]
@@ -399,8 +437,7 @@ quantile(indivParams$r_sent,0.975)
 
 
 ### GLOBAL DESC. EPIDDEMICS WITHOUT INTERVENTION ----
-
-pop<-read.table(file="MONOLIX/outputMonolix/Final_20200325/populationParameters.txt",header=TRUE,sep=",")
+pop<-read.table(file="LASTIDEA/outputMonolix/Final_20200325/populationParameters.txt",header=TRUE,sep=",")
 b<-pop[1,"value"]
 r<-mean(indivParams[,c("r_sent")])
 dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
@@ -411,17 +448,17 @@ Dq<-pop[2,"value"]
 Dh<-Dhfixed
 popSize<-66990000
 E0given<-pop[3,"value"]
-A0given<-pop[4,"value"]
+A0given<-1000
 if(typecov=="constant"){
-  b2<-pop[5,"value"]
+  b2<-pop[4,"value"]
 }
-tconf<-15
+tconf<-1000
 
-bsd<-pop[1,"se_sa"]
-Dqsd<-pop[2,"se_sa"]
-E0sd<-pop[3,"se_sa"]
-A0sd<-pop[4,"se_sa"]
-betasd<-pop[4,"se_sa"]
+bsd<-sqrt(pop[1,"se_sa"]**2+pop[5,"value"]**2)
+Dqsd<-sqrt(pop[2,"se_sa"]**2+pop[6,"value"]**2)
+E0sd<-sqrt(pop[3,"se_sa"]**2++pop[7,"value"]**2)
+A0sd<-0
+betasd<-sqrt(pop[4,"se_sa"]**2)
 
 solution <- getSolution( b,
                          r,
@@ -433,21 +470,29 @@ solution <- getSolution( b,
                          Dh,
                          popSize,
                          E0given,
-                         A0given,b2,tconf,typecov,0,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd, CI=TRUE,ncores=parallel::detectCores()-1)
+                         A0given,0,0,tconf,typecov,0,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,0, CI=TRUE,ncores=parallel::detectCores()-1)
 
-solution$data$date[1]+64
-maxIA<-max(solution$solution$I+solution$solution$A+solution$solution$H)
-timepeak<-solution$solution$time[which(solution$solution$I+solution$solution$A+solution$solution$H==maxIA)]
-endepi<-solution$solution$time[which(solution$solution$I+solution$solution$A+solution$solution$H<3)]
-solution$data$date[1]+457
+
+## Timing peak
+maxIA<-max(solution$solution$E+solution$solution$I+solution$solution$A+solution$solution$H)
+timepeak<-solution$solution$time[which(solution$solution$E+solution$solution$I+solution$solution$A+solution$solution$H==maxIA)]
+solution$data$date[1]+timepeak
+
+endepi<-min(solution$solution$time[which(solution$solution$E+solution$solution$I+solution$solution$A+solution$solution$H<4)])
+solution$data$date[1]+endepi
+
 mashospi<-max(solution$solution$H)
-solution$solution$time[which(solution$solution$H==mashospi)]
-solution$solution$Hmax[solution$solution$time==74]
-solution$solution$Hmin[solution$solution$time==74]
-solution$solution$R[800]/popSize
-solution$solution$Rmin[800]/popSize
-solution$solution$Rmax[800]/popSize
+timemaxhospi<-solution$solution$time[which(solution$solution$H==mashospi)]
+solution$solution$Hmax[solution$solution$time==timemaxhospi]
+solution$solution$Hmin[solution$solution$time==timemaxhospi]
 
+exp(--0.2702769)
+exp(-(-0.2702769-1.96*0.01533011))
+exp(-(-0.2702769+1.96*0.01533011))
+
+exp(--0.2702769--1.0195847)
+exp(-(-0.2702769-1.0195847-1.96*sqrt(0.01533011**2+0.0164773**2)))
+exp(-(-0.2702769-1.0195847+1.96*sqrt(0.01533011**2+0.0164773**2)))
 
 
 ###################

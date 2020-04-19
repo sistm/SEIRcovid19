@@ -953,7 +953,7 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
     p4 <- p4 + scale_y_log10()
   }
 
-  return(list(p1, p2, p3, p4))
+  return(list(p1, p2, p3, p4,datapredNOEFFECT,datapred,datapredUPDATED))
 }
 
 getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale=TRUE){
@@ -976,7 +976,8 @@ getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,prediction
   p3 <- plotList[[3]]
   p4 <- plotList[[4]]
 
-  p1 / (p2 +ggtitle("")) + plot_layout(guides = "collect")
+  p1 + (p2 +ggtitle("")) + plot_layout(ncol=1,nrow=2,guides = "collect")
+
   ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm", logindicator, ".jpg",sep=""),
          device = "jpeg", dpi =300, width=6, height=8)
 
