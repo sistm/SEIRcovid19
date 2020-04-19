@@ -217,7 +217,7 @@ getPlotSolutionAll(solutions_list, nameproject = nameproject)
 
 #### REFF ----
 all_R0s_df <- do.call(rbind.data.frame, R0s_list)
-plotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
+getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
           Di=Difixed, alpha=alphafixed, facet_scales = "fixed", nameprojectupdate)
 
 ### %INFECTED // ATTACK RATES
@@ -468,6 +468,7 @@ for (i in 1:length(indivParams$id)){
   A0given<-10000
   if(typecov=="constant"){
     b2<-as.numeric(indivParams[i,"betat1_mode"])
+    b2UP<-as.numeric(indivParamsUP[i,"betat1_mode"])
   }
   if(typecov=="parametric"){
     b2<-c(as.numeric(indivParams[i,"betat1_mode"]),timings)
@@ -508,37 +509,114 @@ for (i in 1:length(indivParams$id)){
   plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$R),xlim=c(0,400))
   plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$A),xlim=c(0,400))
   plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$H),xlim=c(0,400))
+  solutionREBOUND$solution$date <- seq.Date(from = solutionREBOUND$data$date[1], by = 1, length.out = nrow(solutionREBOUND$solution))
+  solutionREBOUND$solution$popsize <- popSize
   solutionsREBOUND_list[[i]] <- solutionREBOUND$solution
   solutionsREBOUND_list[[i]]$reg<-as.character(indivParams$id[i])
-
 }
+
 solutionsREBOUND_all <- do.call(rbind.data.frame, solutionsREBOUND_list)
-p1 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=S, x=time, colour = reg))+
-  geom_ribbon(aes(ymin=Smin, ymax=Smax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
-p2 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=E, x=time, colour = reg))+
-  geom_ribbon(aes(ymin=Emin, ymax=Emax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
-p3 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=I, x=time, colour = reg))+
-  geom_ribbon(aes(ymin=Imin, ymax=Imax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
-p4 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=R, x=time, colour = reg))+
-  geom_ribbon(aes(ymin=Rmin, ymax=Rmax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
-p5 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=A, x=time, colour = reg))+
-  geom_ribbon(aes(ymin=Amin, ymax=Amax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+head(solutionsREBOUND_all)
 
+solutionsREBOUND_all$reg <- full_region_names(solutionsREBOUND_all$reg)
+solutionsREBOUND_allobs <- solutionsREBOUND_all %>% select(date,reg,popsize,S,E,I,R,A,H) %>%
+  reshape2::melt(id.vars=c("date", "reg", "popsize"))
+solutionsREBOUND_allmin <- solutionsREBOUND_all %>% select(date,reg,popsize,Smin,Emin,Imin,Rmin,Amin,Hmin) %>%
+  rename(S=Smin, E = Emin, I=Imin, R=Rmin, A=Amin, H=Hmin) %>%
+  reshape2::melt(id.vars=c("date", "reg","popsize"), value.name  = "value.min")
+solutionsREBOUND_allmax <- solutionsREBOUND_all %>% select(date,reg,popsize,Smax,Emax,Imax,Rmax,Amax,Hmax) %>%
+  rename(S=Smax, E = Emax, I=Imax, R=Rmax, A=Amax, H=Hmax) %>%
+  reshape2::melt(id.vars=c("date", "reg","popsize"), value.name  = "value.max")
+solutionsREBOUND_2plot <- cbind.data.frame(solutionsREBOUND_allobs,
+                                           "value.min" = solutionsREBOUND_allmin$value.min,
+                                           "value.max" = solutionsREBOUND_allmax$value.max)
 
+ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
+  geom_line(aes(y=value/popsize, colour = reg)) +
+  geom_ribbon(aes(ymin=value.min/popsize, ymax=value.max/popsize), alpha = 0.3) +
+  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lock-down start")) +
+  geom_vline(aes(xintercept=as.Date("2020-05-11"),  linetype="Lock-down lift")) +
+  scale_linetype_manual("", values=c(2,3), breaks=c("Lock-down start", "Lock-down lift")) +
+  xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
+  theme_bw() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 0.01)) +
+  facet_wrap(~variable, scales="free", ncol=2) +
+  ylab("Proportion of region population") +
+  xlab("Date") +
+  colorspace::scale_color_discrete_qualitative(name = "Region", palette = "Dark3") +
+  colorspace::scale_fill_discrete_qualitative(name = "Region", palette = "Dark3") +
+  theme(legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10)) +
+  #theme(legend.position = "bottom", legend.direction = "vertical") +
+  NULL
+ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/rebound_prop.jpg",sep=""),
+       device = "jpeg", dpi =300, width=7, height=5)
 
-p6 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=H, x=time, colour = reg))+
-  geom_ribbon(aes(ymin=Hmin, ymax=Hmax, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
-grid.arrange(p1,p2,p3,p4,p5,p6,ncol=3,nrow=2)
+ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
+  geom_line(aes(y=value, colour = reg)) +
+  geom_ribbon(aes(ymin=value.min, ymax=value.max), alpha = 0.3) +
+  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lock-down start")) +
+  geom_vline(aes(xintercept=as.Date("2020-05-11"),  linetype="Lock-down lift")) +
+  scale_linetype_manual("", values=c(2,3), breaks=c("Lock-down start", "Lock-down lift")) +
+  xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
+  theme_bw() +
+  facet_wrap(~variable, scales="free", ncol=2) +
+  ylab("Number of people") +
+  xlab("Date") +
+  colorspace::scale_color_discrete_qualitative(name = "Region", palette = "Dark3") +
+  colorspace::scale_fill_discrete_qualitative(name = "Region", palette = "Dark3") +
+  theme(legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10)) +
+  #theme(legend.position = "bottom", legend.direction = "vertical") +
+  NULL
+ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/rebound.jpg",sep=""),
+       device = "jpeg", dpi =300, width=7, height=5)
 
-for (i in 1:length(solutionsREBOUND_all$popsize)){
-solutionsREBOUND_all$popsize[i]<-indivParams$popsize[which(indivParams$id==solutionsREBOUND_all$reg[i])]
-}
-
-
-p7 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=(H+I+E+A)/popsize, x=time, colour = reg))+
-  geom_ribbon(aes(ymin=(Hmin+Imin+Emin+Amin)/popsize, ymax=(Hmax+Imax+Emax+Amax)/popsize, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
-p7
-
-p8 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=(R)/popsize, x=time, colour = reg))+
-  geom_ribbon(aes(ymin=(Rmin)/popsize, ymax=(Rmax)/popsize, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
-p8
+#
+# p1 <- ggplot(solutionsREBOUND_all, aes(fill=reg, x=date)) +
+#   geom_line(aes(y=S/popsize, colour = reg)) +
+#   geom_ribbon(aes(ymin=Smin/popsize, ymax=Smax/popsize), alpha = 0.3) +
+#   xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
+#   theme_bw()
+# p2 <- ggplot(solutionsREBOUND_all, aes(fill=reg, x=date)) +
+#   geom_line(aes(y=E/popsize, colour = reg)) +
+#   geom_ribbon(aes(ymin=Emin/popsize, ymax=Emax/popsize), alpha = 0.3) +
+#   xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
+#   theme_bw()
+# p3 <- ggplot(solutionsREBOUND_all, aes(fill=reg, x=date)) +
+#   geom_line(aes(y=I/popsize, colour = reg)) +
+#   geom_ribbon(aes(ymin=Imin/popsize, ymax=Imax/popsize, fill = reg), alpha = 0.3) +
+#   xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
+#   theme_bw()
+# p4 <- ggplot(solutionsREBOUND_all, aes(fill=reg, x=date)) +
+#   geom_line(aes(y=R/popsize, colour = reg)) +
+#   geom_ribbon(aes(ymin=Rmin/popsize, ymax=Rmax/popsize), alpha = 0.3) +
+#   xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
+#   theme_bw()
+# p5 <- ggplot(solutionsREBOUND_all, aes(fill=reg, x=date)) +
+#   geom_line(aes(y=A/popsize, colour = reg)) +
+#   geom_ribbon(aes(ymin=Amin/popsize, ymax=Amax/popsize), alpha = 0.3) +
+#   xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
+#   theme_bw()
+# p6 <- ggplot(solutionsREBOUND_all, aes(fill=reg, x=date)) +
+#   geom_line(aes(y=H/popsize, colour = reg)) +
+#   geom_ribbon(aes(ymin=Hmin/popsize, ymax=Hmax/popsize), alpha = 0.3)+
+#   xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
+#   theme_bw()
+#
+# p6 + theme_bw() +facet_wrap(~reg)
+# library(patchwork)
+# (p1 + p2 + p3) / (p4 + p5 + p6) + plot_layout(guides = "collect")
+#
+# for (i in 1:length(solutionsREBOUND_all$popsize)){
+#   solutionsREBOUND_all$popsize[i] <- indivParams$popsize[which(indivParams$id==solutionsREBOUND_all$reg[i])]
+# }
+#
+#
+# p7 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=(H+I+E+A)/popsize, x=time, colour = reg))+
+#   geom_ribbon(aes(ymin=(Hmin+Imin+Emin+Amin)/popsize, ymax=(Hmax+Imax+Emax+Amax)/popsize, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+# p7
+#
+# p8 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=(R)/popsize, x=time, colour = reg))+
+#   geom_ribbon(aes(ymin=(Rmin)/popsize, ymax=(Rmax)/popsize, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
+# p8

@@ -978,7 +978,7 @@ getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,prediction
 
   p1 / (p2 +ggtitle("")) + plot_layout(guides = "collect")
   ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm", logindicator, ".jpg",sep=""),
-         device = "jpeg", dpi =300, width=11, height=4)
+         device = "jpeg", dpi =300, width=6, height=8)
 
   (p1 + (p2+ggtitle("")))/((p3+ggtitle("")) + (p4+ggtitle(""))) + plot_layout(guides = "collect")
   ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all", logindicator, ".jpg",sep=""),
