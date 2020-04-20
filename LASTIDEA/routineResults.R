@@ -292,11 +292,12 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE, prop_g
     baseline <- geom_hline(yintercept = 1)
   }
 
+
   #adding the max value all the time to ensure that scales match
   Imax_obs <- max(all_data_df %>% filter(obs_id == "Incident confirmed cases") %>% pull(obs))
-  Imax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident confirmed cases") %>% pull(obs))
+  Imax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident confirmed cases") %>% pull(obs_max))
   Hmax_obs <- max(all_data_df %>% filter(obs_id == "Incident hospitalized cases") %>% pull(obs))
-  Hmax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident hospitalized cases") %>% pull(obs))
+  Hmax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident hospitalized cases") %>% pull(obs_max))
 
   dataObs2plot_1 <- all_data_df %>% filter(IDname %in% levels(all_data_df$IDname)[1:6])
   dataObs2plot_2 <- all_data_df %>% filter(IDname %in% levels(all_data_df$IDname)[7:12])
@@ -329,7 +330,6 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE, prop_g
       dataSim2plot_2 <-  dataSim2plot_2 %>% filter(!(IDname==i & date<date_obs_min & obs_id==o))
     }
   }
-
 
   p1 <- ggplot(dataObs2plot_1, aes(x=date, y=obs, group=IDname)) +
     baseline +
@@ -562,7 +562,7 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
     theme_bw() +
     facet_wrap(~Region, ncol = 3, scales = facet_scales) +
     theme(strip.background = element_rect(fill="white")) +
-    ylab(expression(paste("Effective Reproductive Number ", R[eff](t, xi)))) +
+    ylab(expression(paste("Effective Reproductive Number ", R[e](t, xi[i])))) +
     #ylim(0,NA) +
     #ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax)))) +
     scale_y_continuous(breaks=0:7, limits = c(0, NA)) +
@@ -877,29 +877,29 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   p1 <- ggplot(datapred, aes(x=time, y=Iincident)) +
     xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
-    geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
+    geom_line(aes(col="confinement effect\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
-    geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
+    geom_line(data=datapredUPDATED, aes(color="confinement effect\nup to 2020-04-06")) +
     geom_ribbon(data=datapredNOEFFECT,aes(ymin = Iincidentmin, ymax = Iincidentmax,
                                           fill = "no intervention",
                                           alpha="no intervention"))+
     geom_ribbon(data=datapredUPDATED,aes(ymin = Iincidentmin, ymax = Iincidentmax,
-                                         fill = "confinement with data\nup to 2020-04-06",
-                                         alpha="confinement with data\nup to 2020-04-06"))+
+                                         fill = "confinement effect\nup to 2020-04-06",
+                                         alpha="confinement effect\nup to 2020-04-06"))+
     geom_ribbon(data=datapred,aes(ymin = Iincidentmin, ymax = Iincidentmax,
-                                  fill = "confinement with data\nup to 2020-03-25",
-                                  alpha="confinement with data\nup to 2020-03-25")) +
+                                  fill = "confinement effect\nup to 2020-03-25",
+                                  alpha="confinement effect\nup to 2020-03-25")) +
     geom_point(data=datagouv, aes(x=time,y=Iobs, shape="Source: Santé\nPublique France")) +
     scale_shape("Observations") +
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
-                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                  "confinement with data\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                  "confinement effect\nup to 2020-04-06")) +
     scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                  "confinement with data\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                  "confinement effect\nup to 2020-04-06")) +
     scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                      breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                 "confinement with data\nup to 2020-04-06")) +
+                      breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                 "confinement effect\nup to 2020-04-06")) +
     theme_classic() +
     ylab(paste0("National cumulative incidence\nof ascertained cases", log_title)) +
     ggtitle("France")
@@ -907,29 +907,29 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   p2 <- ggplot(datapred, aes(x=time, y=Hincident)) +
     xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
-    geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
+    geom_line(aes(col="confinement effect\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
-    geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
+    geom_line(data=datapredUPDATED, aes(color="confinement effect\nup to 2020-04-06")) +
     geom_ribbon(data=datapredNOEFFECT,aes(ymin = Hincidentmin, ymax = Hincidentmax,
                                           fill = "no intervention",
                                           alpha="no intervention"))+
     geom_ribbon(data=datapredUPDATED,aes(ymin = Hincidentmin, ymax = Hincidentmax,
-                                         fill = "confinement with data\nup to 2020-04-06",
-                                         alpha="confinement with data\nup to 2020-04-06"))+
+                                         fill = "confinement effect\nup to 2020-04-06",
+                                         alpha="confinement effect\nup to 2020-04-06"))+
     geom_ribbon(data=datapred,aes(ymin = Hincidentmin, ymax = Hincidentmax,
-                                  fill = "confinement with data\nup to 2020-03-25",
-                                  alpha="confinement with data\nup to 2020-03-25")) +
+                                  fill = "confinement effect\nup to 2020-03-25",
+                                  alpha="confinement effect\nup to 2020-03-25")) +
     geom_point(data=datagouv, aes(x=time,y=Hobs, shape="Source: Santé\nPublique France")) +
     scale_shape("Observations") +
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
-                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                  "confinement with data\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                  "confinement effect\nup to 2020-04-06")) +
     scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                  "confinement with data\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                  "confinement effect\nup to 2020-04-06")) +
     scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                      breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                 "confinement with data\nup to 2020-04-06")) +
+                      breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                 "confinement effect\nup to 2020-04-06")) +
     theme_classic() +
     ylab(paste0("National prevalence\nof hospitalized cases", log_title)) +
     ggtitle("France")
@@ -937,29 +937,29 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   p3 <- ggplot(datapred, aes(x=time, y=ICUincident)) +
     xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
-    geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
+    geom_line(aes(col="confinement effect\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
-    geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
+    geom_line(data=datapredUPDATED, aes(color="confinement effect\nup to 2020-04-06")) +
     geom_ribbon(data=datapredNOEFFECT,aes(ymin = ICUincidentmin, ymax = ICUincidentmax,
                                           fill = "no intervention",
                                           alpha="no intervention"))+
     geom_ribbon(data=datapredUPDATED,aes(ymin = ICUincidentmin, ymax = ICUincidentmax,
-                                         fill = "confinement with data\nup to 2020-04-06",
-                                         alpha="confinement with data\nup to 2020-04-06"))+
+                                         fill = "confinement effect\nup to 2020-04-06",
+                                         alpha="confinement effect\nup to 2020-04-06"))+
     geom_ribbon(data=datapred,aes(ymin = ICUincidentmin, ymax = ICUincidentmax,
-                                  fill = "confinement with data\nup to 2020-03-25",
-                                  alpha="confinement with data\nup to 2020-03-25")) +
+                                  fill = "confinement effect\nup to 2020-03-25",
+                                  alpha="confinement effect\nup to 2020-03-25")) +
     geom_point(data=datagouv, aes(x=time,y=ICUobs, shape="Source: Santé\nPublique France")) +
     scale_shape("Observations") +
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
-                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                  "confinement with data\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                  "confinement effect\nup to 2020-04-06")) +
     scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                  "confinement with data\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                  "confinement effect\nup to 2020-04-06")) +
     scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                      breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                 "confinement with data\nup to 2020-04-06")) +
+                      breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                 "confinement effect\nup to 2020-04-06")) +
     theme_classic() +
     ylab(paste0("National prevalence\nof ICU cases", log_title)) +
     ggtitle("France")
@@ -967,29 +967,29 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   p4 <- ggplot(datapred, aes(x=time, y=Dincident)) +
     xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
-    geom_line(aes(col="confinement with data\nup to 2020-03-25")) +
+    geom_line(aes(col="confinement effect\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
-    geom_line(data=datapredUPDATED, aes(color="confinement with data\nup to 2020-04-06")) +
+    geom_line(data=datapredUPDATED, aes(color="confinement effect\nup to 2020-04-06")) +
     geom_ribbon(data=datapredNOEFFECT,aes(ymin = Dincidentmin, ymax = Dincidentmax,
                                           fill = "no intervention",
                                           alpha="no intervention"))+
     geom_ribbon(data=datapredUPDATED,aes(ymin = Dincidentmin, ymax = Dincidentmax,
-                                         fill = "confinement with data\nup to 2020-04-06",
-                                         alpha="confinement with data\nup to 2020-04-06"))+
+                                         fill = "confinement effect\nup to 2020-04-06",
+                                         alpha="confinement effect\nup to 2020-04-06"))+
     geom_ribbon(data=datapred,aes(ymin = Dincidentmin, ymax = Dincidentmax,
-                                  fill = "confinement with data\nup to 2020-03-25",
-                                  alpha="confinement with data\nup to 2020-03-25")) +
+                                  fill = "confinement effect\nup to 2020-03-25",
+                                  alpha="confinement effect\nup to 2020-03-25")) +
     geom_point(data=datagouv, aes(x=time,y=Dobs, shape="Source: Santé\nPublique France")) +
     scale_shape("Observations") +
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
-                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                  "confinement with data\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                  "confinement effect\nup to 2020-04-06")) +
     scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                       breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                  "confinement with data\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                  "confinement effect\nup to 2020-04-06")) +
     scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                      breaks = c("no intervention", "confinement with data\nup to 2020-03-25",
-                                 "confinement with data\nup to 2020-04-06")) +
+                      breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
+                                 "confinement effect\nup to 2020-04-06")) +
     theme_classic() +
     ylab(paste0("National cumulative incidence\nof death", log_title)) +
     ggtitle("France")
