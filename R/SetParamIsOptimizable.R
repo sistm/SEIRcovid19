@@ -19,16 +19,16 @@ SetParamIsOptimizable.default <- function(obj, ParamOptim)
   return(obj)
 }
 
-#' @describeIn Set Optimizable param for init of an object of class an object of class \code{OdeSystem}
+#' @describeIn Set Regressor param for init of an object of class an object of class \code{OdeSystem}
 SetParamIsOptimizable.OdeSystem <- function(ode, ParamOptim)
 {
   if (length(ParamOptim)==length(ode$IsOptimizable$param)){
-    print("Set all Optimizable Parameter info")
+    print("Set all Regressor Parameter info")
     ode$IsOptimizable$param<-ParamOptim
   }else{
-    print("Set some Optimizable Parameter info")
+    print("Set some Regressor Parameter info")
     for (p in 1:length(ParamOptim)){
-      ode$IsOptimizable$param[names(ode$param)==names(ParamOptim[p])]<-ParamOptim[[p]]
+      ode$IsOptimizable$param[names(ode$parameter)==names(ParamOptim[p])]<-ParamOptim[[p]]
     }
   }
   return(ode)
