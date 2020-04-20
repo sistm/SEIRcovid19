@@ -3,12 +3,7 @@
 #' @param obj Object to set
 #' @param parameter List of new parameter
 #' @export
-
-foobar.numeric <- function(x) abs(mean(x) - median(x))
-
-
-
-
+#' 
 SetAllInit <- function(obj, init)
 {
   UseMethod("SetAllInit",obj)
@@ -24,6 +19,12 @@ SetAllInit.default <- function(obj, init)
 SetAllInit.OdeSystem <- function(ode, init)
 {
   print("Set all init state for OdeSytem")
-  ode$InitState <- init
-  return(ode)
+  if (length(ode$InitState)==length(init)){
+    ode$InitState <- init
+    return(ode)
+    
+  }
+  else{
+    stop("Argument should have same length as Attribute")
+  }
 }

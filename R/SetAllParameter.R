@@ -24,6 +24,12 @@ SetAllParameter.default <- function(obj, parameter)
 SetAllParameter.OdeSystem <- function(ode, parameter)
 {
   print("Set all parameter for OdeSytem")
-  ode$parameter <- parameter
-  return(ode)
+  if (length(ode$parameter)==length(parameter)){
+    ode$parameter <- parameter
+    return(ode)
+    
+  }
+  else{
+    stop("Argument should have same length as Attribute")
+  }
 }

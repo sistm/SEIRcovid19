@@ -29,9 +29,15 @@
 #' \dontrun{
 #' sum("a")
 #' }
-OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),isoptim=rep(0,length(param)))
+OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),
+                      isoptim=list(),
+                      param_is_regressor=rep(0,length(param)),
+                      init_is_regressor=rep(0,length(init)))
 {
-  
+  if (length(isoptim)==0){
+    isoptim$param<-rep(0,length(param))
+    isoptim$init<-rep(0,length(init))
+  }
   ode <- list(
     ode_def=func,
     #Numberobservation
@@ -39,7 +45,9 @@ OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),isoptim
     InitState = init,
     ncomp= length(modname),
     IsOptimizable= isoptim,
-    ModelName= modname
+    ModelName= modname,
+    ParamIsRegressor=param_is_regressor,
+    InitIsRegressor=init_is_regressor
   )
   
   class(ode) <- append(class(ode),"OdeSystem")
