@@ -408,8 +408,6 @@ result_save$attack<-paste(result_save$attack,"% [",result_save$attackmin,"%; ",r
 xtable(result_save[,c("location","topt","timeMAXICU","ICU","Death","attack")],include.rownames=FALSE)
 strsplit(result_save$Death, split=c(" ",";"))
 
-?xtable
-
 result_save<-result
 result$location<-full_region_names(result$location)
 result<-result[order(result$K, result$location),]

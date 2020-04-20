@@ -404,7 +404,7 @@ getPlotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE, pro
   Sys.setlocale("LC_TIME",old.loc)
 }
 
-getR0France<-function(R0table,nameproject,nameprojectupdate,alpha,Di){
+getR0France<-function(path,nameproject,nameprojectupdate,alpha,Di){
   pop <- read.table(paste(path,"outputMonolix/", nameproject,"/populationParameters.txt",sep=""),
                     sep=",",header=TRUE)
   popUP <- read.table(paste(path,"outputMonolix/", nameprojectupdate,"/populationParameters.txt",sep=""),
@@ -414,6 +414,54 @@ getR0France<-function(R0table,nameproject,nameprojectupdate,alpha,Di){
   Dqmin<-pop$value[pop$parameter=="Dq_pop"]-1.96*pop$se_sa[pop$parameter=="Dq_pop"]
   Dqmax<-pop$value[pop$parameter=="Dq_pop"]+1.96*pop$se_sa[pop$parameter=="Dq_pop"]
 
+  b<-pop$value[pop$parameter=="b1_pop"]
+  r<-0.03307405
+  dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
+  alpha<-alphafixed
+  De<-Defixed
+  Di<-Difixed
+  Dq<-pop$value[pop$parameter=="Dq_pop"]
+  Dh<-Dhfixed
+  b3<-0
+  popSize<-dataregion$popsize[1]
+  E0given<-as.numeric(indivParams[i,c("E0_mode")])
+  A0given<-10000
+  if(typecov=="constant"){
+    b2<-as.numeric(indivParams[i,"betat1_mode"])
+  }
+  if(typecov=="parametric"){
+    b2<-c(as.numeric(indivParams[i,"betat1_mode"]),timings)
+  }
+  if(typecov=="splines"){
+    b2<-c(as.numeric(indivParams[i,"beta1_mode"]),as.numeric(indivParams[i,"beta2_mode"]),as.numeric(indivParams[i,"beta3_mode"]))
+  }
+  tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
+  
+  bsd<-sqrt(as.numeric(indivParams[i,"b1_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="b1_pop"),"se_sa"])**2)
+  Dqsd<-sqrt(as.numeric(indivParams[i,"Dq_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="Dq_pop"),"se_sa"])**2)
+  E0sd<-sqrt(as.numeric(indivParams[i,"E0_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="E0_pop"),"se_sa"])**2)
+  A0sd<-0
+  betasd<-as.numeric(popParams[which(popParams$parameter=="betat1_pop"),"se_sa"])
+  beta2sd<-0
+  if(typecov=="constant"){
+    b3UP<-as.numeric(indivParamsUP[i,"betat2_mode"])
+  }
+  beta2sdUP<-as.numeric(popParamsUP[which(popParamsUP$parameter=="betat2_pop"),"se_sa"])
+  
+  
+  solutionREBOUND <- getSolution( b,
+                                  r,
+                                  dataregion,
+                                  alpha,
+                                  De,
+                                  Di,
+                                  Dq,
+                                  Dh,
+                                  popSize,
+                                  E0given,
+                                  A0given,b2UP,b3UP,tconf,typecov,tconf+55,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sdUP, CI=TRUE,ncores=parallel::detectCores()-1)
+  
+  
   R0tableFRANCE<- data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-06-19"), "day"))
   for (i in 1:length(R0tableFRANCE$time)){
 
@@ -466,7 +514,7 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
   }
   stopifnot(facet_scales %in% c("fixed", "free_y", "free_x", "free"))
 
-  R0tableFRANCE<-getR0France(R0table,nameproject,nameprojectupdate,alpha,Di)
+  R0tableFRANCE<-getR0France(path,nameproject,nameprojectupdate,alpha,Di)
 
   R0table$finaltime <- as.Date(R0table$date)+as.numeric(R0table$time)
 
