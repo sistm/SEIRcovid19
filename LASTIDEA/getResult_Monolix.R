@@ -203,7 +203,6 @@ for (i in 1:length(indivParams$id)){
 
 # #
   R0s_list<-readRDS(file = "./data/all_R0s_df_final20200416.rds")
-  solutions_list<-readRDS(file = "./data/solutions_list20200416.rds")#
   solutionsUPDATED_list<-readRDS(file = "./data/solutionsUPDATED_list20200416.rds")
   solutionsNOEFFECT_list<-readRDS(file = "./data/solutionsNOEFFECT_list20200416.rds")
   solutionsCOMBINED_list<-readRDS(file = "./data/solutionsCOMBINED_list20200416.rds")
@@ -212,7 +211,7 @@ for (i in 1:length(indivParams$id)){
   predictionsNOEFFECT_list<-readRDS(file = "./data/predictionsNOEFFECT20200416.rds")
   predictionsCOMBINED_list<-readRDS(file = "./data/predictionsCOMBINED20200416.rds")
 
-getPlotSolutionAll(solutions_list, nameproject = nameproject)
+getPlotSolutionAll(solutionsCOMBINED_list, nameproject = nameproject)
 
 
 #### REFF ----
@@ -252,7 +251,7 @@ predictionsCOMBINED <- do.call(rbind.data.frame, predictionsCOMBINED_list)
 getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,nameproject, logscale=TRUE)
 getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,nameproject, logscale=FALSE)
 
-### No intervention what if 
+### No intervention what if
 solutionNOEFFECT$solution
 fo
 
@@ -375,15 +374,15 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
 
 
         timemax<-which(solution$solution$H==max(solution$solution$H))
-        
+
         ICUpct<-round((tauxICU*solution$solution$H[timemax])/nblits*100,0)
         ICUpctmin<-round(max(tauxICU*solution$solution$Hmin[timemax])/nblits*100,0)
         ICUpctmax<-round(max(tauxICU*solution$solution$Hmax[timemax])/nblits*100,0)
         maxICU<-paste(round((tauxICU*solution$solution$H[timemax])/nblits*100,0),"% [",round(max(tauxICU*solution$solution$Hmin[timemax])/nblits*100,0),"%; ",round(max(tauxICU*solution$solution$Hmax[timemax])/nblits*100,0),"%]",sep="")
 
-        
+
         result[k,]<-c(K,as.character(indivParams$id[i]),I11mai,A11mai,E11mai,topt,as.character(overload),maxICU,nbdeath,temp,tempmin,tempmax,E,Emin,Emax,A,Amin,Amax,I,Imin,Imax,death,deathmin,deathmax,ICUpct,ICUpctmin,ICUpctmax)
-        
+
 
         print(result[k,])
         k<-k+1
@@ -576,7 +575,7 @@ solutionsREBOUND_2plot <- cbind.data.frame(solutionsREBOUND_allobs,
                                            "value.min" = solutionsREBOUND_allmin$value.min,
                                            "value.max" = solutionsREBOUND_allmax$value.max)
 
-ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
+p <- ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
   geom_line(aes(y=value/popsize, colour = reg)) +
   geom_ribbon(aes(ymin=value.min/popsize, ymax=value.max/popsize), alpha = 0.3) +
   geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lock-down start")) +
@@ -592,12 +591,16 @@ ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
   colorspace::scale_fill_discrete_qualitative(name = "Region", palette = "Dark3") +
   theme(legend.text = element_text(size = 8),
         legend.title = element_text(size = 10)) +
-  #theme(legend.position = "bottom", legend.direction = "vertical") +
+  theme(legend.position = "bottom", legend.box = "vertical") + #, legend.direction = "vertical") +
   NULL
-ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/rebound_prop.jpg",sep=""),
-       device = "jpeg", dpi =300, width=7, height=5)
 
-ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
+old.loc <- Sys.getlocale("LC_TIME")
+Sys.setlocale("LC_TIME", "en_GB.UTF-8")
+ggsave(p, file = paste(path,"outputMonolix/",nameproject,"/graphics/rebound_prop.jpg",sep=""),
+       device = "jpeg", dpi =300, width=7.4, height=8.5)
+Sys.setlocale("LC_TIME",old.loc)
+
+p <- ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
   geom_line(aes(y=value, colour = reg)) +
   geom_ribbon(aes(ymin=value.min, ymax=value.max), alpha = 0.3) +
   geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lock-down start")) +
@@ -611,11 +614,15 @@ ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
   colorspace::scale_color_discrete_qualitative(name = "Region", palette = "Dark3") +
   colorspace::scale_fill_discrete_qualitative(name = "Region", palette = "Dark3") +
   theme(legend.text = element_text(size = 8),
-        legend.title = element_text(size = 10)) +
+        legend.title = element_text(size = 9)) +
   #theme(legend.position = "bottom", legend.direction = "vertical") +
   NULL
-ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/rebound.jpg",sep=""),
+
+old.loc <- Sys.getlocale("LC_TIME")
+Sys.setlocale("LC_TIME", "en_GB.UTF-8")
+ggsave(p, file = paste(path,"outputMonolix/",nameproject,"/graphics/rebound.jpg",sep=""),
        device = "jpeg", dpi =300, width=7, height=5)
+Sys.setlocale("LC_TIME",old.loc)
 
 #
 # p1 <- ggplot(solutionsREBOUND_all, aes(fill=reg, x=date)) +
