@@ -11,7 +11,7 @@ source("./LASTIDEA/routineResults.R")
 
 path<-"./LASTIDEA/"
 nameproject<-"Final_20200325/"
-dataname<-"data_monolix_20200325_corse.txt"
+dataname<-"data_monolix_20200325.txt"
 nameprojectupdate<-"Final_Update_20200410/"
 
 typecov<-"constant"
