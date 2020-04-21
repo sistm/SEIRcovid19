@@ -11,7 +11,7 @@ source("./LASTIDEA/routineResults.R")
 
 path<-"./LASTIDEA/"
 nameproject<-"Final_20200325/"
-dataname<-"data_monolix_20200325.txt"
+dataname<-"data_monolix_20200325_corse.txt"
 nameprojectupdate<-"Final_Update_20200410/"
 
 typecov<-"constant"
@@ -190,7 +190,7 @@ for (i in 1:length(indivParams$id)){
     message("Done\n")
 }
 
-#
+# saveRDS(indivParams, file = "./LASTIDEA/data/indivParams_final20200416.rds")
 # saveRDS(R0s_list, file = "./LASTIDEA/data/all_R0s_df_final20200416.rds")
 # saveRDS(solutions_list, file = "./LASTIDEA/data/solutions_list20200416.rds")
 # saveRDS(solutionsUPDATED_list, file = "./LASTIDEA/data/solutionsUPDATED_list20200416.rds")
@@ -202,6 +202,7 @@ for (i in 1:length(indivParams$id)){
 # saveRDS(predictionsCOMBINED_list, file = "./LASTIDEA/data/predictionsCOMBINED20200416.rds")
 
 # #
+  indivParams<-readRDS(file = "./data/indivParams_final20200416.rds")
   R0s_list<-readRDS(file = "./data/all_R0s_df_final20200416.rds")
   solutionsUPDATED_list<-readRDS(file = "./data/solutionsUPDATED_list20200416.rds")
   solutionsNOEFFECT_list<-readRDS(file = "./data/solutionsNOEFFECT_list20200416.rds")
@@ -219,23 +220,6 @@ all_R0s_df <- do.call(rbind.data.frame, R0s_list)
 getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
           Di=Difixed, alpha=alphafixed, facet_scales = "fixed", nameprojectupdate)
 
-### %INFECTED // ATTACK RATES
-attack<-getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
-attackinfnothingdone<-getAttackrates(predictionsNOEFFECT,indivParams,inf=TRUE)
-for (i in 1:length(indivParams$id)){
-indivParams$attackinfnothingdone[i]<-attackinfnothingdone$summaryinf[which(attackinfnothingdone$reg==indivParams$id[i])]
-}
-attackinfnothingdoneFRANCE<-attackinfnothingdone[which(attackinfnothingdone$reg=="France"),"summaryinf"]
-
-
-### Get Table Article ----
-R0france<-getR0France(all_R0s_df,nameproject,nameprojectupdate,alpha,Di)
-getindicators(indivParams,R0france,path,nameproject,nameprojectupdate,attackinfnothingdoneFRANCE)
-
-R0france$I[which(R0france$time=="2020-04-15")]+0.033*R0france$R[which(R0france$time=="2020-04-15")]+R0france$H[which(R0france$time=="2020-04-15")]
-
-
-
 
 ### PREDICTION COURT TERME -----
 #predictions_list <- readRDS("data/predictions20200411.rds")
@@ -250,6 +234,32 @@ predictionsNOEFFECT <- do.call(rbind.data.frame, predictionsNOEFFECT_list)
 predictionsCOMBINED <- do.call(rbind.data.frame, predictionsCOMBINED_list)
 getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,nameproject, logscale=TRUE)
 getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,nameproject, logscale=FALSE)
+
+
+
+### %INFECTED // ATTACK RATES
+attack<-getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
+attackinfnothingdone<-getAttackrates(predictionsNOEFFECT,indivParams,inf=TRUE)
+for (i in 1:length(indivParams$id)){
+indivParams$attackinfnothingdone[i]<-attackinfnothingdone$summaryinf[which(attackinfnothingdone$reg==indivParams$id[i])]
+}
+#attackinfnothingdoneFRANCE<-attackinfnothingdone[which(attackinfnothingdone$reg=="France"),"summaryinf"]
+
+
+### Get Table Article ----
+#dataFRANCE<-data[which(data$IDname==as.character(indivParams[1,1])),]
+#popFRANCE<-sum(indivParams$popsize)
+#R0france<-getR0France(all_R0s_df,nameproject,nameprojectupdate,alpha,Di)
+getindicators(indivParams,path,nameproject,nameprojectupdate,attackinfnothingdone)
+
+
+
+
+R0france$I[which(R0france$time=="2020-04-15")]+0.033*R0france$R[which(R0france$time=="2020-04-15")]+R0france$H[which(R0france$time=="2020-04-15")]
+
+
+
+
 
 ### No intervention what if
 solutionNOEFFECT$solution
@@ -390,8 +400,18 @@ for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,1
 }
 result_save<-result
 #saveRDS(result_save, file = "./LASTIDEA/data/result_lockdown20200416.rds")
+result_save<-readRDS(file = "./LASTIDEA/data/result_lockdown20200416.rds")
+
+
 result_save$location<-full_region_names(result_save$location)
 xtable(result_save[,c("location","I","A","E")],include.rownames=FALSE)
+
+
+comparaison<-result_save[which(result_save$K==5),c("location","ICU")]
+comparaison$ICUK3<-result_save[which(result_save$K==3),c("ICU")]
+comparaison$real<-c("140%","148%","86%","118%","125%","221%","232%","64%","93%","70%","95%","100%")
+xtable(comparaison)
+
 
 result_save$R<-as.numeric(result_save$dval)/0.05
 result_save$Rmin<-as.numeric(result_save$dvalmin)/0.05
