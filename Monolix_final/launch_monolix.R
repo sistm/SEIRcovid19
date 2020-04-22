@@ -23,8 +23,20 @@ indivModel = getIndividualParameterModel()
 # Check the distribution
 indivModel$distribution
 # Set the distrution to normal for b1
-setIndividualParameterDistribution(b1="normal")
+var_name<-indivModel$name[1]
 
+mlxProject.setIndividualParameterDistribution <- function(a) {
+  #.hiddenCall(paste0('r <- lixoftConnectors::setIndividualParameterDistribution(',a,'= "normal")'))
+  eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterDistribution(',a,'= "normal")' )))
+}
+mlxProject.setIndividualParameterDistribution(var_name)
+indivModel = getIndividualParameterModel()
+indivModel$distribution
+
+
+
+#setIndividualParameterDistribution(b1="normal")
+#setIndividualParameterDistribution("b1"="normal")
 # Check the modification
 indivModel = getIndividualParameterModel()
 indivModel$distribution
