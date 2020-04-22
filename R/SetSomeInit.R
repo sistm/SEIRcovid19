@@ -1,3 +1,5 @@
+#'@export
+
 SetSomeInit <- function(obj, init)
 {
   UseMethod("SetSomeInit",obj)

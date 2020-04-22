@@ -6,7 +6,8 @@ OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),
                       variabilty=list(),
                       isregressor=list(),
                       distribution=list(),
-                      Data=list())
+                      Data=list(),
+                      isspecificinit=rep(0,length(init)))
 {
   if (length(variabilty)==0){
     variabilty$param<-rep(0,length(param))
@@ -33,7 +34,8 @@ OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),
     ModelName= modname,
     IsRegressor=isregressor,
     Distribution=distribution,
-    DataInfo=Data
+    DataInfo=Data,
+    IsSpecificInit=isspecificinit
     )
   
   class(ode) <- append(class(ode),"OdeSystem")
