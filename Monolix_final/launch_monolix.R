@@ -7,11 +7,11 @@ initializeLixoftConnectors(software="monolix")
 ### LAUNCH FROM MONOLIX (recommended)
 ##########################
 
-path<-"./Monolix_final/"
+path<-"/home/ddutartr/Projet/SISTM/SEIRcovid19/Monolix_final/"
 nameproject<-"final"
 dataname<-"data_monolix_20200403.txt"
 codename<- "monolix_Estimation_2periode_cov.txt"
-
+codename<-"mlxmodel_full.txt"
 newProject(modelFile = paste(path,codename,sep=""),
            data = list(dataFile = paste(path,dataname,sep=""),
                        headerTypes =c("ignore","ignore","time","regressor","regressor","obsid","observation","regressor","regressor","regressor","ignore","ignore","ignore","id"),

@@ -1,0 +1,49 @@
+DESCRIPTION: FIT SEIRAH MODEL
+
+
+[LONGITUDINAL]
+INPUT:
+parameter = {initE,Dq,b1,beta1}
+regressor = {init_H0,init_I0,isolation,popSize,ascertainment}
+
+EQUATION:
+odeType = stiff
+
+alpha=1.5
+De=5.2
+Di=2.3
+Dh=30
+dailyMove=122782.1
+timeconf=15
+lengthconf=1000
+newdailyMove=0
+factorreductrans=1.45268562720736
+
+t0 = 0  ; t0 is a reserved keyword (initiation of therapy) 
+
+E_0=initE
+H_0=init_H0
+I_0=init_I0
+R_0=0
+A_0=I_0*(1-ascertainment)/ascertainment
+S_0=popSize-E_0-I_0-R_0-A_0-H_0
+
+transmission=b1*exp(beta1*isolation)
+
+
+ddt_S = -transmission*S*(I+alpha*A)/popSize+dailyMove-dailyMove*S/(popSize-I-H)
+ddt_E = transmission*S*(I+alpha*A)/popSize-E/De-dailyMove*E/(popSize-I-H)
+ddt_I = ascertainment*E/De-I/Dq-I/Di
+ddt_R = (I+A)/Di+H/Dh-dailyMove*R/(popSize-I-H)
+ddt_A = (1-ascertainment)*E/De-A/Di-dailyMove*A/(popSize-I-H)
+ddt_H = I/Dq-H/Dh
+
+Isim=ascertainment*E/De
+Hsim=I/Dq
+
+DEFINITION:
+
+Y1= {type = count, log(P(Y1=k)) = -Isim+ k*log(Isim) - factln(k) }
+Y2= {type = count, log(P(Y2=k)) = -Hsim+ k*log(Hsim) - factln(k) }
+
+output = {Y1, Y2}
