@@ -5,7 +5,7 @@
 \alias{sursaud_covid19}
 \title{Emergency Covid-19 numbers}
 \format{
-A data frame with 2904 rows and 7 variables:
+A data frame with 6,897 rows and 7 variables:
 \describe{
   \item{maille_cd}{administrative code}
   \item{date_de_passage}{Date of ER visits}
@@ -18,14 +18,14 @@ A data frame with 2904 rows and 7 variables:
 }
 \source{
 SURSAUD database share by Santé Publique France \url{https://www.data.gouv.fr/fr/datasets/r/941ff2b4-ea24-4cdf-b0a7-655f2a332fb2}
-stored in \code{'data/raw/sursaud-covid19-quotidien-2020-04-07-19h00.xlsx'}
+stored in \code{'data/raw/sursaud-covid19-quotidien-2020-04-21-19h00.xlsx'}
 }
 \usage{
 sursaud_covid19
 }
 \description{
 A dataset containing the  Emergency Covid-19 related counts in France during
-the Covid epidemics as of 2020-04-07 at 19:00 (Paris time).
+the Covid epidemics as of 2020-04-21 at 19:00 (Paris time).
 }
 \examples{
 data(sursaud_covid19)
@@ -34,7 +34,7 @@ data(sursaud_covid19)
 # library(dplyr)
 
 # ## Regions ----
-# sursaud_covid19_reg <- readxl::read_xlsx("data/raw/sursaud-covid19-quotidien-2020-04-10-19h00.xlsx",
+# sursaud_covid19_reg <- readxl::read_xlsx("data/raw/sursaud-covid19-quotidien-2020-04-21-19h00.xlsx",
 #                                         sheet="reg"
 # )
 # sursaud_covid19_reg_tot <- sursaud_covid19_reg \%>\%
@@ -50,7 +50,7 @@ data(sursaud_covid19)
 # colnames(sursaud_covid19_reg_tot_ord)[1] <- "maille_code"
 
 # ## Departements ----
-# sursaud_covid19_dpt <- readxl::read_xlsx("data/raw/sursaud-covid19-quotidien-2020-04-10-19h00.xlsx",
+# sursaud_covid19_dpt <- readxl::read_xlsx("data/raw/sursaud-covid19-quotidien-2020-04-21-19h00.xlsx",
 #                                          sheet="dep"
 # )
 # sursaud_covid19_dpt_tot <- sursaud_covid19_dpt \%>\%
