@@ -109,7 +109,7 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile)
   write("\nDEFINITION:\n",file=ModelFile,append=TRUE)
   write(def_line,file=ModelFile,append=TRUE)
   
-  write("\nOUTPUT:\n")
+  write("\nOUTPUT:\n",file=ModelFile,append=TRUE)
   write(output_line,file=ModelFile,append=TRUE)
   
   return(ode)
