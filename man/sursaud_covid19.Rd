@@ -65,7 +65,7 @@ data(sursaud_covid19)
 # sursaud_covid19_dpt_tot_ord$dep <- paste0("DPT-", sursaud_covid19_dpt_tot_ord$dep)
 # colnames(sursaud_covid19_dpt_tot_ord)[1] <- "maille_code"
 #
-# sursaud_covid19 <- rbind.data.frame(sursaud_covid19_reg_tot_ord, sursaud_covid19_dpt_tot_ord)
+# sursaud_covid19 <- as.data.frame(rbind.data.frame(sursaud_covid19_reg_tot_ord, sursaud_covid19_dpt_tot_ord))
 # save(sursaud_covid19, file = "data/sursaud_covid19.RData")
 
 }
