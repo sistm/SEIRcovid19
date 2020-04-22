@@ -436,7 +436,7 @@ getR0France<-function(path,nameproject,nameprojectupdate,alpha,Di){
     b2<-c(as.numeric(indivParams[i,"beta1_mode"]),as.numeric(indivParams[i,"beta2_mode"]),as.numeric(indivParams[i,"beta3_mode"]))
   }
   tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
-  
+
   bsd<-sqrt(as.numeric(indivParams[i,"b1_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="b1_pop"),"se_sa"])**2)
   Dqsd<-sqrt(as.numeric(indivParams[i,"Dq_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="Dq_pop"),"se_sa"])**2)
   E0sd<-sqrt(as.numeric(indivParams[i,"E0_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="E0_pop"),"se_sa"])**2)
@@ -447,8 +447,8 @@ getR0France<-function(path,nameproject,nameprojectupdate,alpha,Di){
     b3UP<-as.numeric(indivParamsUP[i,"betat2_mode"])
   }
   beta2sdUP<-as.numeric(popParamsUP[which(popParamsUP$parameter=="betat2_pop"),"se_sa"])
-  
-  
+
+
   solutionREBOUND <- getSolution( b,
                                   r,
                                   dataregion,
@@ -460,8 +460,8 @@ getR0France<-function(path,nameproject,nameprojectupdate,alpha,Di){
                                   popSize,
                                   E0given,
                                   A0given,b2UP,b3UP,tconf,typecov,tconf+55,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sdUP, CI=TRUE,ncores=parallel::detectCores()-1)
-  
-  
+
+
   R0tableFRANCE<- data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-06-19"), "day"))
   for (i in 1:length(R0tableFRANCE$time)){
 
@@ -531,16 +531,16 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
   # R0table2plot <- rbind(R0table1, R0table2)
   # R0table2plot$Inter <- factor(R0table2plot$Inter, levels=c("Before lockdown", "After lockdown\ndata up to 2020-03-25"), ordered = TRUE)
 
-  R0table$Inter <- "Before lock-down"
+  R0table$Inter <- "Before lockdown"
   temp <- R0table[R0table$finaltime == as.Date("2020-03-16"), ]
-  R0table$Inter[R0table$finaltime > as.Date("2020-03-15")] <- "After lock-down\ndata up to 2020-03-25"
+  R0table$Inter[R0table$finaltime > as.Date("2020-03-15")] <- "After lockdown\ndata up to 2020-03-25"
   R0table <- bind_rows(R0table, temp)
   temp <- R0table[R0table$finaltime == as.Date("2020-03-24"), ]
-  R0table$Inter[R0table$finaltime > as.Date("2020-03-23")] <- "After lock-down\ndata up to 2020-04-06"
+  R0table$Inter[R0table$finaltime > as.Date("2020-03-23")] <- "After lockdown\ndata up to 2020-04-06"
   R0table <- bind_rows(R0table, temp)
-  R0table$Inter <- factor(R0table$Inter, levels=c("Before lock-down",
-                                                  "After lock-down\ndata up to 2020-03-25",
-                                                  "After lock-down\ndata up to 2020-04-06"),
+  R0table$Inter <- factor(R0table$Inter, levels=c("Before lockdown",
+                                                  "After lockdown\ndata up to 2020-03-25",
+                                                  "After lockdown\ndata up to 2020-04-06"),
                           ordered = TRUE)
 
   p <- ggplot(R0table %>% filter(finaltime > as.Date("2020-03-01"), finaltime < as.Date("2020-04-07")),
@@ -877,29 +877,29 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   p1 <- ggplot(datapred, aes(x=time, y=Iincident)) +
     xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
-    geom_line(aes(col="confinement effect\nup to 2020-03-25")) +
+    geom_line(aes(col="lockdown effect\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
-    geom_line(data=datapredUPDATED, aes(color="confinement effect\nup to 2020-04-06")) +
+    geom_line(data=datapredUPDATED, aes(color="lockdown effect\nup to 2020-04-06")) +
     geom_ribbon(data=datapredNOEFFECT,aes(ymin = Iincidentmin, ymax = Iincidentmax,
                                           fill = "no intervention",
                                           alpha="no intervention"))+
     geom_ribbon(data=datapredUPDATED,aes(ymin = Iincidentmin, ymax = Iincidentmax,
-                                         fill = "confinement effect\nup to 2020-04-06",
-                                         alpha="confinement effect\nup to 2020-04-06"))+
+                                         fill = "lockdown effect\nup to 2020-04-06",
+                                         alpha="lockdown effect\nup to 2020-04-06"))+
     geom_ribbon(data=datapred,aes(ymin = Iincidentmin, ymax = Iincidentmax,
-                                  fill = "confinement effect\nup to 2020-03-25",
-                                  alpha="confinement effect\nup to 2020-03-25")) +
+                                  fill = "lockdown effect\nup to 2020-03-25",
+                                  alpha="lockdown effect\nup to 2020-03-25")) +
     geom_point(data=datagouv, aes(x=time,y=Iobs, shape="Source: Santé\nPublique France")) +
     scale_shape("Observations") +
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
-                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                  "confinement effect\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                  "lockdown effect\nup to 2020-04-06")) +
     scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                  "confinement effect\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                  "lockdown effect\nup to 2020-04-06")) +
     scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                      breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                 "confinement effect\nup to 2020-04-06")) +
+                      breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                 "lockdown effect\nup to 2020-04-06")) +
     theme_classic() +
     ylab(paste0("National cumulative incidence\nof ascertained cases", log_title)) +
     ggtitle("France")
@@ -907,29 +907,29 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   p2 <- ggplot(datapred, aes(x=time, y=Hincident)) +
     xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
-    geom_line(aes(col="confinement effect\nup to 2020-03-25")) +
+    geom_line(aes(col="lockdown effect\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
-    geom_line(data=datapredUPDATED, aes(color="confinement effect\nup to 2020-04-06")) +
+    geom_line(data=datapredUPDATED, aes(color="lockdown effect\nup to 2020-04-06")) +
     geom_ribbon(data=datapredNOEFFECT,aes(ymin = Hincidentmin, ymax = Hincidentmax,
                                           fill = "no intervention",
                                           alpha="no intervention"))+
     geom_ribbon(data=datapredUPDATED,aes(ymin = Hincidentmin, ymax = Hincidentmax,
-                                         fill = "confinement effect\nup to 2020-04-06",
-                                         alpha="confinement effect\nup to 2020-04-06"))+
+                                         fill = "lockdown effect\nup to 2020-04-06",
+                                         alpha="lockdown effect\nup to 2020-04-06"))+
     geom_ribbon(data=datapred,aes(ymin = Hincidentmin, ymax = Hincidentmax,
-                                  fill = "confinement effect\nup to 2020-03-25",
-                                  alpha="confinement effect\nup to 2020-03-25")) +
+                                  fill = "lockdown effect\nup to 2020-03-25",
+                                  alpha="lockdown effect\nup to 2020-03-25")) +
     geom_point(data=datagouv, aes(x=time,y=Hobs, shape="Source: Santé\nPublique France")) +
     scale_shape("Observations") +
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
-                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                  "confinement effect\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                  "lockdown effect\nup to 2020-04-06")) +
     scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                  "confinement effect\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                  "lockdown effect\nup to 2020-04-06")) +
     scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                      breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                 "confinement effect\nup to 2020-04-06")) +
+                      breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                 "lockdown effect\nup to 2020-04-06")) +
     theme_classic() +
     ylab(paste0("National prevalence\nof hospitalized cases", log_title)) +
     ggtitle("France")
@@ -937,29 +937,29 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   p3 <- ggplot(datapred, aes(x=time, y=ICUincident)) +
     xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
-    geom_line(aes(col="confinement effect\nup to 2020-03-25")) +
+    geom_line(aes(col="lockdown effect\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
-    geom_line(data=datapredUPDATED, aes(color="confinement effect\nup to 2020-04-06")) +
+    geom_line(data=datapredUPDATED, aes(color="lockdown effect\nup to 2020-04-06")) +
     geom_ribbon(data=datapredNOEFFECT,aes(ymin = ICUincidentmin, ymax = ICUincidentmax,
                                           fill = "no intervention",
                                           alpha="no intervention"))+
     geom_ribbon(data=datapredUPDATED,aes(ymin = ICUincidentmin, ymax = ICUincidentmax,
-                                         fill = "confinement effect\nup to 2020-04-06",
-                                         alpha="confinement effect\nup to 2020-04-06"))+
+                                         fill = "lockdown effect\nup to 2020-04-06",
+                                         alpha="lockdown effect\nup to 2020-04-06"))+
     geom_ribbon(data=datapred,aes(ymin = ICUincidentmin, ymax = ICUincidentmax,
-                                  fill = "confinement effect\nup to 2020-03-25",
-                                  alpha="confinement effect\nup to 2020-03-25")) +
+                                  fill = "lockdown effect\nup to 2020-03-25",
+                                  alpha="lockdown effect\nup to 2020-03-25")) +
     geom_point(data=datagouv, aes(x=time,y=ICUobs, shape="Source: Santé\nPublique France")) +
     scale_shape("Observations") +
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
-                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                  "confinement effect\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                  "lockdown effect\nup to 2020-04-06")) +
     scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                  "confinement effect\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                  "lockdown effect\nup to 2020-04-06")) +
     scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                      breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                 "confinement effect\nup to 2020-04-06")) +
+                      breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                 "lockdown effect\nup to 2020-04-06")) +
     theme_classic() +
     ylab(paste0("National prevalence\nof ICU cases", log_title)) +
     ggtitle("France")
@@ -967,29 +967,29 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   p4 <- ggplot(datapred, aes(x=time, y=Dincident)) +
     xlab("Date") + geom_vline(xintercept = as.Date("2020-03-25"), linetype=2, color="red3") +
     geom_vline(xintercept = as.Date("2020-04-06"), linetype=2, color="skyblue") +
-    geom_line(aes(col="confinement effect\nup to 2020-03-25")) +
+    geom_line(aes(col="lockdown effect\nup to 2020-03-25")) +
     geom_line(data=datapredNOEFFECT, aes(color="no intervention")) +
-    geom_line(data=datapredUPDATED, aes(color="confinement effect\nup to 2020-04-06")) +
+    geom_line(data=datapredUPDATED, aes(color="lockdown effect\nup to 2020-04-06")) +
     geom_ribbon(data=datapredNOEFFECT,aes(ymin = Dincidentmin, ymax = Dincidentmax,
                                           fill = "no intervention",
                                           alpha="no intervention"))+
     geom_ribbon(data=datapredUPDATED,aes(ymin = Dincidentmin, ymax = Dincidentmax,
-                                         fill = "confinement effect\nup to 2020-04-06",
-                                         alpha="confinement effect\nup to 2020-04-06"))+
+                                         fill = "lockdown effect\nup to 2020-04-06",
+                                         alpha="lockdown effect\nup to 2020-04-06"))+
     geom_ribbon(data=datapred,aes(ymin = Dincidentmin, ymax = Dincidentmax,
-                                  fill = "confinement effect\nup to 2020-03-25",
-                                  alpha="confinement effect\nup to 2020-03-25")) +
+                                  fill = "lockdown effect\nup to 2020-03-25",
+                                  alpha="lockdown effect\nup to 2020-03-25")) +
     geom_point(data=datagouv, aes(x=time,y=Dobs, shape="Source: Santé\nPublique France")) +
     scale_shape("Observations") +
     scale_alpha_manual("Estimate (95% CI)", values=c(0.25, 0.25, 0.25),
-                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                  "confinement effect\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                  "lockdown effect\nup to 2020-04-06")) +
     scale_color_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                       breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                  "confinement effect\nup to 2020-04-06")) +
+                       breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                  "lockdown effect\nup to 2020-04-06")) +
     scale_fill_manual("Estimate (95% CI)", values=c("purple4", "red3", "skyblue"),
-                      breaks = c("no intervention", "confinement effect\nup to 2020-03-25",
-                                 "confinement effect\nup to 2020-04-06")) +
+                      breaks = c("no intervention", "lockdown effect\nup to 2020-03-25",
+                                 "lockdown effect\nup to 2020-04-06")) +
     theme_classic() +
     ylab(paste0("National cumulative incidence\nof death", log_title)) +
     ggtitle("France")

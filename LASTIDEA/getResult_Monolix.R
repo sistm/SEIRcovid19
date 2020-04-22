@@ -253,7 +253,6 @@ getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,n
 
 ### No intervention what if
 solutionNOEFFECT$solution
-fo
 
 maxepidemics<-max(predictionnoint$Iincident)
 predictionnoint$time[which(predictionnoint$Iincident==maxepidemics)]
@@ -576,9 +575,9 @@ solutionsREBOUND_2plot <- cbind.data.frame(solutionsREBOUND_allobs,
 p <- ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
   geom_line(aes(y=value/popsize, colour = reg)) +
   geom_ribbon(aes(ymin=value.min/popsize, ymax=value.max/popsize), alpha = 0.3) +
-  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lock-down start")) +
-  geom_vline(aes(xintercept=as.Date("2020-05-11"),  linetype="Lock-down lift")) +
-  scale_linetype_manual("", values=c(2,3), breaks=c("Lock-down start", "Lock-down lift")) +
+  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lockdown start")) +
+  geom_vline(aes(xintercept=as.Date("2020-05-11"),  linetype="Lockdown lift")) +
+  scale_linetype_manual("", values=c(2,3), breaks=c("Lockdown start", "Lockdown lift")) +
   xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
   theme_bw() +
   scale_y_continuous(labels = scales::percent_format(accuracy = 0.01)) +
@@ -601,9 +600,9 @@ Sys.setlocale("LC_TIME",old.loc)
 p <- ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
   geom_line(aes(y=value, colour = reg)) +
   geom_ribbon(aes(ymin=value.min, ymax=value.max), alpha = 0.3) +
-  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lock-down start")) +
-  geom_vline(aes(xintercept=as.Date("2020-05-11"),  linetype="Lock-down lift")) +
-  scale_linetype_manual("", values=c(2,3), breaks=c("Lock-down start", "Lock-down lift")) +
+  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lockdown start")) +
+  geom_vline(aes(xintercept=as.Date("2020-05-11"),  linetype="Lockdown lift")) +
+  scale_linetype_manual("", values=c(2,3), breaks=c("Lockdown start", "Lockdown lift")) +
   xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
   theme_bw() +
   facet_wrap(~variable, scales="free", ncol=2) +
