@@ -24,8 +24,10 @@ OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),
   Data$File=""
   Data$HeaderType=""
   Data$Sep=""
+  ModelFile=""
   ode <- list(
     ode_def=func,
+    ModelFile=ModelFile,
     Numberobservation=0,
     parameter = param,
     InitState = init,
