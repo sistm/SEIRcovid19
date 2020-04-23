@@ -19,7 +19,7 @@ SetSomeParameter.default <- function(obj, parameter)
 SetSomeParameter.OdeSystem <- function(ode, param)
 {
   for (p in 1:length(param)){
-    ode$parameter[names(ode$parameter)==names(param[p])]<-param[p]
+    ode$parameter[names(ode$parameter)==names(param[p])]<-param[[p]]
   }
   return(ode)
 }
