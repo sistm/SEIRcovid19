@@ -695,15 +695,32 @@ Sys.setlocale("LC_TIME",old.loc)
 
 
 
-##########GRAPHICAL ABSTRAC
-data[which((data$date==as.Date("2020-03-08"))&(data$obs_id==1)),]
-head(data)
-data$IDgood<-full_region_names(data$IDname)
-p <- ggplot(data[which((data$obs_id==1)&(!(data$date==as.Date("2020-03-08")))&(!(data$date==as.Date("2020-03-09")))),], aes(fill=IDgood, x=date)) +
-  geom_line(aes(y=obs, colour = IDgood),size=2) +ylab("Incident Number of Cases")+xlab("Date")+theme_bw()+ theme(text = element_text(size=15))
-
-p <- ggplot(data[which((data$obs_id==2)&(!(data$date==as.Date("2020-03-08")))&(!(data$date==as.Date("2020-03-09")))),], aes(fill=IDgood, x=date)) +
-  geom_line(aes(y=obs, colour = IDgood),size=2) +ylab("Number of Hospitalization")+xlab("Date")+theme_bw()+ theme(text = element_text(size=15))
+## GRAPHICAL ABSTRACT ----
+data[data$date==as.Date("2020-03-08") & data$obs_id==1, ]
+library(patchwork)
+#head(data)
+data$IDgood <- full_region_names(data$IDname)
+p1 <- ggplot(data[which((data$obs_id==1)&(!(data$date==as.Date("2020-03-08")))&(!(data$date==as.Date("2020-03-09")))),], aes(fill=IDgood, x=date)) +
+  geom_line(aes(y=obs, group = IDgood), size=0.8) +
+  ggtitle("COVID-19 regional new infections") +
+  ylab("") +
+  xlab("Date") +
+  theme_bw() +
+  theme(plot.title = element_text(size=16), text = element_text(size=16)) +
+  theme(panel.grid.minor = element_blank())
+p2 <- ggplot(data[which((data$obs_id==2)&(!(data$date==as.Date("2020-03-08")))&(!(data$date==as.Date("2020-03-09")))),], aes(fill=IDgood, x=date)) +
+  geom_line(aes(y=obs, group = IDgood), size=0.8) +
+  ggtitle("COVID-19 regional new hospitalizations") +
+  ylab("") +
+  xlab("Date") +
+  theme_bw() +
+  theme(plot.title = element_text(size=16), text = element_text(size=16)) +
+  theme(panel.grid.minor = element_blank())
+old.loc <- Sys.getlocale("LC_TIME")
+Sys.setlocale("LC_TIME", "en_GB.UTF-8")
+p3 <- p1 + plot_spacer() + p2 + plot_layout(widths = c(2,0.05,2))
+ggsave(plot = p3, file="RegionTrajectories.jpeg", width=10, height=4, dpi = 600)
+Sys.setlocale("LC_TIME",old.loc)
 
 head(all_R0s_df)
 R0pred<-data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-04-30"), "day"))
@@ -713,23 +730,45 @@ for (i in 1:length(R0pred$time)){
   R0pred$R0max[i]<-sum(as.numeric(all_R0s_df$R0ICmax[which(as.character(as.Date(all_R0s_df$date)+as.numeric(all_R0s_df$time))==as.character(R0pred$time[i]))])*indivParams$popsize)/sum(indivParams$popsize)
 }
 R0pred$timeperiod<-"before"
-R0pred$timeperiod[which(R0pred$time>as.Date("2020-03-17"))]<-"lockdown"
-R0pred$timeperiod[which(R0pred$time>as.Date("2020-03-25"))]<-"lockdown7days"
+R0pred$timeperiod[which(R0pred$time>as.Date("2020-03-15"))]<-"lockdown"
+temp <- R0pred[R0pred$time == as.Date("2020-03-16"), ]
+temp$timeperiod <- "before"
+R0pred <- rbind.data.frame(R0pred, temp)
+#R0pred$timeperiod[which(R0pred$timeas.Date("2020-03-17"))]<-"lockdown"
+R0pred$timeperiod[which(R0pred$time>as.Date("2020-03-23"))]<-"lockdown7days"
+temp <- R0pred[R0pred$time == as.Date("2020-03-24"), ]
+temp$timeperiod <- "lockdown"
+R0pred <- rbind.data.frame(R0pred, temp)
 p <- ggplot(R0pred, aes(x=time)) +
-  geom_line(aes(y=R0mean, color = timeperiod,fill = timeperiod)) +
-  geom_ribbon(aes(ymin=R0min, ymax=R0max, colour = timeperiod), alpha = 0.3) +
-  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lockdown start")) +
-  geom_vline(aes(xintercept=as.Date("2020-03-25"),  linetype="One week after Lockdown")) +
+  geom_line(aes(y=R0mean, color = timeperiod), size=0.8) +
+  geom_ribbon(aes(ymin=R0min, ymax=R0max,
+                  fill = timeperiod), alpha = 0.4, size = 0.15) +
+  geom_vline(aes(xintercept=as.Date("2020-03-17")))+#, linetype="Lockdown start")) +
+  geom_text(aes(x=as.Date("2020-03-17"), y=0, label="lockdown"),
+            angle=90, vjust=-0.4, hjust=0, size=5.5) +
+  geom_vline(aes(xintercept=as.Date("2020-03-25")))+#,  linetype="One week\nafter Lockdown")) +
+  geom_text(aes(x=as.Date("2020-03-25"), y=0, label="One week\nafter Lockdown"),
+            angle=90, vjust=0.5, hjust=0, size=5.5) +
+  geom_hline(aes(yintercept = 1), color="grey25", linetype=2) +
   theme_bw() +
-  ylab("Effective Reproductive Number") +
-  xlab("Date")
-
+  #scale_linetype_manual("", values=c(2,3)) +
+  scale_color_manual(values=c("purple4","red3", "skyblue")) +
+  scale_fill_manual(values=c("purple4","red3", "skyblue")) +
+  guides(color="none", fill="none") +
+  ylab("Effective reproductive number") +
+  xlab("Date") +
+  ggtitle("French average") +
+  theme(legend.position = "bottom") +
+  theme(panel.grid.minor = element_blank(), panel.grid.major.x = element_blank()) +
+  theme(text = element_text(size=16)) +
+  ylim(0,4)
+ggsave(plot = p, file="R0_FR.jpeg", width=6.5, height=4, dpi = 600)
 
 fill_info <- cbind.data.frame("name" = as.character(full_region_names(attack$reg)),
                       "fill_value" = as.numeric(sapply(strsplit(attack$summary52, " [", fixed=TRUE), "[", 1)),
                       stringsAsFactors = FALSE)
 p <- french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
-                        one_out_of = 30)
+                        one_out_of = 1)
 ggsave(plot = p, file="map_infec_May11.jpeg", width=5, height=4, dpi = 600)
 #ggsave(plot = p, file="map_infec_May11.pdf", width=5, height=4)
 
