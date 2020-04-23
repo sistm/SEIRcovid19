@@ -514,7 +514,7 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
     theme_bw() +
     facet_wrap(~Region, ncol = 3, scales = facet_scales) +
     theme(strip.background = element_rect(fill="white")) +
-    ylab(expression(paste("Effective Reproductive Number ", R[eff](t, xi)))) +
+    ylab(expression(paste("Effective Reproductive Number ", R[e](t, xi[i])))) +
     #ylim(0,NA) +
     #ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax)))) +
     scale_y_continuous(breaks=0:7, limits = c(0, NA)) +
