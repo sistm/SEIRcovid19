@@ -6,4 +6,5 @@
 *.Rproj
 ./**.jpg
 ./man/*
+./MonolixFile/*
 TRASH
