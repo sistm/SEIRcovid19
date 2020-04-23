@@ -138,6 +138,7 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
   write("\nOUTPUT:\n",file=ModelFile,append=TRUE)
   write(output_line,file=ModelFile,append=TRUE)
   
-  ode$ModelFile<-ModelFile
+  ode<-SetModelFile(ode,ModelFile)
+  #ode$ModelFile<-ModelFile
   return(ode)
 }
