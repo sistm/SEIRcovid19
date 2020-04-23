@@ -1,7 +1,7 @@
 #' SetParamIsRegressor generic
 #'
 #' @param obj Object to set
-#' @param ParamRegressor List of new boolean
+#' @param ParamRegressor List of new Regressor info
 #' @export
 
 
@@ -19,14 +19,12 @@ SetParamIsRegressor.default <- function(obj, ParamRegressor)
   return(obj)
 }
 
-#' @describeIn Set Regressor info for param of an object of class an object of class \code{OdeSystem}
+#' @describeIn Set Regressor info for parameter attribute of an object of class \code{OdeSystem}
 SetParamIsRegressor.OdeSystem <- function(ode, ParamRegressor)
 {
   if (length(ParamRegressor)==length(ode$IsRegressor$param)){
-    print("Set all Optimizable Parameter info")
     ode$IsRegressor$param<-ParamRegressor
   }else{
-    print("Set some Optimizable Parameter info")
     for (p in 1:length(ParamRegressor)){
       ode$IsRegressor$param[names(ode$parameter)==names(ParamRegressor[p])]<-ParamRegressor[[p]]
     }

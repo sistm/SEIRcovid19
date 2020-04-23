@@ -1,7 +1,7 @@
 #' SetParamDistribution generic
 #'
 #' @param obj Object to set
-#' @param ParamDist List of new boolean
+#' @param ParamDist List of new Distribution
 #' @export
 
 
@@ -19,14 +19,12 @@ SetParamDistribution.default <- function(obj, ParamDist)
   return(obj)
 }
 
-#' @describeIn Set Distribution for parameter of an object of class an object of class \code{OdeSystem}
+#' @describeIn Set Distribution for parameter attribute of an object of class \code{OdeSystem}
 SetParamDistribution.OdeSystem <- function(ode, ParamDist)
 {
   if (length(ParamDist)==length(ode$Distribution$param)){
-    print("Set all Regressor Parameter info")
     ode$Distribution$param<-ParamDist
   }else{
-    print("Set some Regressor Parameter info")
     for (p in 1:length(ParamDist)){
       ode$Distribution$param[names(ode$parameter)==names(ParamDist[p])]<-ParamDist[[p]]
     }

@@ -1,4 +1,9 @@
-#'@export
+#' SetSomeInit generic
+#'
+#' @param obj Object to set
+#' @param init List of new initState
+#' @export
+#' 
 
 SetSomeInit <- function(obj, init)
 {
@@ -11,10 +16,9 @@ SetSomeInit.default <- function(obj, init)
   return(obj)
 }
 
-
+#' @describeIn Set Some InitState for an object of class \code{OdeSystem}
 SetSomeInit.OdeSystem <- function(ode, init)
 {
-  print("Set some Init for OdeSytem")
   for (p in 1:length(init)){
     print(init[p])
     ode$InitState[names(ode$InitState)==names(init[p])]<-init[[p]]

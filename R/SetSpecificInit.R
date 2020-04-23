@@ -1,4 +1,8 @@
-#'@export
+#' SetSomeParameter generic
+#'
+#' @param obj Object to set
+#' @param isspecific define is the init state is specific or not
+#' @export
 SetSpecificInit <- function(obj, isspecific)
 {
   UseMethod("SetSpecificInit",obj)
@@ -10,6 +14,7 @@ SetSpecificInit.default <- function(obj, isspecific)
   return(obj)
 }
 
+#' @describeIn Set IsSpecificInit attribute for an object of class \code{OdeSystem}
 
 SetSpecificInit.OdeSystem <- function(ode, isspecific)
 {
