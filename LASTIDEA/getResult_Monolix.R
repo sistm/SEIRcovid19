@@ -239,8 +239,8 @@ getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,n
 
 
 ### %INFECTED // ATTACK RATES
-attack<-getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
-attackinfnothingdone<-getAttackrates(predictionsNOEFFECT,indivParams,inf=TRUE)
+attack <- getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
+attackinfnothingdone <- getAttackrates(predictionsNOEFFECT,indivParams,inf=TRUE)
 for (i in 1:length(indivParams$id)){
 indivParams$attackinfnothingdone[i]<-attackinfnothingdone$summaryinf[which(attackinfnothingdone$reg==indivParams$id[i])]
 }
@@ -723,4 +723,13 @@ p <- ggplot(R0pred, aes(x=time)) +
   theme_bw() +
   ylab("Effective Reproductive Number") +
   xlab("Date")
+
+
+fill_info <- cbind.data.frame("name" = as.character(full_region_names(attack$reg)),
+                      "fill_value" = as.numeric(sapply(strsplit(attack$summary52, " [", fixed=TRUE), "[", 1)),
+                      stringsAsFactors = FALSE)
+p <- french_regions_map(fill_info, legend_name = "Predicted cumulative\nCOVID-19 infected\nproportion on May 11\n")
+ggsave(plot = p, file="map_infec_May11.jpeg", width=5, height=4, dpi = 600)
+ggsave(plot = p, file="map_infec_May11.pdf", width=5, height=4)
+
 
