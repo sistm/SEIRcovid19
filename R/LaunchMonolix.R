@@ -16,10 +16,13 @@ LaunchMonolix.default <- function(obj,  ProjectName, ObservationType, Mapping)
   return(obj)
 }
 #' @export
-#' @describeIn Launch monolix scenario for an object of class an object of class \code{OdeSystem}
+#' @describeIn Launch monolix scenario for an object of class \code{OdeSystem}
 LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping)
 {
+  # Initialize the connection
   lixoftConnectors::initializeLixoftConnectors(software="monolix")
+  
+  # Function to set Distribution and Parameter
   mlxProject.setIndividualParameterDistribution <- function(a) {
     eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterDistribution(',a,'= "normal")' )))
   }
@@ -27,6 +30,7 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping)
     eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterVariability(',a,'= FALSE)' )))
   }
   
+  # Create the project
   lixoftConnectors::newProject(modelFile = ode$ModelFile,
                                data = list(dataFile = ode$DataInfo$File,
                                            headerTypes =ode$DataInfo$HeaderType,
@@ -41,10 +45,6 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping)
       mlxProject.setIndividualParameterVariability(var_name)
     }
   }
-  indivModel <- lixoftConnectors::getIndividualParameterModel()
-  indivModel$distribution
-  indivModel$variability
-  
   # Set all task to True (default for us)
   scenario <- lixoftConnectors::getScenario()
   for (itask in 1:length(scenario$tasks)){
@@ -52,6 +52,7 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping)
   }
   scenario$linearization<-FALSE
   lixoftConnectors::setScenario(scenario)
+  #Save the project
   lixoftConnectors::saveProject(projectFile = paste(here::here(),'/MonolixFile/',ProjectName,".mlxtran",sep=""))
   #lixoftConnectors::runScenario()
   return(ode)

@@ -20,7 +20,7 @@ SetAllParameter.default <- function(obj, parameter)
   return(obj)
 }
 
-#' @describeIn Set parameter for an object of class an object of class \code{OdeSystem}
+#' @describeIn Set parameter for an object of class \code{OdeSystem}
 SetAllParameter.OdeSystem <- function(ode, parameter)
 {
   print("Set all parameter for OdeSytem")

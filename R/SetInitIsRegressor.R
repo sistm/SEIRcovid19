@@ -1,7 +1,7 @@
 #' SetInitIsRegressor generic
 #'
 #' @param obj Object to set
-#' @param InitRegressor List of new boolean
+#' @param InitRegressor List of new int
 #' @export
 
 
@@ -19,14 +19,12 @@ SetInitIsRegressor.default <- function(obj, InitRegressor)
   return(obj)
 }
 
-#' @describeIn Set Regressor info for init of an object of class an object of class \code{OdeSystem}
+#' @describeIn Set Regressor info for init attribute of an object of class \code{OdeSystem}
 SetInitIsRegressor.OdeSystem <- function(ode, InitRegressor)
 {
   if (length(InitRegressor)==length(ode$IsRegressor$init)){
-    print("Set all Optimizable Parameter info")
     ode$IsRegressor$init<-InitRegressor
   }else{
-    print("Set some Optimizable Parameter info")
     for (p in 1:length(InitRegressor)){
       ode$IsRegressor$init[names(ode$InitState)==names(InitRegressor[p])]<-InitRegressor[[p]]
     }

@@ -21,7 +21,7 @@ SetDataInput.default <- function(obj, path,header,sep)
   return(obj)
 }
 
-#' @describeIn Set Data Input info of an object of class an object of class \code{OdeSystem}
+#' @describeIn Set Data Input info of an object of class \code{OdeSystem}
 SetDataInput.OdeSystem <- function(ode, path,header,sep)
 {
   ode$DataInfo$File<-path

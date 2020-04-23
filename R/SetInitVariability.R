@@ -1,7 +1,7 @@
 #' SetInitVariability generic
 #'
 #' @param obj Object to set
-#' @param InitVaria List of new boolean
+#' @param InitVaria List of new variability
 #' @export
 
 
@@ -19,14 +19,12 @@ SetInitVariability.default <- function(obj, InitVaria)
   return(obj)
 }
 
-#' @describeIn Set Variability info for init of an object of class an object of class \code{OdeSystem}
+#' @describeIn Set Variability info for init attribute of an object of class \code{OdeSystem}
 SetInitVariability.OdeSystem <- function(ode, InitVaria)
 {
   if (length(InitVaria)==length(ode$Variability$init)){
-    print("Set all Optimizable Init info")
     ode$Variability$init<-InitVaria
   }else{
-    print("Set some Optimizable Init info")
     for (p in 1:length(InitVaria)){
       ode$Variability$init[names(ode$InitState)==names(InitVaria[p])]<-InitVaria[[p]]
     }

@@ -1,7 +1,7 @@
 #' SetAllInit generic
 #'
 #' @param obj Object to set
-#' @param parameter List of new parameter
+#' @param init List of new initState
 #' @export
 #' 
 SetAllInit <- function(obj, init)
@@ -15,7 +15,7 @@ SetAllInit.default <- function(obj, init)
   return(obj)
 }
 
-#' @describeIn Set parameter for an object of class an object of class \code{OdeSystem}
+#' @describeIn Set InitState for an object of class \code{OdeSystem}
 SetAllInit.OdeSystem <- function(ode, init)
 {
   print("Set all init state for OdeSytem")

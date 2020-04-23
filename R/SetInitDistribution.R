@@ -1,7 +1,7 @@
 #' SetInitDistribution generic
 #'
 #' @param obj Object to set
-#' @param InitDist List of new boolean
+#' @param InitDist List of new value
 #' @export
 
 
@@ -19,7 +19,7 @@ SetInitDistribution.default <- function(obj, InitDist)
   return(obj)
 }
 
-#' @describeIn Set Distribution for init of an object of class an object of class \code{OdeSystem}
+#' @describeIn Set Distribution for init attribute of an object of class \code{OdeSystem}
 SetInitDistribution.OdeSystem <- function(ode, InitDist)
 {
   if (length(InitDist)==length(ode$Distribution$init)){
