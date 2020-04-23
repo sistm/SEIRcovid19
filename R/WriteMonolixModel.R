@@ -54,6 +54,9 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
   }
   write(param_line, file=ModelFile,append=TRUE)
   
+  
+  ode<-SetParamRandomEffect(ode,number_parameter_with_random_effect)
+
   #Regressor
   regressor_line<-"regressor = {"
   RegressorName<-GetRegressorName(ode)

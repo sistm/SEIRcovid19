@@ -58,10 +58,6 @@ header<-c("ignore","ignore","time","regressor","regressor","obsid","observation"
 myOde<-SetDataInput(myOde,path,header,sep)
 myOde$DataInfo
 
-parameter_with_random_effect<-c(names(myOde$parameter[myOde$Variability$param==2]),names(myOde$InitState[myOde$Variability$init==2]))
-number_parameter_with_random_effect<-length(parameter_with_random_effect)
-myOde<-SetParamRandomEffect(myOde,number_parameter_with_random_effect)
-myOde$ParamRandomEffect
 
 #Write mlxtran
 ModelFile<-paste('./MonolixFile/','mlxmodel',".txt",sep="")
