@@ -20,7 +20,6 @@ SetSomeInit.default <- function(obj, init)
 SetSomeInit.OdeSystem <- function(ode, init)
 {
   for (p in 1:length(init)){
-    print(init[p])
     ode$InitState[names(ode$InitState)==names(init[p])]<-init[[p]]
   }
   return(ode)
