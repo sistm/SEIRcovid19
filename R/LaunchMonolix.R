@@ -19,6 +19,7 @@ LaunchMonolix.default <- function(obj,  ProjectName, ObservationType, Mapping)
 #' @describeIn Launch monolix scenario for an object of class an object of class \code{OdeSystem}
 LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping)
 {
+  lixoftConnectors::initializeLixoftConnectors(software="monolix")
   mlxProject.setIndividualParameterDistribution <- function(a) {
     eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterDistribution(',a,'= "normal")' )))
   }
@@ -51,7 +52,7 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping)
   }
   scenario$linearization<-FALSE
   lixoftConnectors::setScenario(scenario)
-  lixoftConnectors::saveProject(projectFile = paste(here::here(),'/',ProjectName,".mlxtran",sep=""))
+  lixoftConnectors::saveProject(projectFile = paste(here::here(),'/MonolixFile/',ProjectName,".mlxtran",sep=""))
   #lixoftConnectors::runScenario()
   return(ode)
 }

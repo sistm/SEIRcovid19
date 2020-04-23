@@ -7,6 +7,6 @@ seirah_solve_sensitivity_param.R
 R/seirah_longterm_sensitivity_analysis.R
 R/confidence_interval_seirah_ode_response.R
 R/seirah_solve_sensitivity_param.R
-
+use_package.R
 
 ^README\.Rmd$
