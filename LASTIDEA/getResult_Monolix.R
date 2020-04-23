@@ -512,6 +512,8 @@ exp(-(-0.2702769-1.0195847-1.96*sqrt(0.01533011**2+0.0164773**2)))
 exp(-(-0.2702769-1.0195847+1.96*sqrt(0.01533011**2+0.0164773**2)))
 
 
+
+
 ###################
 solutionsREBOUND_list <- list()
 for (i in 1:length(indivParams$id)){
@@ -690,3 +692,35 @@ Sys.setlocale("LC_TIME",old.loc)
 # p8 <- ggplot(solutionsREBOUND_all) + geom_line(aes(y=(R)/popsize, x=time, colour = reg))+
 #   geom_ribbon(aes(ymin=(Rmin)/popsize, ymax=(Rmax)/popsize, x=time, fill = reg), alpha = 0.3)+xlim(c(0,300))
 # p8
+
+
+
+##########GRAPHICAL ABSTRAC
+data[which((data$date==as.Date("2020-03-08"))&(data$obs_id==1)),]
+head(data)
+data$IDgood<-full_region_names(data$IDname)
+p <- ggplot(data[which((data$obs_id==1)&(!(data$date==as.Date("2020-03-08")))&(!(data$date==as.Date("2020-03-09")))),], aes(fill=IDgood, x=date)) +
+  geom_line(aes(y=obs, colour = IDgood),size=2) +ylab("Incident Number of Cases")+xlab("Date")+theme_bw()+ theme(text = element_text(size=15))
+
+p <- ggplot(data[which((data$obs_id==2)&(!(data$date==as.Date("2020-03-08")))&(!(data$date==as.Date("2020-03-09")))),], aes(fill=IDgood, x=date)) +
+  geom_line(aes(y=obs, colour = IDgood),size=2) +ylab("Number of Hospitalization")+xlab("Date")+theme_bw()+ theme(text = element_text(size=15))
+
+head(all_R0s_df)
+R0pred<-data.frame(time=seq(as.Date("2020-03-11"), as.Date("2020-04-30"), "day"))
+for (i in 1:length(R0pred$time)){
+  R0pred$R0mean[i]<-sum(as.numeric(all_R0s_df$R0[which(as.character(as.Date(all_R0s_df$date)+as.numeric(all_R0s_df$time))==as.character(R0pred$time[i]))])*indivParams$popsize)/sum(indivParams$popsize)
+  R0pred$R0min[i]<-sum(as.numeric(all_R0s_df$R0ICmin[which(as.character(as.Date(all_R0s_df$date)+as.numeric(all_R0s_df$time))==as.character(R0pred$time[i]))])*indivParams$popsize)/sum(indivParams$popsize)
+  R0pred$R0max[i]<-sum(as.numeric(all_R0s_df$R0ICmax[which(as.character(as.Date(all_R0s_df$date)+as.numeric(all_R0s_df$time))==as.character(R0pred$time[i]))])*indivParams$popsize)/sum(indivParams$popsize)
+}
+R0pred$timeperiod<-"before"
+R0pred$timeperiod[which(R0pred$time>as.Date("2020-03-17"))]<-"lockdown"
+R0pred$timeperiod[which(R0pred$time>as.Date("2020-03-25"))]<-"lockdown7days"
+p <- ggplot(R0pred, aes(x=time)) +
+  geom_line(aes(y=R0mean, color = timeperiod,fill = timeperiod)) +
+  geom_ribbon(aes(ymin=R0min, ymax=R0max, colour = timeperiod), alpha = 0.3) +
+  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lockdown start")) +
+  geom_vline(aes(xintercept=as.Date("2020-03-25"),  linetype="One week after Lockdown")) +
+  theme_bw() +
+  ylab("Effective Reproductive Number") +
+  xlab("Date")
+
