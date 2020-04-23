@@ -22,6 +22,8 @@ ode_def<-seirah_ode
 myOde<-OdeSystem(func=ode_def,param=param,init=init,modname = model_name)
 myOde
 
+
+
 # Définition spécifique pour les états initiaux => A et S
 SpecificInit<-list(initA=1,initS=1)
 myOde<-SetSpecificInit(myOde,SpecificInit)
@@ -55,6 +57,11 @@ sep<-"\t"
 header<-c("ignore","ignore","time","regressor","regressor","obsid","observation","regressor","regressor","regressor","ignore","ignore","ignore","id")
 myOde<-SetDataInput(myOde,path,header,sep)
 myOde$DataInfo
+
+parameter_with_random_effect<-c(names(myOde$parameter[myOde$Variability$param==2]),names(myOde$InitState[myOde$Variability$init==2]))
+number_parameter_with_random_effect<-length(parameter_with_random_effect)
+myOde<-SetParamRandomEffect(myOde,number_parameter_with_random_effect)
+myOde$ParamRandomEffect
 
 #Write mlxtran
 ModelFile<-paste('./MonolixFile/','mlxmodel',".txt",sep="")

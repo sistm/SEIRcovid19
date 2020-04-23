@@ -43,8 +43,8 @@ OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),
     IsRegressor=isregressor,
     Distribution=distribution,
     DataInfo=Data,
-    IsSpecificInit=isspecificinit
-    #, NumberRandomEffect=0
+    IsSpecificInit=isspecificinit, 
+    ParamRandomEffect=list()
     )
   
   class(ode) <- append(class(ode),"OdeSystem")
