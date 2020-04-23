@@ -608,9 +608,9 @@ getindicators<-function(indivParams,path,nameproject,nameprojectupdate,attackinf
   paramax4<-format(round(sum((as.numeric(indivParams$Dq_mode)+1.96*as.numeric(indivParams$Dq_sd))*as.numeric(indivParams$popsize))/sum(as.numeric(indivParams$popsize)),1), nsmall=2)
   Dqpop<-paste(para4," [",paramin4,";",paramax4,"]",sep="")
 
-  para4<-format(round(sum(as.numeric(indivParams$E0_mode)*as.numeric(indivParams$popsize))/sum(as.numeric(indivParams$popsize)),0), nsmall=0)
-  paramin4<-format(round(sum((as.numeric(indivParams$E0_mode)-1.96*as.numeric(indivParams$E0_sd))*as.numeric(indivParams$popsize))/sum(as.numeric(indivParams$popsize)),0), nsmall=0)
-  paramax4<-format(round(sum((as.numeric(indivParams$E0_mode)+1.96*as.numeric(indivParams$E0_sd))*as.numeric(indivParams$popsize))/sum(as.numeric(indivParams$popsize)),0), nsmall=0)
+  para4<-format(round(sum(as.numeric(indivParams$E0_mode)),0), nsmall=0)
+  paramin4<-format(round(sum((as.numeric(indivParams$E0_mode)-1.96*as.numeric(indivParams$E0_sd))),0), nsmall=0)
+  paramax4<-format(round(sum((as.numeric(indivParams$E0_mode)+1.96*as.numeric(indivParams$E0_sd))),0), nsmall=0)
   E0pop<-paste(para4," [",paramin4,";",paramax4,"]",sep="")
 
 
@@ -661,7 +661,7 @@ getindicators<-function(indivParams,path,nameproject,nameprojectupdate,attackinf
 
   indivParamsprint[length(indivParamsprint$id)+1,]<-c("France",attackFRANCE,NA,NA,NA,b1pop,NA,NA,NA,Dqpop,NA,NA,NA,E0pop,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,R0pop,R0confpop,R0conf2pop,"2020-03-11",cumulIfrance,cumulHfrance,popsizefrance,icufrance,rsentfr)
 
-  print(xtable(indivParamsprint[,c("id","b1summary","Dqsummary","E0summary","attackinfnothingdone")]),
+  print(xtable(indivParamsprint[,c("id","b1summary","E0summary","attackinfnothingdone")]),
         include.rownames=FALSE)
   print(xtable(indivParamsprint[,c("id","R0summary","R0confsummary","R0conf2summary")]),
         include.rownames=FALSE)
