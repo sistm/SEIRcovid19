@@ -728,8 +728,9 @@ p <- ggplot(R0pred, aes(x=time)) +
 fill_info <- cbind.data.frame("name" = as.character(full_region_names(attack$reg)),
                       "fill_value" = as.numeric(sapply(strsplit(attack$summary52, " [", fixed=TRUE), "[", 1)),
                       stringsAsFactors = FALSE)
-p <- french_regions_map(fill_info, legend_name = "Predicted cumulative\nCOVID-19 infected\nproportion on May 11\n")
+p <- french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
+                        one_out_of = 30)
 ggsave(plot = p, file="map_infec_May11.jpeg", width=5, height=4, dpi = 600)
-ggsave(plot = p, file="map_infec_May11.pdf", width=5, height=4)
+#ggsave(plot = p, file="map_infec_May11.pdf", width=5, height=4)
 
 
