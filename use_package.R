@@ -1,4 +1,5 @@
 devtools::load_all('.')
+Sys.setlocale("LC_NUMERIC","C")
 param<-c(b=0.838434,
          ascertainement=0.0431010769979476,
          alpha=1.5,
@@ -79,3 +80,49 @@ obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 
 myOde<-LaunchMonolix.OdeSystem(myOde, "LaunchTest", obs, map)
+
+
+
+# @Melanie ne pas aller plus loin
+
+
+
+## Start get_result
+path<-"/home/ddutartr/Projet/SISTM/SEIRcovid19/MonolixFile/"
+nameproject<-"final/"
+dataname<-"./MonolixFile/data_monolix_20200403.txt"
+## Get Individual Parameters & data
+indivParams <-read.table(paste(path,"/outputMonolix/",nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
+
+data<-read.table(myOde$DataInfo$File,sep=myOde$DataInfo$Sep,header=TRUE)
+RegressorName<-GetRegressorName(myOde)
+InputNames<-colnames(data)
+timename<-InputNames[myOde$DataInfo$HeaderType=="time"]
+idname<-InputNames[myOde$DataInfo$HeaderType=="id"]
+
+for (i in 1:length(indivParams$id)){
+  ode_id<-myOde
+  RegressorValue<-as.list(rep(NA,length(RegressorName)))
+  names(RegressorValue)<-(RegressorName)
+  # Set the regressor value thanks to data input
+  for (j in 1:length(RegressorName)){
+    RegressorValue[j]<-data[which(data[idname]==as.character(indivParams$id[i]) & (data[timename]==0)) ,RegressorName[j]][1]
+  }
+  ode_id$InitState
+  ode_id<-SetSomeInit(ode_id,RegressorValue)
+  ode_id$InitState
+  ode_id$parameter
+  ode_id<-SetSomeParameter(ode_id,RegressorValue)
+  ode_id$parameter
+  # Set the parameter name thanks to monolix
+  optimize_param_name<-c(names(ode_id$parameter[ode_id$Variability$param>0]),names(ode_id$ParamRandomEffect))
+  OptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
+  names(OptimizeParam)<-optimize_param_name
+  for (j in 1:length(optimize_param_name)){
+    optimize_monolix_name<-paste(optimize_param_name[j],"_mode",sep="")
+    OptimizeParam[j]<-indivParams[i,optimize_monolix_name]
+  }
+  ode_id<-SetSomeParameter(ode_id,OptimizeParam)
+  ode_id$parameter
+  
+}

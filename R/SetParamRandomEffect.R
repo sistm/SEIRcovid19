@@ -19,6 +19,7 @@ SetParamRandomEffect.default <- function(obj, Nrand)
 #' @describeIn Set parameter with random effect for an object of class \code{OdeSystem}
 SetParamRandomEffect.OdeSystem <- function(ode, Nrand)
 {
+  # TODO test numeric or list
   exp<-"param_random <-list("
   for (i in 1:Nrand){
     if (i==Nrand){
