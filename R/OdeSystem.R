@@ -34,7 +34,7 @@ OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),
   ode <- list(
     ode_def=func,
     ModelFile=ModelFile,
-    Numberobservation=0,
+    NumberObservation=0,
     parameter = param,
     InitState = init,
     ncomp= length(modname),

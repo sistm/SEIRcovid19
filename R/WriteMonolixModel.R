@@ -115,7 +115,7 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
   WriteEmptyLine(ModelFile)
   
   ## TO do remplacer par un set
-  ode$Numberobservation<-length(ModelObservationChunck)
+  ode<-SetNumberObservation(ode,length(ModelObservationChunck))
   
   CutObservation<-strsplit(ModelObservationChunck,'=')
   def_line<-""
