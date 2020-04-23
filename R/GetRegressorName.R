@@ -18,11 +18,13 @@ GetRegressorName.default <- function(obj)
   return(obj)
 }
 
-#' @describeIn Set Data Input info of an object of class an object of class \code{OdeSystem}
+#' @describeIn Get the regressor name  of an object of class \code{OdeSystem} based on the Headernames
 GetRegressorName.OdeSystem <- function(ode)
 {
+  #Read Input Data
   Input<-read.csv2(ode$DataInfo$File,sep=ode$DataInfo$Sep)
   InputNames<-colnames(Input)
+  #Find header define as regressor for monolix
   RegressorNameOrdered<-InputNames[ode$DataInfo$HeaderType=="regressor"]
   return(RegressorNameOrdered)
 }
