@@ -10,7 +10,10 @@ param<-c(b=0,
          Dq=0,
          Dh=30,
          popsize=0,
+         tconf=15,
+         lengthconf=1000,
          dailyMove=0,
+         newdailyMove=0,
          isolation=0,
          beta1=0)# Regressor parameter
 # Define all init state of the ODE systme with value, it should be initVar
@@ -96,32 +99,6 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 
-
-Mapping<-map
-ObservationType<-obs
-
-# Initialize the connection
-lixoftConnectors::initializeLixoftConnectors(software="monolix")
-
-# Function to set Distribution and Parameter
-mlxProject.setIndividualParameterDistribution <- function(a) {
-  eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterDistribution(',a,'= "normal")' )))
-}
-mlxProject.setIndividualParameterVariability <- function(a) {
-  eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterVariability(',a,'= FALSE)' )))
-}
-
-# Create the project
-lixoftConnectors::newProject(modelFile = ode$ModelFile,
-                             data = list(dataFile = ode$DataInfo$File,
-                                         headerTypes =ode$DataInfo$HeaderType,
-                                         observationTypes = ObservationType,
-                                         mapping = Mapping))
-
-
-
-
-
 myOde<-LaunchMonolix.OdeSystem(myOde, "LaunchTest", obs, map)
 
 
@@ -135,8 +112,10 @@ myOde<-LaunchMonolix.OdeSystem(myOde, "LaunchTest", obs, map)
 
 ## Start get_result
 path<-"/home/ddutartr/Projet/SISTM/SEIRcovid19/MonolixFile/"
-nameproject<-"final/"
-dataname<-"./MonolixFile/data_monolix_20200403.txt"
+nameproject<-"Final_20200325/"
+dataname<-"./MonolixFile/data_monolix_20200325.txt"
+myOde$DataInfo$File<-dataname
+myOde$DataInfo$HeaderType<-c("ignore","ignore","time","regressor","regressor","obsid","observation","regressor","regressor","regressor","id","regressor","ignore","ignore")
 ## Get Individual Parameters & data
 indivParams <-read.table(paste(path,"/outputMonolix/",nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
 
@@ -146,7 +125,7 @@ InputNames<-colnames(data)
 timename<-InputNames[myOde$DataInfo$HeaderType=="time"]
 idname<-InputNames[myOde$DataInfo$HeaderType=="id"]
 
-for (i in 1:length(indivParams$id)){
+for (i in 1:1){#length(indivParams$id)){
   ode_id<-myOde
   RegressorValue<-as.list(rep(NA,length(RegressorName)))
   names(RegressorValue)<-(RegressorName)
@@ -174,4 +153,5 @@ for (i in 1:length(indivParams$id)){
   ode_id$InitState
 }
 
-ode_id
+ode_id$parameter
+ode_id$InitState
