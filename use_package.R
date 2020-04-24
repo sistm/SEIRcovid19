@@ -13,7 +13,6 @@ param<-c(b=0,
          tconf=15,
          lengthconf=1000,
          dailyMove=0,
-         newdailyMove=0,
          isolation=0,
          beta1=0)# Regressor parameter
 # Define all init state of the ODE systme with value, it should be initVar
@@ -151,7 +150,13 @@ for (i in 1:1){#length(indivParams$id)){
   ode_id$parameter
   ode_id<-SetSomeInit(ode_id,OptimizeParam)
   ode_id$InitState
+  ode_id<-SetSpecificInitState(ode_id,SpecificInitBloc)
+  
 }
 
 ode_id$parameter
 ode_id$InitState
+
+
+
+
