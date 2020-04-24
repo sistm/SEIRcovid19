@@ -237,7 +237,7 @@ getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,n
 getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,nameproject, logscale=FALSE)
 
 
-
+library(xtable)
 ### %INFECTED // ATTACK RATES
 attack<-getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
 attackinfnothingdone<-getAttackrates(predictionsNOEFFECT,indivParams,inf=TRUE)
@@ -716,11 +716,26 @@ R0pred$timeperiod<-"before"
 R0pred$timeperiod[which(R0pred$time>as.Date("2020-03-17"))]<-"lockdown"
 R0pred$timeperiod[which(R0pred$time>as.Date("2020-03-25"))]<-"lockdown7days"
 p <- ggplot(R0pred, aes(x=time)) +
-  geom_line(aes(y=R0mean, color = timeperiod,fill = timeperiod)) +
-  geom_ribbon(aes(ymin=R0min, ymax=R0max, colour = timeperiod), alpha = 0.3) +
+  geom_line(aes(y=R0mean, colour = timeperiod)) +
+  geom_ribbon(aes(ymin=R0min, ymax=R0max, colour = timeperiod,fill = timeperiod), alpha = 0.3) +
   geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lockdown start")) +
   geom_vline(aes(xintercept=as.Date("2020-03-25"),  linetype="One week after Lockdown")) +
+  geom_hline(aes(yintercept = 1), color="black") +
   theme_bw() +
   ylab("Effective Reproductive Number") +
-  xlab("Date")
+  xlab("Date")+ theme(text = element_text(size=15))
+p
 
+
+library(geojsonio)
+spdf <- geojson_read("https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson",  what = "sp")
+
+# Since it is a bit to much data, I select only a subset of it:
+spdf <- spdf[ substr(spdf@data$code,1,2)  %in% c("06", "83", "13", "30", "34", "11", "66") , ]
+
+# Geospatial data available at the geojson format
+library(geojsonio)
+spdf <- geojson_read("https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson",  what = "sp")
+
+# Since it is a bit to much data, I select only a subset of it:
+spdf <- spdf[ substr(spdf@data$code,1,2)  %in% c("06", "83", "13", "30", "34", "11", "66") , ]
