@@ -4,7 +4,14 @@
 \alias{french_regions_map}
 \title{Map of French region}
 \usage{
-french_regions_map(fill_info_df, mytitle, one_out_of = 30)
+french_regions_map(
+  fill_info_df,
+  mytitle,
+  one_out_of = 30,
+  show_labels = FALSE,
+  col_labels = "white",
+  size_labels = 5
+)
 }
 \description{
 Map of French region

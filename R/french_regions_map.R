@@ -2,7 +2,11 @@
 #'
 #' @export
 french_regions_map <- function(fill_info_df,
-                               mytitle, one_out_of=30){
+                               mytitle,
+                               one_out_of=30,
+                               show_labels = FALSE,
+                               col_labels = "white",
+                               size_labels = 5){
 
   library(ggplot2)
   library(maptools)
@@ -14,12 +18,16 @@ french_regions_map <- function(fill_info_df,
   #   layer="regions-20180101",
   #   verbose=TRUE
   # )
+  # reg_map_centroids_df <- as.data.frame(coordinates(region_shp))
+  # colnames(reg_map_centroids_df) <- c("long", "lat")
+  # reg_map_centroids_df$id <- rownames(region_shp@data)
+  # reg_map_centroids_df$name <- as.character(region_shp@data$nom)
   # region_shp@data$id <- rownames(region_shp@data)
   # reg_points <- ggplot2::fortify(region_shp, region="id")
   # reg_map_df <- dplyr::left_join(reg_points, region_shp@data, by="id")
   # reg_map_df <- reg_map_df %>% rename(name = nom)
   # reg_map_df$name <- as.character(reg_map_df$name)
-  # save(reg_map_df, file = "data/FrenchRegionsMap.RData")
+  # save(reg_map_df, reg_map_centroids_df, file = "data/FrenchRegionsMap.RData")
   data(FrenchRegionsMap)
 
   reg_map_df2plot <- reg_map_df %>% filter(name %in% c("Auvergne-Rhône-Alpes", "Bourgogne-Franche-Comté",
@@ -28,13 +36,19 @@ french_regions_map <- function(fill_info_df,
                                                        "Nouvelle-Aquitaine", "Occitanie",
                                                        "Pays de la Loire", "Provence-Alpes-Côte d'Azur")
   )
-
+  reg_map_centroids_df2plot <- reg_map_centroids_df %>% filter(name %in% c("Auvergne-Rhône-Alpes", "Bourgogne-Franche-Comté",
+                                                                           "Bretagne", "Centre-Val de Loire", "Grand Est",
+                                                                           "Hauts-de-France", "Île-de-France", "Normandie",
+                                                                           "Nouvelle-Aquitaine", "Occitanie",
+                                                                           "Pays de la Loire", "Provence-Alpes-Côte d'Azur")
+  )
+  reg_map_centroids_df2plot <- reg_map_centroids_df2plot %>% rename(group = id)
   reg_map_df2plot <- left_join(reg_map_df2plot, fill_info, by = c("name"))
-
+  reg_map_centroids_df2plot <- left_join(reg_map_centroids_df2plot, fill_info, by = c("name"))
   #subsampling
   sel <- c(TRUE, rep(FALSE, times = one_out_of-1))
 
-  p <-ggplot(reg_map_df2plot[sel,], aes(x = long, y = lat, group=group)) +
+  p <- ggplot(reg_map_df2plot[sel,], aes(x = long, y = lat, group=group)) +
     geom_polygon(aes(fill=fill_value, color=fill_value), alpha=0.93, size=0.08) +
     scale_fill_gradientn(name = "", colours = c("lightcyan", "skyblue1", "red3", "red4"),
                          breaks=c(0,2,4,6), minor_breaks=c(1,3,5),
@@ -50,6 +64,11 @@ french_regions_map <- function(fill_info_df,
     theme(legend.text = element_text(size=18)) +
     theme(plot.title = element_text(hjust=0.5))
 
+  if(show_labels){
+    p <- p + geom_text(data = reg_map_centroids_df2plot, aes(label=fill_value),
+                       color=col_labels, size=size_labels, vjust=0.65) +
+      NULL
+  }
   return(p)
 }
 

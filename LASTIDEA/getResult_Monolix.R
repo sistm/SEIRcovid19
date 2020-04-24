@@ -31,7 +31,7 @@ dir.create(paste(path,"outputMonolix/",nameproject,"/graphics",sep=""))
 data<-read.table(paste(path,dataname,sep=""),sep="\t",header=TRUE)
 ## Get rfrom sentinelle
 for (i in 1:length(indivParams$id)){
-    indivParams$r_sent[i]<-data$ascertainement[which((data$IDname==indivParams$id[i])&(data$day==0)&(data$obs_id==1))]
+  indivParams$r_sent[i]<-data$ascertainement[which((data$IDname==indivParams$id[i])&(data$day==0)&(data$obs_id==1))]
 }
 data$date<-lubridate::as_date(as.character(data$date))
 timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day","IDname")]
@@ -39,7 +39,7 @@ timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day"
 load("./data/popreg.RData")
 popreg$idnames<-c("AURA","BFC","Bretagne","Centre","Corse","GrandEst","HDF","IDF","Normandie","NAquitaine","Occitanie","PaysLoire","PACA","G1","G2","G3","G4","G5","France")
 for(i in 1:length(indivParams$id)){
-    indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i])]
+  indivParams$popsize[i]<-popreg$population[which(popreg$idnames==indivParams$id[i])]
 }
 #data[which(data$day==0),c("reg_id","IDname")]
 ## Get ICU
@@ -60,134 +60,134 @@ predictionsUPDATED_list<- list()
 predictionsCOMBINED_list<- list()
 
 for (i in 1:length(indivParams$id)){
-    message(as.character(indivParams$id[i]), " (",i,"/",length(indivParams$id),") ...")
-    b<-as.numeric(indivParams[i,c("b1_mode")])
-    r<-as.numeric(indivParams[i,c("r_sent")])
-    dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
-    alpha<-alphafixed
-    De<-Defixed
-    Di<-Difixed
-    Dq<-as.numeric(indivParams[i,c("Dq_mode")])
-    Dh<-Dhfixed
-    b3<-0
-    popSize<-dataregion$popsize[1]
-    E0given<-as.numeric(indivParams[i,c("E0_mode")])
-    A0given<-10000
-    if(typecov=="constant"){
+  message(as.character(indivParams$id[i]), " (",i,"/",length(indivParams$id),") ...")
+  b<-as.numeric(indivParams[i,c("b1_mode")])
+  r<-as.numeric(indivParams[i,c("r_sent")])
+  dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
+  alpha<-alphafixed
+  De<-Defixed
+  Di<-Difixed
+  Dq<-as.numeric(indivParams[i,c("Dq_mode")])
+  Dh<-Dhfixed
+  b3<-0
+  popSize<-dataregion$popsize[1]
+  E0given<-as.numeric(indivParams[i,c("E0_mode")])
+  A0given<-10000
+  if(typecov=="constant"){
     b2<-as.numeric(indivParams[i,"betat1_mode"])
-    }
-    if(typecov=="parametric"){
-      b2<-c(as.numeric(indivParams[i,"betat1_mode"]),timings)
-    }
-    if(typecov=="splines"){
-      b2<-c(as.numeric(indivParams[i,"beta1_mode"]),as.numeric(indivParams[i,"beta2_mode"]),as.numeric(indivParams[i,"beta3_mode"]))
-    }
-    tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
+  }
+  if(typecov=="parametric"){
+    b2<-c(as.numeric(indivParams[i,"betat1_mode"]),timings)
+  }
+  if(typecov=="splines"){
+    b2<-c(as.numeric(indivParams[i,"beta1_mode"]),as.numeric(indivParams[i,"beta2_mode"]),as.numeric(indivParams[i,"beta3_mode"]))
+  }
+  tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
 
-    bsd<-sqrt(as.numeric(indivParams[i,"b1_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="b1_pop"),"se_sa"])**2)
-    Dqsd<-sqrt(as.numeric(indivParams[i,"Dq_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="Dq_pop"),"se_sa"])**2)
-    E0sd<-sqrt(as.numeric(indivParams[i,"E0_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="E0_pop"),"se_sa"])**2)
-    A0sd<-0
-    betasd<-as.numeric(popParams[which(popParams$parameter=="betat1_pop"),"se_sa"])
-    beta2sd<-0
+  bsd<-sqrt(as.numeric(indivParams[i,"b1_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="b1_pop"),"se_sa"])**2)
+  Dqsd<-sqrt(as.numeric(indivParams[i,"Dq_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="Dq_pop"),"se_sa"])**2)
+  E0sd<-sqrt(as.numeric(indivParams[i,"E0_sd"])**2)#+as.numeric(popParams[which(popParams$parameter=="E0_pop"),"se_sa"])**2)
+  A0sd<-0
+  betasd<-as.numeric(popParams[which(popParams$parameter=="betat1_pop"),"se_sa"])
+  beta2sd<-0
 
-    solution <- getSolution( b,
-                             r,
-                             dataregion,
-                             alpha,
-                             De,
-                             Di,
-                             Dq,
-                             Dh,
-                             popSize,
-                             E0given,
-                             A0given,b2,b3,tconf,typecov,1000,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sd, CI=TRUE,ncores=parallel::detectCores()-1)
-
-
-    solutionNOEFFECT <- getSolution( b,
-                                     r,
-                                     dataregion,
-                                     alpha,
-                                     De,
-                                     Di,
-                                     Dq,
-                                     Dh,
-                                     popSize,
-                                     E0given,
-                                     A0given,0.0,0.0,tconf,typecov,1000,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sd, CI=TRUE,ncores=parallel::detectCores()-1)
-
-    bUP<-as.numeric(indivParamsUP[i,c("b1_mode")])
-    DqUP<-as.numeric(indivParamsUP[i,c("Dq_mode")])
-    E0givenUP<-as.numeric(indivParamsUP[i,c("E0_mode")])
-    A0givenUP<-as.numeric(indivParamsUP[i,c("pctA0_mode")])
-    if(typecov=="constant"){
-      b2UP<-as.numeric(indivParamsUP[i,"betat1_mode"])
-      b3UP<-as.numeric(indivParamsUP[i,"betat2_mode"])
-    }
-    beta2sdUP<-as.numeric(popParamsUP[which(popParamsUP$parameter=="betat2_pop"),"se_sa"])
+  solution <- getSolution( b,
+                           r,
+                           dataregion,
+                           alpha,
+                           De,
+                           Di,
+                           Dq,
+                           Dh,
+                           popSize,
+                           E0given,
+                           A0given,b2,b3,tconf,typecov,1000,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sd, CI=TRUE,ncores=parallel::detectCores()-1)
 
 
-    solutionUPDATED <- getSolution( bUP,
-                             r,
-                             dataregion,
-                             alpha,
-                             De,
-                             Di,
-                             DqUP,
-                             Dh,
-                             popSize,
-                             E0givenUP,
-                             A0givenUP,b2UP,b3UP,tconf,typecov,1000,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sdUP, CI=TRUE,ncores=parallel::detectCores()-1)
+  solutionNOEFFECT <- getSolution( b,
+                                   r,
+                                   dataregion,
+                                   alpha,
+                                   De,
+                                   Di,
+                                   Dq,
+                                   Dh,
+                                   popSize,
+                                   E0given,
+                                   A0given,0.0,0.0,tconf,typecov,1000,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sd, CI=TRUE,ncores=parallel::detectCores()-1)
 
-    solutionCOMBINED <- getSolution( b,
-                             r,
-                             dataregion,
-                             alpha,
-                             De,
-                             Di,
-                             Dq,
-                             Dh,
-                             popSize,
-                             E0given,
-                             A0given,b2UP,b3UP,tconf,typecov,1000,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sdUP, CI=TRUE,ncores=parallel::detectCores()-1)
+  bUP<-as.numeric(indivParamsUP[i,c("b1_mode")])
+  DqUP<-as.numeric(indivParamsUP[i,c("Dq_mode")])
+  E0givenUP<-as.numeric(indivParamsUP[i,c("E0_mode")])
+  A0givenUP<-as.numeric(indivParamsUP[i,c("pctA0_mode")])
+  if(typecov=="constant"){
+    b2UP<-as.numeric(indivParamsUP[i,"betat1_mode"])
+    b3UP<-as.numeric(indivParamsUP[i,"betat2_mode"])
+  }
+  beta2sdUP<-as.numeric(popParamsUP[which(popParamsUP$parameter=="betat2_pop"),"se_sa"])
 
-    solution$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solution$solution))
-    solutionCOMBINED$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solutionCOMBINED$solution))
-    solutionUPDATED$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solutionUPDATED$solution))
-    solutionNOEFFECT$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solutionNOEFFECT$solution))
 
-    solutionNOEFFECT$solution$reg <- as.character(indivParams$id[i])
-    solutionUPDATED$solution$reg <- as.character(indivParams$id[i])
-    solution$solution$reg <- as.character(indivParams$id[i])
-    solutionCOMBINED$solution$reg <- as.character(indivParams$id[i])
-    solutions_list[[i]] <- solution
-    solutionsNOEFFECT_list[[i]] <- solutionNOEFFECT
-    solutionsUPDATED_list[[i]] <- solutionUPDATED
-    solutionsCOMBINED_list[[i]] <- solutionCOMBINED
+  solutionUPDATED <- getSolution( bUP,
+                                  r,
+                                  dataregion,
+                                  alpha,
+                                  De,
+                                  Di,
+                                  DqUP,
+                                  Dh,
+                                  popSize,
+                                  E0givenUP,
+                                  A0givenUP,b2UP,b3UP,tconf,typecov,1000,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sdUP, CI=TRUE,ncores=parallel::detectCores()-1)
 
-    getPlot(solutionCOMBINED,nameproject,indivParams[i,],path)
+  solutionCOMBINED <- getSolution( b,
+                                   r,
+                                   dataregion,
+                                   alpha,
+                                   De,
+                                   Di,
+                                   Dq,
+                                   Dh,
+                                   popSize,
+                                   E0given,
+                                   A0given,b2UP,b3UP,tconf,typecov,1000,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sdUP, CI=TRUE,ncores=parallel::detectCores()-1)
 
-    res<-getR0(solution,indivParams[i,],typecov,timings,indivParamsUP[i,],solutionCOMBINED)
-    R0s_list[[i]] <-  res
+  solution$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solution$solution))
+  solutionCOMBINED$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solutionCOMBINED$solution))
+  solutionUPDATED$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solutionUPDATED$solution))
+  solutionNOEFFECT$solution$date <- seq.Date(from = dataregion$date[1], by=1, length.out = nrow(solutionNOEFFECT$solution))
 
-    getPlotR0(res,nameproject,indivParams[i,])
+  solutionNOEFFECT$solution$reg <- as.character(indivParams$id[i])
+  solutionUPDATED$solution$reg <- as.character(indivParams$id[i])
+  solution$solution$reg <- as.character(indivParams$id[i])
+  solutionCOMBINED$solution$reg <- as.character(indivParams$id[i])
+  solutions_list[[i]] <- solution
+  solutionsNOEFFECT_list[[i]] <- solutionNOEFFECT
+  solutionsUPDATED_list[[i]] <- solutionUPDATED
+  solutionsCOMBINED_list[[i]] <- solutionCOMBINED
 
-    indivParams[i,c("R0","R0min","R0max")]<-res[which(res$time==(tconf-1)),c("R0","R0ICmin","R0ICmax")]
-    indivParams[i,c("R0conf","R0minconf","R0maxconf")]<-res[which(res$time==tconf+2),c("R0","R0ICmin","R0ICmax")]
-    indivParams[i,c("R0conf2","R0minconf2","R0maxconf2")]<-res[which(res$time==tconf+20),c("R0","R0ICmin","R0ICmax")]
-    indivParams[i,"timestart"]<-as.character(dataregion$date[which((dataregion$day==0)&(dataregion$obs_id==1))])
-    indivParams[i,"Icumul"]<-sum(dataregion$obs[which((dataregion$obs_id==1))])
-    indivParams[i,"Hcumul"]<-sum(dataregion$obs[which((dataregion$obs_id==2))])
-    res <- getIHD(solution,indivParams[i,])
-    resNOEFFECT <- getIHD(solutionNOEFFECT,indivParams[i,])
-    resUPDATED <- getIHD(solutionUPDATED,indivParams[i,])
-    resCOMBINED <- getIHD(solutionCOMBINED,indivParams[i,])
+  getPlot(solutionCOMBINED,nameproject,indivParams[i,],path)
 
-    predictionsCOMBINED_list[[i]] <- resCOMBINED
-    predictionsNOEFFECT_list[[i]] <- resNOEFFECT
-    predictionsUPDATED_list[[i]] <- resUPDATED
-    predictions_list[[i]] <- res
-    message("Done\n")
+  res<-getR0(solution,indivParams[i,],typecov,timings,indivParamsUP[i,],solutionCOMBINED)
+  R0s_list[[i]] <-  res
+
+  getPlotR0(res,nameproject,indivParams[i,])
+
+  indivParams[i,c("R0","R0min","R0max")]<-res[which(res$time==(tconf-1)),c("R0","R0ICmin","R0ICmax")]
+  indivParams[i,c("R0conf","R0minconf","R0maxconf")]<-res[which(res$time==tconf+2),c("R0","R0ICmin","R0ICmax")]
+  indivParams[i,c("R0conf2","R0minconf2","R0maxconf2")]<-res[which(res$time==tconf+20),c("R0","R0ICmin","R0ICmax")]
+  indivParams[i,"timestart"]<-as.character(dataregion$date[which((dataregion$day==0)&(dataregion$obs_id==1))])
+  indivParams[i,"Icumul"]<-sum(dataregion$obs[which((dataregion$obs_id==1))])
+  indivParams[i,"Hcumul"]<-sum(dataregion$obs[which((dataregion$obs_id==2))])
+  res <- getIHD(solution,indivParams[i,])
+  resNOEFFECT <- getIHD(solutionNOEFFECT,indivParams[i,])
+  resUPDATED <- getIHD(solutionUPDATED,indivParams[i,])
+  resCOMBINED <- getIHD(solutionCOMBINED,indivParams[i,])
+
+  predictionsCOMBINED_list[[i]] <- resCOMBINED
+  predictionsNOEFFECT_list[[i]] <- resNOEFFECT
+  predictionsUPDATED_list[[i]] <- resUPDATED
+  predictions_list[[i]] <- res
+  message("Done\n")
 }
 
 # saveRDS(indivParams, file = "./LASTIDEA/data/indivParams_final20200416.rds")
@@ -219,7 +219,7 @@ getPlotSolutionAll(solutionsCOMBINED_list, nameproject = nameproject)
 #### REFF ----
 all_R0s_df <- do.call(rbind.data.frame, R0s_list)
 getPlotR0all(all_R0s_df, nameproject = nameproject,path,timings,typecov,
-          Di=Difixed, alpha=alphafixed, facet_scales = "fixed", nameprojectupdate)
+             Di=Difixed, alpha=alphafixed, facet_scales = "fixed", nameprojectupdate)
 
 
 ### PREDICTION COURT TERME -----
@@ -242,7 +242,7 @@ getPlotPredictionShortterm(predictions,predictionsCOMBINED,predictionsNOEFFECT,n
 attack <- getAttackrates(predictionsCOMBINED,indivParams,inf=FALSE)
 attackinfnothingdone <- getAttackrates(predictionsNOEFFECT,indivParams,inf=TRUE)
 for (i in 1:length(indivParams$id)){
-indivParams$attackinfnothingdone[i]<-attackinfnothingdone$summaryinf[which(attackinfnothingdone$reg==indivParams$id[i])]
+  indivParams$attackinfnothingdone[i]<-attackinfnothingdone$summaryinf[which(attackinfnothingdone$reg==indivParams$id[i])]
 }
 #attackinfnothingdoneFRANCE<-attackinfnothingdone[which(attackinfnothingdone$reg=="France"),"summaryinf"]
 
@@ -302,101 +302,101 @@ typecov="constant"
 k<-1
 
 for (K in c(3,5,10)){ #c(1,exp(-as.numeric(indivParams[1,"beta_mode"])),3,5,10,100)
-    print(paste("K",K,sep=" "))
-    for (i in 1:length(indivParams$id)){
-        print(as.character(indivParams$id[i]))
+  print(paste("K",K,sep=" "))
+  for (i in 1:length(indivParams$id)){
+    print(as.character(indivParams$id[i]))
 
-        dureeconf=2000
-        b<-as.numeric(indivParams[i,c("b1_mode")])
-        r<-as.numeric(indivParams[i,c("r_sent")])
-        dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
-        alpha<-alphafixed
-        De<-Defixed
-        Di<-Difixed
-        Dq<-as.numeric(indivParams[i,c("Dq_mode")])
-        Dh<-Dhfixed
-        popSize<-dataregion$popsize[1]
-        E0given<-as.numeric(indivParams[i,c("E0_mode")])
-        A0given<-10000
-        b2<-as.numeric(indivParams[i,c("betat1_mode")])
-        b3<--log(K)-b2
-        tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
-        lengthconf=dureeconf
-        newdailyMove=0
-        pred=TRUE
-        bsd<-as.numeric(indivParams[i,"b1_sd"])
-        Dqsd<-as.numeric(indivParams[i,"Dq_sd"])
-        E0sd<-as.numeric(indivParams[i,"E0_sd"])
-        A0sd<-as.numeric(indivParams[i,"A0_sd"])
-        betasd<-as.numeric(popParams[which(popParams$parameter=="betat1_pop"),"se_sa"])
-        beta2sd<-as.numeric(popParams[which(popParamsUP$parameter=="betat2_pop"),"se_sa"])
+    dureeconf=2000
+    b<-as.numeric(indivParams[i,c("b1_mode")])
+    r<-as.numeric(indivParams[i,c("r_sent")])
+    dataregion<-data[which(data$IDname==as.character(indivParams[i,1])),]
+    alpha<-alphafixed
+    De<-Defixed
+    Di<-Difixed
+    Dq<-as.numeric(indivParams[i,c("Dq_mode")])
+    Dh<-Dhfixed
+    popSize<-dataregion$popsize[1]
+    E0given<-as.numeric(indivParams[i,c("E0_mode")])
+    A0given<-10000
+    b2<-as.numeric(indivParams[i,c("betat1_mode")])
+    b3<--log(K)-b2
+    tconf<-timesconfinement[which(timesconfinement$IDname==as.character(indivParams[i,1])),1]
+    lengthconf=dureeconf
+    newdailyMove=0
+    pred=TRUE
+    bsd<-as.numeric(indivParams[i,"b1_sd"])
+    Dqsd<-as.numeric(indivParams[i,"Dq_sd"])
+    E0sd<-as.numeric(indivParams[i,"E0_sd"])
+    A0sd<-as.numeric(indivParams[i,"A0_sd"])
+    betasd<-as.numeric(popParams[which(popParams$parameter=="betat1_pop"),"se_sa"])
+    beta2sd<-as.numeric(popParams[which(popParamsUP$parameter=="betat2_pop"),"se_sa"])
 
-        solution<-getSolution( b,
-                               r,
-                               dataregion,
-                               alpha,
-                               De,
-                               Di,
-                               Dq,
-                               Dh,
-                               popSize,
-                               E0given,
-                               A0given,
-                               b2,b3,
-                               tconf,typecov,
-                               lengthconf=dureeconf,
-                               newdailyMove=newdailyMove,
-                               pred=FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sd,TRUE,ncores=parallel::detectCores()-1)
+    solution<-getSolution( b,
+                           r,
+                           dataregion,
+                           alpha,
+                           De,
+                           Di,
+                           Dq,
+                           Dh,
+                           popSize,
+                           E0given,
+                           A0given,
+                           b2,b3,
+                           tconf,typecov,
+                           lengthconf=dureeconf,
+                           newdailyMove=newdailyMove,
+                           pred=FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sd,TRUE,ncores=parallel::detectCores()-1)
 
-        mai11<-tconf+55
-        temp<-min(solution$solution$time[which((solution$solution$I+solution$solution$E+solution$solution$A)<3)])
-        tempmin<-min(solution$solution$time[which((solution$solution$Imin+solution$solution$Emin+solution$solution$Amin)<3)])
-        tempmax<-solution$solution$time[which((solution$solution$Imax+solution$solution$Emax+solution$solution$Amax)<3)]
-        tempmax<-min(ifelse(is.finite(tempmax),tempmax,1000))
-        topt<-paste(temp," [",tempmin,"; ",tempmax,"]",sep="")
+    mai11<-tconf+55
+    temp<-min(solution$solution$time[which((solution$solution$I+solution$solution$E+solution$solution$A)<3)])
+    tempmin<-min(solution$solution$time[which((solution$solution$Imin+solution$solution$Emin+solution$solution$Amin)<3)])
+    tempmax<-solution$solution$time[which((solution$solution$Imax+solution$solution$Emax+solution$solution$Amax)<3)]
+    tempmax<-min(ifelse(is.finite(tempmax),tempmax,1000))
+    topt<-paste(temp," [",tempmin,"; ",tempmax,"]",sep="")
 
-        E<-round(solution$solution$E[mai11],0)
-        Emin<-round(solution$solution$Emin[mai11],0)
-        Emax<-round(solution$solution$Emax[mai11],0)
-        E11mai<-paste(E," [",Emin,"; ",Emax,"]",sep="")
+    E<-round(solution$solution$E[mai11],0)
+    Emin<-round(solution$solution$Emin[mai11],0)
+    Emax<-round(solution$solution$Emax[mai11],0)
+    E11mai<-paste(E," [",Emin,"; ",Emax,"]",sep="")
 
-        A<-round(solution$solution$A[mai11],0)
-        Amin<-round(solution$solution$Amin[mai11],0)
-        Amax<-round(solution$solution$Amax[mai11],0)
-        A11mai<-paste(A," [",Amin,"; ",Amax,"]",sep="")
+    A<-round(solution$solution$A[mai11],0)
+    Amin<-round(solution$solution$Amin[mai11],0)
+    Amax<-round(solution$solution$Amax[mai11],0)
+    A11mai<-paste(A," [",Amin,"; ",Amax,"]",sep="")
 
-        I<-round(solution$solution$I[mai11],0)
-        Imin<-round(solution$solution$Imin[mai11],0)
-        Imax<-round(solution$solution$Imax[mai11],0)
-        I11mai<-paste(I," [",Imin,"; ",Imax,"]",sep="")
-
-
-        death<-round(tauxD*solution$solution$R[1000],0)
-        deathmin<-round(tauxD*solution$solution$Rmin[1000],0)
-        deathmax<-round(tauxD*solution$solution$Rmax[1000],0)
-
-        nbdeath<-paste(round(tauxD*solution$solution$R[1000],0)," [",round(tauxD*solution$solution$Rmin[1000],0),"; ",round(tauxD*solution$solution$Rmax[1000],0),"]",sep="")
-
-        nblits<-nbICUplus*ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
+    I<-round(solution$solution$I[mai11],0)
+    Imin<-round(solution$solution$Imin[mai11],0)
+    Imax<-round(solution$solution$Imax[mai11],0)
+    I11mai<-paste(I," [",Imin,"; ",Imax,"]",sep="")
 
 
-        overload<-solution$data$date[1]+as.numeric(min(solution$solution$time[which(tauxICU*solution$solution$H>=nblits)]))
+    death<-round(tauxD*solution$solution$R[1000],0)
+    deathmin<-round(tauxD*solution$solution$Rmin[1000],0)
+    deathmax<-round(tauxD*solution$solution$Rmax[1000],0)
+
+    nbdeath<-paste(round(tauxD*solution$solution$R[1000],0)," [",round(tauxD*solution$solution$Rmin[1000],0),"; ",round(tauxD*solution$solution$Rmax[1000],0),"]",sep="")
+
+    nblits<-nbICUplus*ICUcapacity_FR$nbICU_adult[which(ICUcapacity_FR$maille_code==as.character(solution$data$reg_id[1]))]
 
 
-        timemax<-which(solution$solution$H==max(solution$solution$H))
-
-        ICUpct<-round((tauxICU*solution$solution$H[timemax])/nblits*100,0)
-        ICUpctmin<-round(max(tauxICU*solution$solution$Hmin[timemax])/nblits*100,0)
-        ICUpctmax<-round(max(tauxICU*solution$solution$Hmax[timemax])/nblits*100,0)
-        maxICU<-paste(round((tauxICU*solution$solution$H[timemax])/nblits*100,0),"% [",round(max(tauxICU*solution$solution$Hmin[timemax])/nblits*100,0),"%; ",round(max(tauxICU*solution$solution$Hmax[timemax])/nblits*100,0),"%]",sep="")
+    overload<-solution$data$date[1]+as.numeric(min(solution$solution$time[which(tauxICU*solution$solution$H>=nblits)]))
 
 
-        result[k,]<-c(K,as.character(indivParams$id[i]),I11mai,A11mai,E11mai,topt,as.character(overload),maxICU,nbdeath,temp,tempmin,tempmax,E,Emin,Emax,A,Amin,Amax,I,Imin,Imax,death,deathmin,deathmax,ICUpct,ICUpctmin,ICUpctmax)
+    timemax<-which(solution$solution$H==max(solution$solution$H))
+
+    ICUpct<-round((tauxICU*solution$solution$H[timemax])/nblits*100,0)
+    ICUpctmin<-round(max(tauxICU*solution$solution$Hmin[timemax])/nblits*100,0)
+    ICUpctmax<-round(max(tauxICU*solution$solution$Hmax[timemax])/nblits*100,0)
+    maxICU<-paste(round((tauxICU*solution$solution$H[timemax])/nblits*100,0),"% [",round(max(tauxICU*solution$solution$Hmin[timemax])/nblits*100,0),"%; ",round(max(tauxICU*solution$solution$Hmax[timemax])/nblits*100,0),"%]",sep="")
 
 
-        print(result[k,])
-        k<-k+1
-    }
+    result[k,]<-c(K,as.character(indivParams$id[i]),I11mai,A11mai,E11mai,topt,as.character(overload),maxICU,nbdeath,temp,tempmin,tempmax,E,Emin,Emax,A,Amin,Amax,I,Imin,Imax,death,deathmin,deathmax,ICUpct,ICUpctmin,ICUpctmax)
+
+
+    print(result[k,])
+    k<-k+1
+  }
 }
 result_save<-result
 #saveRDS(result_save, file = "./LASTIDEA/data/result_lockdown20200416.rds")
@@ -432,15 +432,15 @@ result$location<-full_region_names(result$location)
 result<-result[order(result$K, result$location),]
 xtable(result)
 
- resultfois_death2<-resultdeath
-   resultfois_end2<-resultfinepidemics
-   resultfois_hosto2<-resulthospmax
-  resultfois_ICU2<-result
+resultfois_death2<-resultdeath
+resultfois_end2<-resultfinepidemics
+resultfois_hosto2<-resulthospmax
+resultfois_ICU2<-result
 
-     # resultfois_death<-resultdeath
-     #   resultfois_end<-resultfinepidemics
-     #   resultfois_hosto<-resulthospmax
-     #   resultfois_ICU<-result
+# resultfois_death<-resultdeath
+#   resultfois_end<-resultfinepidemics
+#   resultfois_hosto<-resulthospmax
+#   resultfois_ICU<-result
 
 
 
@@ -555,16 +555,16 @@ for (i in 1:length(indivParams$id)){
 
 
   solutionREBOUND <- getSolution( b,
-                                   r,
-                                   dataregion,
-                                   alpha,
-                                   De,
-                                   Di,
-                                   Dq,
-                                   Dh,
-                                   popSize,
-                                   E0given,
-                                   A0given,b2UP,b3UP,tconf,typecov,tconf+55,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sdUP, CI=TRUE,ncores=parallel::detectCores()-1)
+                                  r,
+                                  dataregion,
+                                  alpha,
+                                  De,
+                                  Di,
+                                  Dq,
+                                  Dh,
+                                  popSize,
+                                  E0given,
+                                  A0given,b2UP,b3UP,tconf,typecov,tconf+55,0,FALSE,bsd,Dqsd,E0sd,A0sd,betasd,beta2sdUP, CI=TRUE,ncores=parallel::detectCores()-1)
 
   par(mfrow=c(2,3))
   plot(solutionREBOUND$solution$time,(solutionREBOUND$solution$S),xlim=c(0,400))
@@ -604,7 +604,7 @@ p <- ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
   xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
   theme_bw() +
   scale_y_continuous(labels = scales::percent_format(accuracy = 0.01)) +
-  facet_wrap(~variable, scales="free", ncol=2) +
+  facet_wrap(~variable, scales="free_y", ncol=2) +
   ylab("Proportion of region population") +
   xlab("Date") +
   colorspace::scale_color_discrete_qualitative(name = "Region", palette = "Dark3") +
@@ -616,8 +616,10 @@ p <- ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
 
 old.loc <- Sys.getlocale("LC_TIME")
 Sys.setlocale("LC_TIME", "en_GB.UTF-8")
+ggsave(p, file = paste(path,"outputMonolix/",nameproject,"/graphics/rebound_prop.pdf",sep=""),
+       device = "pdf", width=7.6, height=8.5)
 ggsave(p, file = paste(path,"outputMonolix/",nameproject,"/graphics/rebound_prop.jpg",sep=""),
-       device = "jpeg", dpi =300, width=7.4, height=8.5)
+       device = "jpeg", dpi =300, width=7.6, height=8.5)
 Sys.setlocale("LC_TIME",old.loc)
 
 p <- ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
@@ -628,7 +630,7 @@ p <- ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
   scale_linetype_manual("", values=c(2,3), breaks=c("Lockdown start", "Lockdown lift")) +
   xlim(c(as.Date("2020-03-01"), as.Date("2020-12-31"))) +
   theme_bw() +
-  facet_wrap(~variable, scales="free", ncol=2) +
+  facet_wrap(~variable, scales="free_y", ncol=2) +
   ylab("Number of people") +
   xlab("Date") +
   colorspace::scale_color_discrete_qualitative(name = "Region", palette = "Dark3") +
@@ -740,9 +742,9 @@ temp <- R0pred[R0pred$time == as.Date("2020-03-24"), ]
 temp$timeperiod <- "lockdown"
 R0pred <- rbind.data.frame(R0pred, temp)
 p <- ggplot(R0pred, aes(x=time)) +
-  geom_line(aes(y=R0mean, color = timeperiod), size=0.8) +
   geom_ribbon(aes(ymin=R0min, ymax=R0max,
                   fill = timeperiod), alpha = 0.4, size = 0.15) +
+  geom_line(aes(y=R0mean, color = timeperiod), size=0.8) +
   geom_vline(aes(xintercept=as.Date("2020-03-17")))+#, linetype="Lockdown start")) +
   geom_text(aes(x=as.Date("2020-03-17"), y=0, label="lockdown"),
             angle=90, vjust=-0.4, hjust=0, size=5.5) +
@@ -765,8 +767,10 @@ p <- ggplot(R0pred, aes(x=time)) +
 ggsave(plot = p, file="R0_FR.jpeg", width=6.5, height=4, dpi = 600)
 
 fill_info <- cbind.data.frame("name" = as.character(full_region_names(attack$reg)),
-                      "fill_value" = as.numeric(sapply(strsplit(attack$summary52, " [", fixed=TRUE), "[", 1)),
-                      stringsAsFactors = FALSE)
+                              "fill_value" = as.numeric(sapply(strsplit(attack$summary52, " [", fixed=TRUE), "[", 1)),
+                              stringsAsFactors = FALSE)
+french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
+                   one_out_of = 50, show_labels = TRUE)
 p <- french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
                         one_out_of = 1)
 ggsave(plot = p, file="map_infec_May11.jpeg", width=5, height=4, dpi = 600)
