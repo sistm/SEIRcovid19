@@ -19,18 +19,24 @@ SetParamRandomEffect.default <- function(obj, Nrand)
 #' @describeIn Set parameter with random effect for an object of class \code{OdeSystem}
 SetParamRandomEffect.OdeSystem <- function(ode, Nrand)
 {
-  # TODO test numeric or list
-  exp<-"param_random <-list("
-  for (i in 1:Nrand){
-    if (i==Nrand){
-      exp<-paste(exp,"beta",as.character(i),"=0)",sep="")
-    }else{
-      exp<-paste(exp,"beta",as.character(i),"=0,",sep="")
+  # If List => Set value
+  if (is.list(Nrand)){
+    for (p in 1:length(Nrand)){
+      ode$ParamRandomEffect[names(ode$ParamRandomEffect)==names(Nrand[p])]<-Nrand[[p]]
     }
+  }else { # If number => Init the list with name betai
+    exp<-"param_random <-list("
+    for (i in 1:Nrand){
+      if (i==Nrand){
+        exp<-paste(exp,"beta",as.character(i),"=0)",sep="")
+      }else{
+        exp<-paste(exp,"beta",as.character(i),"=0,",sep="")
+      }
+    }
+    eval(parse(text=exp))
+    ode$ParamRandomEffect<-param_random
   }
-  #a<-expression(list(beta1=0,beta2=0))
-  eval(parse(text=exp))
-  ode$ParamRandomEffect<-param_random
+
   return(ode)
   
 }

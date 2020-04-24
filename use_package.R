@@ -124,5 +124,9 @@ for (i in 1:length(indivParams$id)){
   }
   ode_id<-SetSomeParameter(ode_id,OptimizeParam)
   ode_id$parameter
+  ode_id$ParamRandomEffect
+  ode_id<-SetParamRandomEffect(ode_id,OptimizeParam)
+  ode_id$ParamRandomEffect
+  
   
 }
