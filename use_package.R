@@ -1,54 +1,59 @@
 devtools::load_all('.')
 Sys.setlocale("LC_NUMERIC","C")
-param<-c(b=0.838434,
-         ascertainement=0.0431010769979476,
-         alpha=1.5,
-         De=5.2,
-         Di=2.3,
-         Dq=2.37556,
-         Dh=30,
-         popsize=12278210,
-         dailyMove=0,
-         isolation=0)
-init  <- c(initS=12274535.42, 
-           initE=1702.34,
-           initI=25.00,
-           initR=0,
-           initA=1942.24,
-           initH=5)
-model_name<-c("S","E","I","R","A","H")
-ode_def<-seirah_ode
 
+# Define all paremeter for Ode system with initial value (0), including regressor parameter
+param<-c(b=0,
+         ascertainement=0,
+         alpha=0.5,
+         De=5.1,
+         Di=2.3,
+         Dq=0,
+         Dh=30,
+         popsize=0,
+         dailyMove=0,
+         isolation=0,
+         beta1=0)# Regressor parameter
+# Define all init state of the ODE systme with value, it should be initVar
+init  <- c(initS=0, 
+           initE=0,
+           initI=0,
+           initR=0,
+           initA=0,
+           initH=0)
+# Model name
+model_name<-c("S","E","I","R","A","H")
+# Not used for now
+ode_def<-seirah_ode
 
 myOde<-OdeSystem(func=ode_def,param=param,init=init,modname = model_name)
 myOde
-
-
-
 # Définition spécifique pour les états initiaux => A et S
 SpecificInit<-list(initA=1,initS=1)
 myOde<-SetSpecificInit(myOde,SpecificInit)
 myOde$IsSpecificInit
-
-# Variabily => 0 = fixed, 1 mobile sans effet aléatoire, 2 mobile avec effet aléatoire (ajout d'un beta)
-ParamVar<-list(b=2,Dq=1)
+# Variability => 0 = fixed, 1 mobile sans effet aléatoire, 2 mobile avec effet aléatoire (ajout d'un beta)
+## Variability has to be defined for Parameter and InitState
+#Param
+ParamVar<-list(b=2,Dq=2,beta1=1)
 myOde<-SetParamVariability(myOde,ParamVar)
-myOde$Variability$param
-InitVar<-list(initE=1)
+# Param
+InitVar<-list(initE=2)
 myOde<-SetInitVariability(myOde,InitVar)
-myOde$Variability$init
-
-# Distribution : Dans notre cas tout les param/init ont des distrus logNormal, sauf pour le beta
-Paramdist<-list(b="logNormal")
+# Distribution of the parameter, default is logNormal
+# Distribution as to be define for Parameter and IniState
+#Param
+Paramdist<-list(beta1="normal")
 myOde<-SetParamDistribution(myOde,Paramdist)
-myOde$Distribution$param
-Initdist<-list(initS="logNormal")
-myOde<-SetInitDistribution(myOde,Initdist)
-myOde$Distribution$init
-#Regressor
+# Init (not used in actual example)
+#Initdist<-list(initS="logNormal")
+#myOde<-SetInitDistribution(myOde,Initdist)
+# Regressor => 1 is regressor , it mean that this value is available in the data input
+# Regressor as to be defined for parameter and init
+# Param
 ParamRegressor<-list(ascertainement=1,popsize=1,isolation=1)
 myOde<-SetParamIsRegressor(myOde,ParamRegressor)
 myOde$IsRegressor$param
+# Init
 InitRegressor<-list(initH=1,initI=1)
 myOde<-SetInitIsRegressor(myOde,InitRegressor)
 myOde$IsRegressor$init
@@ -59,12 +64,24 @@ header<-c("ignore","ignore","time","regressor","regressor","obsid","observation"
 myOde<-SetDataInput(myOde,path,header,sep)
 myOde$DataInfo
 
+## TODO add a print method
+# Print will show
+# - Parameter
+# - InitState
+# - Who is optimisable and their variability (1/2)
+# - Who is regressor
 
 #Write mlxtran
+# We need several info :
+# - The Specific definition of the init state
+# - The statistical model
+# - The mathematical model
+# - The observation model
+## TODO keep this info for the estimation (specific,stat,math,obs)
 ModelFile<-paste('./MonolixFile/','mlxmodel',".txt",sep="")
 SpecificInitBloc<-c("A_0=I_0*(1-ascertainement)/ascertainement",
                     "S_0=popsize-E_0-I_0-R_0-A_0-H_0")
-ModelStatBloc<-c("transmission=b1*exp(beta1*isolation)")
+ModelStatBloc<-c("transmission=b*exp(beta1*isolation)")
 ModelMathBloc<-c("ddt_S = -transmission*S*(I+alpha*A)/popsize+dailyMove-dailyMove*S/(popsize-I-H)",
                  "ddt_E = transmission*S*(I+alpha*A)/popsize-E/De-dailyMove*E/(popsize-I-H)",
                  "ddt_I = ascertainement*E/De-I/Dq-I/Di",
@@ -79,7 +96,36 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 
+
+Mapping<-map
+ObservationType<-obs
+
+# Initialize the connection
+lixoftConnectors::initializeLixoftConnectors(software="monolix")
+
+# Function to set Distribution and Parameter
+mlxProject.setIndividualParameterDistribution <- function(a) {
+  eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterDistribution(',a,'= "normal")' )))
+}
+mlxProject.setIndividualParameterVariability <- function(a) {
+  eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterVariability(',a,'= FALSE)' )))
+}
+
+# Create the project
+lixoftConnectors::newProject(modelFile = ode$ModelFile,
+                             data = list(dataFile = ode$DataInfo$File,
+                                         headerTypes =ode$DataInfo$HeaderType,
+                                         observationTypes = ObservationType,
+                                         mapping = Mapping))
+
+
+
+
+
 myOde<-LaunchMonolix.OdeSystem(myOde, "LaunchTest", obs, map)
+
+
+
 
 
 

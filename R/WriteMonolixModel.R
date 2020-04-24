@@ -36,27 +36,12 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
   # Parameter : optimiser par monolix
   param_line<-"parameter = {"
   ## Etats initiaux et parametres optimisable
-  mlx_param<-paste(c(names(ode$InitState[ode$Variability$init==1]),names(ode$parameter[ode$Variability$param==1])),collapse=',')
+  mlx_param<-paste(c(names(ode$InitState[ode$Variability$init>0]),names(ode$parameter[ode$Variability$param>0])),collapse=',')
+  param_line<-paste(param_line,mlx_param,'}',sep='')
   ## Ceux avec une distribution
-  parameter_with_random_effect<-c(names(ode$parameter[ode$Variability$param==2]),names(ode$InitState[ode$Variability$init==2]))
-  number_parameter_with_random_effect<-length(parameter_with_random_effect)
-  if (number_parameter_with_random_effect > 0){
-    param_line<-paste(param_line,mlx_param,',',sep='')
-    for (i in 1:number_parameter_with_random_effect){
-      if (i==number_parameter_with_random_effect){
-        param_line<-paste(param_line,parameter_with_random_effect[i],as.character(i),',',"beta",as.character(i),'}',sep='')
-      }else{
-        param_line<-paste(param_line,parameter_with_random_effect[i],as.character(i),',',"beta",as.character(i),',',sep='')
-      }
-    }
-  }else{
-    param_line<-paste(param_line,mlx_param,'}',sep='')
-  }
   write(param_line, file=ModelFile,append=TRUE)
   
   
-  ode<-SetParamRandomEffect(ode,number_parameter_with_random_effect)
-
   #Regressor
   regressor_line<-"regressor = {"
   RegressorName<-GetRegressorName(ode)
@@ -86,7 +71,7 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
   write(init_line,file=ModelFile,append=TRUE)
 
   # Init monolix parameter
-  init_parameter<-names(ode$InitState[ode$Variability$init==1])
+  init_parameter<-names(ode$InitState[ode$Variability$init>0])
   init_line<-""
   for (i in 1:length(init_parameter)){
     variable_name<-substr(init_parameter[i], nchar(init_parameter[i]), nchar(init_parameter[i]))

@@ -37,12 +37,18 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping)
                                            observationTypes = ObservationType,
                                            mapping = Mapping))
   # Set the distrution and variability 
-  number_parameter_with_random_effect<-length(c(names(ode$parameter[ode$Variability$param==2]),names(ode$InitState[ode$Variability$init==2])))
-  if (length(number_parameter_with_random_effect)>0){
-    for (i in 1:number_parameter_with_random_effect){
-      var_name<-paste("beta",as.character(i),sep="")
-      mlxProject.setIndividualParameterDistribution(var_name)
-      mlxProject.setIndividualParameterVariability(var_name)
+  parameter_with_no_random_effect<-(c(names(ode$parameter[ode$Variability$param==1]),names(ode$InitState[ode$Variability$init==1])))
+  if (length(parameter_with_no_random_effect)>0){
+    for (i in 1:length(parameter_with_no_random_effect)){
+      #mlxProject.setIndividualParameterDistribution(var_name)
+      mlxProject.setIndividualParameterVariability(parameter_with_no_random_effect[i])
+    }
+  }
+  parameter_with_no_normal_dist<-(c(names(ode$parameter[ode$Distribution$param=="normal"]),names(ode$InitState[ode$Distribution$init=="normal"])))
+  if (length(parameter_with_no_normal_dist)>0){
+    for (i in 1:length(parameter_with_no_normal_dist)){
+      #mlxProject.setIndividualParameterDistribution(var_name)
+      mlxProject.setIndividualParameterDistribution(parameter_with_no_normal_dist[i])
     }
   }
   # Set all task to True (default for us)

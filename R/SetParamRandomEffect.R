@@ -1,4 +1,4 @@
-#' SetParamRandomEffect generic
+#' SetParamRandomEffect generic not used any more
 #'
 #' @param obj Object to set
 #' @param Nrand List of parameter wtih Random Effect

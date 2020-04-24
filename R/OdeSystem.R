@@ -44,7 +44,7 @@ OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),
     Distribution=distribution,
     DataInfo=Data,
     IsSpecificInit=isspecificinit, 
-    ParamRandomEffect=list()
+    ParamRandomEffect=list() # not used any more
     )
   
   class(ode) <- append(class(ode),"OdeSystem")
