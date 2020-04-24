@@ -255,19 +255,19 @@ getindicators(indivParams,path,nameproject,nameprojectupdate,attackinfnothingdon
 
 
 
-
-R0france$I[which(R0france$time=="2020-04-15")]+0.033*R0france$R[which(R0france$time=="2020-04-15")]+R0france$H[which(R0france$time=="2020-04-15")]
-
-
-
-
-
-### No intervention what if
-solutionNOEFFECT$solution
-
-maxepidemics<-max(predictionnoint$Iincident)
-predictionnoint$time[which(predictionnoint$Iincident==maxepidemics)]
-predictionnoint$time[which(predictionnoint$Iincident<5)]
+# 
+# R0france$I[which(R0france$time=="2020-04-15")]+0.033*R0france$R[which(R0france$time=="2020-04-15")]+R0france$H[which(R0france$time=="2020-04-15")]
+# 
+# 
+# 
+# 
+# 
+# ### No intervention what if
+# solutionNOEFFECT$solution
+# 
+# maxepidemics<-max(predictionnoint$Iincident)
+# predictionnoint$time[which(predictionnoint$Iincident==maxepidemics)]
+# predictionnoint$time[which(predictionnoint$Iincident<5)]
 
 ### INDICATEURS -----
 
@@ -770,14 +770,25 @@ ggsave(plot = p, file="R0_FR.jpeg", width=6.5, height=4, dpi = 600)
 fill_info <- cbind.data.frame("name" = as.character(full_region_names(attack$reg)),
                               "fill_value" = as.numeric(sapply(strsplit(attack$summary52, " [", fixed=TRUE), "[", 1)),
                               stringsAsFactors = FALSE)
-french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
-                   one_out_of = 50, show_labels = TRUE)
+fill_info$fill_value<-fill_info$fill_value*5/5.9
+french_regions_map(cauchemez, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
+                   one_out_of = 1, show_labels = FALSE)
 
 fill_info_trueI<-fill_info
-fill_info_trueI$fill_value<-c(11950/12278210,769/5999982,2760/8032377,965/2559073,1283/2783039,614/3303500,2435/5962662,4416/5511747,747/3801797,430/3340379,804/5924858,1783/5055651,66/100,0/100)
+fill_info_trueI$fill_value<-c(11950/12278210,769/5999982,2760/8032377,965/2559073,1283/2783039,614/3303500,2435/5962662,4416/5511747,747/3801797,430/3340379,804/5924858,1783/5055651,66/100)*5/max(c(11950/12278210,769/5999982,2760/8032377,965/2559073,1283/2783039,614/3303500,2435/5962662,4416/5511747,747/3801797,430/3340379,804/5924858,1783/5055651,66/100))
+
+french_regions_map(fill_info_trueI, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
+                   one_out_of = 50, show_labels = TRUE)
+french_regions_map(cauchemez, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
+                   one_out_of = 1, show_labels = TRUE)
+
 
 cauchemez<-fill_info
-cauchemez$fill_value<-c(12.3,1.4,4.4,3.1,5.7,2.6,6.1,11.8,1.9,1.8,3.1,3.4,0,0)
+cauchemez$fill_value<-c(12.3,1.4,4.4,3.1,5.7,2.6,6.1,11.8,1.9,1.8,3.1,3.4,0)*5/12.3
+french_regions_map(cauchemez, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
+                   one_out_of = 1, show_labels = FALSE)
+
+
 
 p1 <- french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
                         one_out_of = 1)

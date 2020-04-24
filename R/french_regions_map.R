@@ -43,8 +43,8 @@ french_regions_map <- function(fill_info_df,
                                                                            "Pays de la Loire", "Provence-Alpes-Côte d'Azur")
   )
   reg_map_centroids_df2plot <- reg_map_centroids_df2plot %>% rename(group = id)
-  reg_map_df2plot <- left_join(reg_map_df2plot, fill_info, by = c("name"))
-  reg_map_centroids_df2plot <- left_join(reg_map_centroids_df2plot, fill_info, by = c("name"))
+  reg_map_df2plot <- left_join(reg_map_df2plot, fill_info_df, by = c("name"))
+  reg_map_centroids_df2plot <- left_join(reg_map_centroids_df2plot, fill_info_df, by = c("name"))
   #subsampling
   sel <- c(TRUE, rep(FALSE, times = one_out_of-1))
 
