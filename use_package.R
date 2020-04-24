@@ -172,3 +172,42 @@ model_name<-"SEIRAH"
 res<-ode_solve_simulx(pk.model,time,par,init,model_name)
 
 
+library(ggplot2)
+melanie<-read.table("/home/ddutartr/Projet/SISTM/SEIRcovid19/SolutionIDF.txt",header=TRUE)
+melanie<-melanie[melanie$time<101,c('time',"S","E","I","R","A","H")]
+compare_res<-resultat-melanie 
+compare_res$time<-resultat$time
+
+S <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = S), color = "darkred") 
+E <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = E), color = "darkred") 
+I <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = I), color = "darkred") 
+R <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = R), color = "darkred") 
+A <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = A), color = "darkred") 
+H <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = H), color = "darkred") 
+
+cowplot::plot_grid(S, E,I,R,A,H,labels=c("S","E","I","R","A","H"), ncol = 2, nrow = 3)
+
+compare_res<-resultat-res 
+compare_res$time<-resultat$time
+
+S <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = S), color = "darkred") 
+E <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = E), color = "darkred") 
+I <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = I), color = "darkred") 
+R <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = R), color = "darkred") 
+A <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = A), color = "darkred") 
+H <- ggplot(compare_res, aes(x=time) ) +
+  geom_line(aes(y = H), color = "darkred") 
+
+cowplot::plot_grid(S, E,I,R,A,H,labels=c("S","E","I","R","A","H"), ncol = 2, nrow = 3)
+
