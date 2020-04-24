@@ -749,7 +749,7 @@ p <- ggplot(R0pred, aes(x=time)) +
   geom_text(aes(x=as.Date("2020-03-17"), y=0, label="lockdown"),
             angle=90, vjust=-0.4, hjust=0, size=5.5) +
   geom_vline(aes(xintercept=as.Date("2020-03-25")))+#,  linetype="One week\nafter Lockdown")) +
-  geom_text(aes(x=as.Date("2020-03-25"), y=0, label="One week\nafter Lockdown"),
+  geom_text(aes(x=as.Date("2020-03-25"), y=0, label="1st week\nafter Lockdown"),
             angle=90, vjust=0.5, hjust=0, size=5.5) +
   geom_hline(aes(yintercept = 1), color="grey25", linetype=2) +
   theme_bw() +
@@ -763,8 +763,12 @@ p <- ggplot(R0pred, aes(x=time)) +
   theme(legend.position = "bottom") +
   theme(panel.grid.minor = element_blank(), panel.grid.major.x = element_blank()) +
   theme(text = element_text(size=16)) +
-  ylim(0,4)
-ggsave(plot = p, file="R0_FR.jpeg", width=6.5, height=4, dpi = 600)
+  ylim(0,4) +
+  scale_x_date(breaks = c(as.Date("2020-03-17"), as.Date("2020-03-25")),
+              limits = c(as.Date("2020-03-11"), as.Date("2020-04-01")),
+              labels = c("Mar 17", "Mar 25"),
+              expand = c(0, 0))
+ggsave(plot = p, file="R0_FR.jpeg", width=5, height=4, dpi = 600)
 
 fill_info <- cbind.data.frame("name" = as.character(full_region_names(attack$reg)),
                               "fill_value" = as.numeric(sapply(strsplit(attack$summary52, " [", fixed=TRUE), "[", 1)),
