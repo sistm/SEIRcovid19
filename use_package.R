@@ -161,7 +161,7 @@ for (i in 1:length(indivParams$id)){
   ode_id<-SetSomeParameter(ode_id,RegressorValue)
   ode_id$parameter
   # Set the parameter name thanks to monolix
-  optimize_param_name<-c(names(ode_id$parameter[ode_id$Variability$param>0]),names(ode_id$ParamRandomEffect))
+  optimize_param_name<-c(names(ode_id$parameter[ode_id$Variability$param>0]),names(ode_id$InitState[ode_id$Variability$init>0]))
   OptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
   names(OptimizeParam)<-optimize_param_name
   for (j in 1:length(optimize_param_name)){
@@ -170,9 +170,8 @@ for (i in 1:length(indivParams$id)){
   }
   ode_id<-SetSomeParameter(ode_id,OptimizeParam)
   ode_id$parameter
-  ode_id$ParamRandomEffect
-  ode_id<-SetParamRandomEffect(ode_id,OptimizeParam)
-  ode_id$ParamRandomEffect
-  
-  
+  ode_id<-SetSomeInit(ode_id,OptimizeParam)
+  ode_id$InitState
 }
+
+ode_id
