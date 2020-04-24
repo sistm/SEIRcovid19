@@ -157,6 +157,9 @@ for (i in 1:1){#length(indivParams$id)){
 ode_id$parameter
 ode_id$InitState
 
+pk.model<-'/home/ddutartr/Projet/SISTM/testminpuls/model_if.txt'
+time<-seq(0,365, by=1)
+resultat<-mlxtran_solve_simulx(pk.model,time,ode_id$parameter,ode_id$InitState,ode_id$ModelName)
 
 
 
