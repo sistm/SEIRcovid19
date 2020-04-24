@@ -14,7 +14,8 @@ param<-c(b=0,
          lengthconf=1000,
          dailyMove=0,
          isolation=0,
-         beta1=0)# Regressor parameter
+         beta1=0,
+         beta3=0)# Regressor parameter
 # Define all init state of the ODE systme with value, it should be initVar
 init  <- c(initS=0, 
            initE=0,
@@ -158,8 +159,16 @@ ode_id$parameter
 ode_id$InitState
 
 pk.model<-'/home/ddutartr/Projet/SISTM/testminpuls/model_if.txt'
-time<-seq(0,365, by=1)
+time<-seq(0,100, by=1)
 resultat<-mlxtran_solve_simulx(pk.model,time,ode_id$parameter,ode_id$InitState,ode_id$ModelName)
 
+pk.model<-'../testminpuls/seirah_lastIdea.R'
+source(pk.model)
+time<-seq(0,100, by=1)
+par<-ode_id$parameter
+init<-ode_id$InitState
+names(init)<-c("S","E","I","R","A","H")
+model_name<-"SEIRAH"
+res<-ode_solve_simulx(pk.model,time,par,init,model_name)
 
 
