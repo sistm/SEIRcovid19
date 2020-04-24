@@ -382,7 +382,8 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE, prop_g
   return(plot_res)
 }
 
-getPlotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE, prop_geo = FALSE){
+getPlotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE,
+                               prop_geo = FALSE, device = "pdf"){
 
   if(log_scale){
     logindicator <- "_logscale"
@@ -399,8 +400,13 @@ getPlotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE, pro
   old.loc <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "en_GB.UTF-8")
   p <- plotSolutionAll(solutions_list,nameproject, log_scale, prop_geo)
-  ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/fit_all", logindicator, rateindicator, ".jpg"),
-         device = "jpeg", dpi = 300, width=10, height=8)
+  if(device == "pdf"){
+    ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/fit_all", logindicator, rateindicator, ".pdf"),
+           device = "pdf", width=10, height=8)
+  }else if(device == "jpg"){
+    ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/fit_all", logindicator, rateindicator, ".jpg"),
+           device = "jpeg", dpi = 300, width=10, height=8)
+  }
   Sys.setlocale("LC_TIME",old.loc)
 }
 
@@ -514,7 +520,7 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
     theme_bw() +
     facet_wrap(~Region, ncol = 3, scales = facet_scales) +
     theme(strip.background = element_rect(fill="white")) +
-    ylab(expression(paste("Effective Reproductive Number ", R[eff](t, xi)))) +
+    ylab(expression(paste("Effective Reproductive Number ", R[e](t, xi[i])))) +
     #ylim(0,NA) +
     #ylim(0, max(c(as.numeric(R0table$R0),as.numeric(R0table$R0ICmin),as.numeric(R0table$R0ICmax)))) +
     scale_y_continuous(breaks=0:7, limits = c(0, NA)) +
@@ -534,15 +540,19 @@ plotR0all <- function(R0table,nameproject,path,timingdays,typecov, Di, alpha,
 
 
 getPlotR0all <- function(R0table, nameproject,path,timingdays,typecov, Di, alpha,
-                         facet_scales=c("fixed", "free_y", "free_x", "free"),nameprojectupdate){
-
+                         facet_scales=c("fixed", "free_y", "free_x", "free"), nameprojectupdate,
+                         device = "pdf"){
   old.loc <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "en_GB.UTF-8")
 
   p <- plotR0all(R0table, nameproject,path,timingdays,typecov, Di, alpha, facet_scales,nameprojectupdate)
-  ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/R0_all.jpg"),
-         device = "jpeg", dpi = 500, width=7, height=7)
-
+  if(device == "pdf"){
+    ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/R0_all.pdf"),
+           device = "pdf", width=7, height=7)
+  }else if(device == "jpg"){
+    ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/R0_all.jpg"),
+           device = "jpeg", dpi = 500, width=7, height=7)
+  }
   Sys.setlocale("LC_TIME",old.loc)
 }
 
@@ -971,7 +981,8 @@ plotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNO
   return(list(p1, p2, p3, p4,datapredNOEFFECT,datapred,datapredUPDATED))
 }
 
-getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNOEFFECT,nameproject, logscale=TRUE){
+getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,predictionsNOEFFECT,
+                                       nameproject, logscale=TRUE, device="pdf"){
 
 
   if(logscale){
@@ -993,12 +1004,23 @@ getPlotPredictionShortterm <- function(predictions,predictionsUPDATED,prediction
 
   p1 + (p2 +ggtitle("")) + plot_layout(ncol=1,nrow=2,guides = "collect")
 
-  ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm", logindicator, ".jpg",sep=""),
-         device = "jpeg", dpi =300, width=6, height=8)
+  if(device == "pdf"){
+    ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm", logindicator, ".pdf",sep=""),
+           device = "pdf", width=6, height=8)
+  }else if(device == "jpg"){
+    ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm", logindicator, ".jpg",sep=""),
+                                   device = "jpeg", dpi =300, width=6, height=8)
+  }
 
   (p1 + (p2+ggtitle("")))/((p3+ggtitle("")) + (p4+ggtitle(""))) + plot_layout(guides = "collect")
-  ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all", logindicator, ".jpg",sep=""),
-         device = "jpeg", dpi = 300, width=11, height=8)
+  if(device == "pdf"){
+    ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all", logindicator, ".pdf",sep=""),
+           device = "pdf", width=11, height=8)
+  }else if(device == "jpg"){
+    ggsave(file = paste(path,"outputMonolix/",nameproject,"/graphics/shortterm_all", logindicator, ".jpg",sep=""),
+           device = "jpeg", dpi = 300, width=11, height=8)
+  }
+
 
   Sys.setlocale("LC_TIME",old.loc)
 
