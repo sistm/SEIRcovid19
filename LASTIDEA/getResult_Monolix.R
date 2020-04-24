@@ -773,7 +773,7 @@ french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOV
                    one_out_of = 50, show_labels = FALSE)
 p <- french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
                         one_out_of = 1, show_labels = TRUE)
-ggsave(plot = p, file="map_infec_May11.jpeg", width=4, height=5, dpi = 600)
+ggsave(plot = p, file="map_infec_May11_melcol.jpeg", width=4, height=5, dpi = 600)
 #ggsave(plot = p, file="map_infec_May11.pdf", width=5, height=4)
 
 

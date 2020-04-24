@@ -48,13 +48,14 @@ french_regions_map <- function(fill_info_df,
   #subsampling
   sel <- c(TRUE, rep(FALSE, times = one_out_of-1))
 
+
   p <- ggplot(reg_map_df2plot[sel,], aes(x = long, y = lat, group=group)) +
     geom_polygon(aes(fill=fill_value, color=fill_value), alpha=0.93, size=0.08) +
-    scale_fill_gradientn(name = "", colours = c("aliceblue", "lightcyan", "lightskyblue", "red4"), #c("white", "lightcyan", "lightblue1", "lightskyblue", "red3", "red4"),
+    scale_fill_gradientn(name = "", colours = c("aliceblue", "lightcyan", "lightskyblue", "red4"), #c("#F9FCFF", "#EEF8FF", "#E2FDFF", "#CCF5FF", "#ADE4FD", "#98D8FB", "#8DC3EC", "#B97790", "#BB0000", "#8B0000"),
                          breaks=c(0,2,4,6), minor_breaks=c(1,3,5),
                          labels = paste0(c(0,2,4,6), "%"),
                          limits = c(0,6)) +
-    scale_color_gradientn(name = "", colours = c("aliceblue", "lightcyan", "lightskyblue", "red4"),
+    scale_color_gradientn(name = "", colours = c("aliceblue", "lightcyan", "lightskyblue", "red4"), #c("#F9FCFF", "#EEF8FF", "#E2FDFF", "#CCF5FF", "#ADE4FD", "#98D8FB", "#8DC3EC", "#B97790", "#BB0000", "#8B0000"),
                           breaks=c(0,2,4,6), minor_breaks=c(1,3,5),
                           labels = paste0(c(0,2,4,6), "%"),
                           limits = c(0,6)) +
