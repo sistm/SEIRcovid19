@@ -4,7 +4,7 @@ Sys.setlocale("LC_NUMERIC","C")
 # Define all paremeter for Ode system with initial value (0), including regressor parameter
 param<-c(b=0,
          ascertainement=0,
-         alpha=0.5,
+         alpha=0.55,
          De=5.1,
          Di=2.3,
          Dq=0,
@@ -166,6 +166,7 @@ pk.model<-'../testminpuls/seirah_lastIdea.R'
 source(pk.model)
 time<-seq(0,100, by=1)
 par<-ode_id$parameter
+par<-c(par,newdailyMove=0)
 init<-ode_id$InitState
 names(init)<-c("S","E","I","R","A","H")
 model_name<-"SEIRAH"
@@ -173,7 +174,7 @@ res<-ode_solve_simulx(pk.model,time,par,init,model_name)
 
 
 library(ggplot2)
-melanie<-read.table("/home/ddutartr/Projet/SISTM/SEIRcovid19/SolutionIDF.txt",header=TRUE)
+melanie<-read.table("/home/ddutartr/Projet/SISTM/testminpuls/SolutionIDF.txt",header=TRUE)
 melanie<-melanie[melanie$time<101,c('time',"S","E","I","R","A","H")]
 compare_res<-resultat-melanie 
 compare_res$time<-resultat$time
