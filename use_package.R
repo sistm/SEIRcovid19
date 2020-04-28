@@ -101,43 +101,37 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 ## Launch monolix
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
-nameproject<-"LauchTest"
+nameproject<-"LaunchTest"
 myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map)
 myOde$nameproject<-nameproject
 
-
-
-
-
 # @Melanie ne pas aller plus loin
-
-
-
-## Start get_result
-path<-"/home/ddutartr/Projet/SISTM/SEIRcovid19/MonolixFile/"
+## We want now to update the system after optimisation
+# Use the result from melanie
 nameproject<-"Final_20200325/"
 myOde$nameproject<-nameproject
-
-## Get Individual Parameters & data
-
+#Updating ofr id<-1 => IDF
 index_id<-1
 ode_id<-myOde
 ode_id<-UpdateOdeSystem(ode_id,index_id,SpecificInitBloc)
+# Write monolix model for estimation
+WriteEmptyLine<-function(ModelFile){
+  write("\n",file=ModelFile,append=TRUE)
+  
+}
+ModeFilename<-"model_estimation.txt"
+TimeSpecificEquation<-c("transmission=b",
+                        "if (t>=tconf)",
+                        "  transmission=b*exp(beta1)",
+                        "end")
 
-pk.model<-'/home/ddutartr/Projet/SISTM/testminpuls/model_if.txt'
+ode_id<-WriteEstimationModel(ode_id,ModeFilename,TimeSpecificEquation,ModelMathBloc)
+
 time<-seq(0,100, by=1)
-resultat<-mlxtran_solve_simulx(pk.model,time,ode_id$parameter,ode_id$InitState,ode_id$ModelName)
+is_global<-0
 
-pk.model<-'../testminpuls/seirah_lastIdea.R'
-source(pk.model)
-time<-seq(0,10, by=1)
-par<-ode_id$parameter
-par<-c(par,newdailyMove=0)
-init<-ode_id$InitState
-names(init)<-c("S","E","I","R","A","H")
-model_name<-"SEIRAH"
-res<-ode_solve_simulx(pk.model,time,par,init,model_name)
-
+ode_id<-Estimate(ode_id, time,is_global)
+resultat<-ode_id$solution
 
 library(ggplot2)
 melanie<-read.table("/home/ddutartr/Projet/SISTM/testminpuls/SolutionIDF.txt",header=TRUE)
@@ -159,22 +153,3 @@ H <- ggplot(compare_res, aes(x=time) ) +
   geom_line(aes(y = H), color = "darkred") 
 
 cowplot::plot_grid(S, E,I,R,A,H,labels=c("S","E","I","R","A","H"), ncol = 2, nrow = 3)
-
-compare_res<-resultat-res 
-compare_res$time<-resultat$time
-
-S <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = S), color = "darkred") 
-E <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = E), color = "darkred") 
-I <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = I), color = "darkred") 
-R <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = R), color = "darkred") 
-A <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = A), color = "darkred") 
-H <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = H), color = "darkred") 
-
-cowplot::plot_grid(S, E,I,R,A,H,labels=c("S","E","I","R","A","H"), ncol = 2, nrow = 3)
-
