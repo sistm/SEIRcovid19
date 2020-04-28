@@ -61,9 +61,12 @@ InitRegressor<-list(initH=1,initI=1)
 myOde<-SetInitIsRegressor(myOde,InitRegressor)
 myOde$IsRegressor$init
 # Data input info
-path<-"./MonolixFile/data_monolix_20200403.txt"
+#path<-"./MonolixFile/data_monolix_20200403.txt"
+path<-"./MonolixFile/data_monolix_20200325.txt"
 sep<-"\t"
-header<-c("ignore","ignore","time","regressor","regressor","obsid","observation","regressor","regressor","regressor","ignore","ignore","ignore","id")
+#header<-c("ignore","ignore","time","regressor","regressor","obsid","observation","regressor","regressor","regressor","ignore","ignore","ignore","id")
+header<-c("ignore","ignore","time","regressor","regressor","obsid","observation","regressor","regressor","regressor","id","ignore","ignore","ignore")
+
 myOde<-SetDataInput(myOde,path,header,sep)
 myOde$DataInfo
 
@@ -98,9 +101,9 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 ## Launch monolix
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
-
-myOde<-LaunchMonolix.OdeSystem(myOde, "LaunchTest", obs, map)
-
+nameproject<-"LauchTest"
+myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map)
+myOde$nameproject<-nameproject
 
 
 
@@ -113,50 +116,13 @@ myOde<-LaunchMonolix.OdeSystem(myOde, "LaunchTest", obs, map)
 ## Start get_result
 path<-"/home/ddutartr/Projet/SISTM/SEIRcovid19/MonolixFile/"
 nameproject<-"Final_20200325/"
-dataname<-"./MonolixFile/data_monolix_20200325.txt"
-myOde$DataInfo$File<-dataname
-myOde$DataInfo$HeaderType<-c("ignore","ignore","time","regressor","regressor","obsid","observation","regressor","regressor","regressor","id","regressor","ignore","ignore")
+myOde$nameproject<-nameproject
+
 ## Get Individual Parameters & data
-indivParams <-read.table(paste(path,"/outputMonolix/",nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
 
-data<-read.table(myOde$DataInfo$File,sep=myOde$DataInfo$Sep,header=TRUE)
-RegressorName<-GetRegressorName(myOde)
-InputNames<-colnames(data)
-timename<-InputNames[myOde$DataInfo$HeaderType=="time"]
-idname<-InputNames[myOde$DataInfo$HeaderType=="id"]
-
-for (i in 1:1){#length(indivParams$id)){
-  ode_id<-myOde
-  RegressorValue<-as.list(rep(NA,length(RegressorName)))
-  names(RegressorValue)<-(RegressorName)
-  # Set the regressor value thanks to data input
-  for (j in 1:length(RegressorName)){
-    RegressorValue[j]<-data[which(data[idname]==as.character(indivParams$id[i]) & (data[timename]==0)) ,RegressorName[j]][1]
-  }
-  ode_id$InitState
-  ode_id<-SetSomeInit(ode_id,RegressorValue)
-  ode_id$InitState
-  ode_id$parameter
-  ode_id<-SetSomeParameter(ode_id,RegressorValue)
-  ode_id$parameter
-  # Set the parameter name thanks to monolix
-  optimize_param_name<-c(names(ode_id$parameter[ode_id$Variability$param>0]),names(ode_id$InitState[ode_id$Variability$init>0]))
-  OptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
-  names(OptimizeParam)<-optimize_param_name
-  for (j in 1:length(optimize_param_name)){
-    optimize_monolix_name<-paste(optimize_param_name[j],"_mode",sep="")
-    OptimizeParam[j]<-indivParams[i,optimize_monolix_name]
-  }
-  ode_id<-SetSomeParameter(ode_id,OptimizeParam)
-  ode_id$parameter
-  ode_id<-SetSomeInit(ode_id,OptimizeParam)
-  ode_id$InitState
-  ode_id<-SetSpecificInitState(ode_id,SpecificInitBloc)
-  
-}
-
-ode_id$parameter
-ode_id$InitState
+index_id<-1
+ode_id<-myOde
+ode_id<-UpdateOdeSystem(ode_id,index_id,SpecificInitBloc)
 
 pk.model<-'/home/ddutartr/Projet/SISTM/testminpuls/model_if.txt'
 time<-seq(0,100, by=1)
@@ -164,7 +130,7 @@ resultat<-mlxtran_solve_simulx(pk.model,time,ode_id$parameter,ode_id$InitState,o
 
 pk.model<-'../testminpuls/seirah_lastIdea.R'
 source(pk.model)
-time<-seq(0,100, by=1)
+time<-seq(0,10, by=1)
 par<-ode_id$parameter
 par<-c(par,newdailyMove=0)
 init<-ode_id$InitState

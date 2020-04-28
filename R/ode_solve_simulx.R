@@ -5,6 +5,7 @@
 #' @export
 #' @importFrom mlxR simulx
 ode_solve_simulx<-function(pk.model,time,param,init,model_name){
+  lixoftConnectors::initializeLixoftConnectors(software="simulx",force=TRUE)
   C <- list(name=c(model_name), time=time[1:2])
   param_and_init<-c(param,init,number_parameter=length(param))
   
