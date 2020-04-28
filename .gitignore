@@ -6,6 +6,6 @@
 *.Rproj
 ./**.jpg
 ./man/*
-./MonolixFile/*
+./MonolixFile/*.txt
 TRASH
 *.Rd

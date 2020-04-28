@@ -1,0 +1,26 @@
+[LONGITUDINAL]
+
+input = {b,ascertainement,alpha,De,Di,Dq,Dh,popsize,tconf,lengthconf,dailyMove,isolation,beta1,beta3,initS,initE,initI,initR,initA,initH}
+
+EQUATION:
+odeType = stiff
+
+S_0=initS
+E_0=initE
+I_0=initI
+R_0=initR
+A_0=initA
+H_0=initH
+
+transmission=b
+if (t>=tconf)
+  transmission=b*exp(beta1)
+end
+
+
+ddt_S = -transmission*S*(I+alpha*A)/popsize+dailyMove-dailyMove*S/(popsize-I-H)
+ddt_E = transmission*S*(I+alpha*A)/popsize-E/De-dailyMove*E/(popsize-I-H)
+ddt_I = ascertainement*E/De-I/Dq-I/Di
+ddt_R = (I+A)/Di+H/Dh-dailyMove*R/(popsize-I-H)
+ddt_A = (1-ascertainement)*E/De-A/Di-dailyMove*A/(popsize-I-H)
+ddt_H = I/Dq-H/Dh
