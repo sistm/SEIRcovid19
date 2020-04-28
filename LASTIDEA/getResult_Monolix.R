@@ -747,11 +747,12 @@ p <- ggplot(R0pred, aes(x=time)) +
                   fill = timeperiod), alpha = 0.4, size = 0.15) +
   geom_line(aes(y=R0mean, color = timeperiod), size=0.8) +
   geom_vline(aes(xintercept=as.Date("2020-03-17")))+#, linetype="Lockdown start")) +
-  geom_text(aes(x=as.Date("2020-03-17"), y=0, label="Lockdown"),
-            angle=90, vjust=-0.4, hjust=0, size=5.5) +
+
+  geom_text(aes(x=as.Date("2020-03-17"), y=0, label="lockdown"),
+            angle=90, vjust=-0.4, hjust=0, size=6) +
   geom_vline(aes(xintercept=as.Date("2020-03-25")))+#,  linetype="One week\nafter Lockdown")) +
-  geom_text(aes(x=as.Date("2020-03-25"), y=0, label="First Week\nafter Lockdown"),
-            angle=90, vjust=0.5, hjust=0, size=5.5) +
+  geom_text(aes(x=as.Date("2020-03-25"), y=0, label="1st week\nafter Lockdown"),
+            angle=90, vjust=0.5, hjust=0, size=6) +
   geom_hline(aes(yintercept = 1), color="grey25", linetype=2) +
   theme_bw() +
   #scale_linetype_manual("", values=c(2,3)) +
@@ -763,9 +764,13 @@ p <- ggplot(R0pred, aes(x=time)) +
   ggtitle("French average") +
   theme(legend.position = "bottom") +
   theme(panel.grid.minor = element_blank(), panel.grid.major.x = element_blank()) +
-  theme(text = element_text(size=16)) +
-  ylim(0,4)
-ggsave(plot = p, file="R0_FR.jpeg", width=6.5, height=4, dpi = 600)
+  theme(text = element_text(size=20)) +
+  ylim(0,4) +
+  scale_x_date(breaks = c(as.Date("2020-03-17"), as.Date("2020-03-25")),
+              limits = c(as.Date("2020-03-11"), as.Date("2020-04-01")),
+              labels = c("Mar 17", "Mar 25"),
+              expand = c(0, 0))
+ggsave(plot = p, file="R0_FR.jpeg", width=4, height=4, dpi = 600)
 
 
 fill_info <- cbind.data.frame("name" = as.character(full_region_names(attack$reg)),
@@ -776,6 +781,7 @@ fill_info$fill_valueNORM<-fill_info$fill_value
 fill_info$fill_value<-(fill_info$fill_value - min(fill_info$fill_value)) / (max(fill_info$fill_value) - min(fill_info$fill_value))
 
 french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
+<<<<<<< HEAD
                    one_out_of = 1, show_labels = FALSE)
 
 fill_info_trueI<-fill_info
@@ -807,6 +813,7 @@ p1 <- french_regions_map(fill_info, mytitle = "Predicted proportion of cumulativ
 
 
 ggsave(plot = p1, file="map_infec_May11cauchemez.jpeg", width=5, height=4, dpi = 600)
+
 #ggsave(plot = p, file="map_infec_May11.pdf", width=5, height=4)
 
 
