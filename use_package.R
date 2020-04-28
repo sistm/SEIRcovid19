@@ -187,27 +187,55 @@ for (i in 1:length(ode$ModelName)){
   df[,((i-1)*3+2):(i*3+1)] <- t(rbind(apply(sapply(mc_res, "[[", ode$ModelName[i]), 1, FUN=quantile, probs = c(0.025, 0.975)),
                               rowMeans(sapply(mc_res, "[[",  ode$ModelName[i]), na.rm=TRUE)))
 }
+df[1:10,]
+odemin <- data.frame(matrix(ncol = length(model_name), nrow = length(time)))
+odemax <- data.frame(matrix(ncol = length(model_name), nrow = length(time)))
+names(odemin)<-ode$ModelName
+names(odemax)<-ode$ModelName
+for (i in 1:length(ode$ModelName)){
+  odemin[,i]<-pmax(0,df[,((i-1)*3+2)]-1.96*sqrt(pmax(0,ode$solution[,i+1])))
+  odemax[,i]<-pmax(0,df[,i*3]+1.96*sqrt(pmax(0,ode$solution[,i+1])))
+}
+
+ode$ICmin<-odemin
+ode$ICmax<-odemax
 
 
 
+a<-"Isim=ascertainement*E/De"
+State<-data.frame(matrix(ncol = 1, nrow = dim(ode$solution)[1]))
+GetStatWithExp<-function(solution,parameter,exp,name){
+  #State<-data.frame(matrix(ncol = 1, nrow = dim(solution)[1]))
+  with(as.list(c(solution,parameter)),{
+    State<-data.frame((eval(parse(text=exp))))
+    names(State)<-name
+    return(State)
+  })
+}
+b<-GetStatWithExp(ode$solution,ode$parameter,a,"Isim")
+c<-GetStatWithExp(ode$ICmin,ode$parameter,a,"Isim_min")
+d<-GetStatWithExp(ode$ICmax,ode$parameter,a,"Isim_max")
+e<-data.frame(ode$solution$time)
+names(e)<-"day"
+data<-read.table(ode$DataInfo$File,sep=ode$DataInfo$Sep,header=TRUE)
+InputNames<-colnames(data)
+timename<-InputNames[ode$DataInfo$HeaderType=="time"]
+idname<-InputNames[ode$DataInfo$HeaderType=="id"]
+obs<-data
+
+tot<-cbind(b,c,d,e)
+
+temp<-data[which((data$obs_id==1) & (data$IDname=='IDF')),c("day","obs")]
+data2plot <- merge(temp, tot, by = "day")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+p<-ggplot(data2plot, aes(x=day)) +
+  geom_point(aes(y = obs, color = "Observed")) +
+  geom_line(aes(y = Isim, color = "SEIRAH")) +
+  geom_ribbon(aes(ymin=Isim_min, ymax=Isim_max,fill="SEIRAH",alpha=0.5)) +
+  theme_classic() + ylab("Number of incident cases") +
+  scale_color_manual("", values=c("black", "blue"))
+p
 
 # Compare result for IDf (old)
 library(ggplot2)
