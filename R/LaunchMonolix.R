@@ -60,6 +60,32 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
   lixoftConnectors::setScenario(scenario)
   #Save the project
   lixoftConnectors::saveProject(projectFile = paste(here::here(),'/MonolixFile/',ProjectName,".mlxtran",sep=""))
-  if(runToBeDone)lixoftConnectors::runScenario()
+  if(runToBeDone){
+    lixoftConnectors::runScenario()
+    dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,sep=""))
+    dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/IndividualParameters/',sep=""))
+    indiv<-lixoftConnectors::getEstimatedIndividualParameters()    
+    indiv_mode<-indiv$conditionalMode
+    indiv_sd<-indiv$conditionalSD
+    new_names_mode<-rep("",length(names(indiv_mode)))
+    new_names_sd<-rep("",length(names(indiv_mode)))
+    for (i in 1:length(names(indiv_mode))){
+      if (i ==1){
+        new_names_mode[i]<-names(indiv_mode)[i]
+        new_names_sd[i]<-names(indiv_sd)[i]
+      }else{
+        new_names_mode[i]<-paste(names(indiv_mode)[i],"_mode",sep="")
+        new_names_sd[i]<-paste(names(indiv_sd)[i],"_sd",sep="")
+      }
+    }
+    names(indiv_mode)<-new_names_mode
+    names(indiv_sd)<-new_names_sd
+    indiv_param<-cbind(indiv_mode,indiv_sd[,new_names_sd[2:length(new_names_sd)]])
+    write.table(indiv_param,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/IndividualParameters/',"estimatedIndividualParameters.txt",sep=""),sep=",")
+    
+    pop<-getEstimatedStandardErrors()
+    write.table(pop,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/',"populationParameters.txt",sep=""),sep=",")
+
+  }
   return(ode)
 }

@@ -102,7 +102,7 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 nameproject<-"LaunchTest"
-myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map)
+myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=TRUE)
 myOde$nameproject<-nameproject
 
 # @Melanie ne pas aller plus loin
@@ -114,11 +114,9 @@ myOde$nameproject<-nameproject
 index_id<-1
 ode_id<-myOde
 ode_id<-UpdateOdeSystem(ode_id,index_id,SpecificInitBloc)
+ode_id$parameter
+ode_id$InitState
 # Write monolix model for estimation
-WriteEmptyLine<-function(ModelFile){
-  write("\n",file=ModelFile,append=TRUE)
-  
-}
 ModeFilename<-"model_estimation.txt"
 TimeSpecificEquation<-c("transmission=b",
                         "if (t>=tconf)",
