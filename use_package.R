@@ -101,32 +101,39 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 ## Launch monolix
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
-nameproject<-"LauchTest"
+nameproject<-"LaunchTest"
 myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map)
 myOde$nameproject<-nameproject
 
-
-
-
-
 # @Melanie ne pas aller plus loin
-
-
-
-## Start get_result
-path<-"/home/ddutartr/Projet/SISTM/SEIRcovid19/MonolixFile/"
+## We want now to update the system after optimisation
+# Use the result from melanie
 nameproject<-"Final_20200325/"
 myOde$nameproject<-nameproject
-
-## Get Individual Parameters & data
-
+#Updating ofr id<-1 => IDF
 index_id<-1
 ode_id<-myOde
 ode_id<-UpdateOdeSystem(ode_id,index_id,SpecificInitBloc)
+# Write monolix model for estimation
+WriteEmptyLine<-function(ModelFile){
+  write("\n",file=ModelFile,append=TRUE)
+  
+}
+ModeFilename<-"model_estimation.txt"
+TimeSpecificEquation<-c("transmission=b",
+                        "if (t>=tconf)",
+                        "  transmission=b*exp(beta1)",
+                        "end")
 
-pk.model<-'/home/ddutartr/Projet/SISTM/testminpuls/model_if.txt'
+ode_id<-WriteEstimationModel(ode_id,ModeFilename,TimeSpecificEquation,ModelMathBloc)
+
+pk.model<-ode_id$ModelFileEstimation
+#pk.model<-'/home/ddutartr/Projet/SISTM/testminpuls/model_if.txt'
+# Estimate the state for specific time
 time<-seq(0,100, by=1)
 resultat<-mlxtran_solve_simulx(pk.model,time,ode_id$parameter,ode_id$InitState,ode_id$ModelName)
+
+
 
 pk.model<-'../testminpuls/seirah_lastIdea.R'
 source(pk.model)
