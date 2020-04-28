@@ -135,6 +135,7 @@ ode<-ode_id
 
 
 # Confidence interval
+
 indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
 popParams<-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/populationParameters.txt",sep=""),header=TRUE,sep=",")
 nb_mc <- 1000
@@ -143,7 +144,8 @@ SdOptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
 names(SdOptimizeParam)<-optimize_param_name
 OptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
 names(OptimizeParam)<-optimize_param_name
-
+param_and_init<-c(ode$parameter,ode$InitState)
+is_global<-1
 for (j in 1:length(optimize_param_name)){
   optimize_monolix_name<-paste(optimize_param_name[j],"_sd",sep="")
   SdOptimizeParam[j]<-indivParams[index_id,optimize_monolix_name]
@@ -155,29 +157,59 @@ for (j in 1:length(optimize_param_name)){
   }
 }
 
-result<-matrix(0,nb_mc,length(time),length(model_name))
-param_and_init<-c(ode$parameter,ode$InitState)
-is_global<-1
-for (i in 1:nb_mc){
-  ParamMonteCarlo<-as.list(rep(NA,length(optimize_param_name)))
-  names(ParamMonteCarlo)<-optimize_param_name
+nb_mc <- 10
+C <- list(name=ode$ModelName, time=time)
+pk.model<-ode$ModelFileEstimation
+mc_res <- parallel::mclapply(X = 1:nb_mc, mc.cores=1, FUN=function(mc_cur){
+  param_and_init<-c(ode$parameter,ode$InitState)
   for (j in 1:length(optimize_param_name)){
-    ParamMonteCarlo[j]<-as.numeric(OptimizeParam[j])+as.numeric(SdOptimizeParam[j])*rnorm(1,0)
+    param_and_init[names(param_and_init)==optimize_param_name[j]]<-as.numeric(OptimizeParam[j])+as.numeric(SdOptimizeParam[j])*rnorm(1,0)
   }
-  #ode<-SetSomeParameter(ode,ParamMonteCarlo)
-  #ode<-SetSomeInit(ode,ParamMonteCarlo)
-  #ode<-SetSpecificInitState(ode,SpecificInitBloc)
-  #ode<-Estimate(ode, time,is_global)
-  
-  number_param_exept_init<-length(ode$parameter)
-  C <- list(name=ode$ModelName, time=time)
+  InitSpecific<-GetSpecificInitState(param_and_init,SpecificInitBloc)
+  for (j in 1:length(InitSpecific)){
+    param_and_init[names(param_and_init)==names(InitSpecific[j])]<-InitSpecific[[j]]
+  }  
   solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init)
   result<-as.data.frame(solution)
   result<-result[,c(1,seq(2,length(ode$ModelName)*2,by=2))]
   colnames(result)<-c("time",ode$ModelName)
+  return(result)
+  }
+)
+df <- data.frame(matrix(ncol = 1+length(model_name)*3, nrow = length(time)))
+dfnames<-c("time")
+for (i in 1:length(ode$ModelName)){
+  dfnames<-c(dfnames,paste(ode$ModelName[i],"_min",sep=""),paste(ode$ModelName[i],"_max",sep=""),paste(ode$ModelName[i],"_mean",sep=""))
+}
+colnames(df) <- dfnames
+df$time<-time
+for (i in 1:length(ode$ModelName)){
+  df[,((i-1)*3+2):(i*3+1)] <- t(rbind(apply(sapply(mc_res, "[[", ode$ModelName[i]), 1, FUN=quantile, probs = c(0.025, 0.975)),
+                              rowMeans(sapply(mc_res, "[[",  ode$ModelName[i]), na.rm=TRUE)))
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Compare result for IDf (old)
 library(ggplot2)
 melanie<-read.table("/home/ddutartr/Projet/SISTM/testminpuls/SolutionIDF.txt",header=TRUE)
 melanie<-melanie[melanie$time<101,c('time',"S","E","I","R","A","H")]
