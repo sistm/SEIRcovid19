@@ -102,14 +102,14 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 nameproject<-"LaunchTest"
-myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=TRUE)
+myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
 myOde$nameproject<-nameproject
 
 # @Melanie ne pas aller plus loin
 ## We want now to update the system after optimisation
 # Use the result from melanie
-nameproject<-"Final_20200325/"
-myOde$nameproject<-nameproject
+#nameproject<-"Final_20200325/"
+#myOde$nameproject<-nameproject
 #Updating ofr id<-1 => IDF
 index_id<-1
 ode_id<-myOde
@@ -131,20 +131,52 @@ is_global<-0
 ode_id<-Estimate(ode_id, time,is_global)
 resultat<-ode_id$solution
 ode<-ode_id
-# Set the parameter name thanks to monolix
+
+
+
+# Confidence interval
+indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
+popParams<-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/populationParameters.txt",sep=""),header=TRUE,sep=",")
+nb_mc <- 1000
 optimize_param_name<-c(names(ode$parameter[ode$Variability$param>0]),names(ode$InitState[ode$Variability$init>0]))
 SdOptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
 names(SdOptimizeParam)<-optimize_param_name
-indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
-popParams<-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/populationParameters.txt",sep=""),header=TRUE,sep=",")
+OptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
+names(OptimizeParam)<-optimize_param_name
+
 for (j in 1:length(optimize_param_name)){
   optimize_monolix_name<-paste(optimize_param_name[j],"_sd",sep="")
   SdOptimizeParam[j]<-indivParams[index_id,optimize_monolix_name]
+  optimize_monolix_name<-paste(optimize_param_name[j],"_mode",sep="")
+  OptimizeParam[j]<-indivParams[index_id,optimize_monolix_name]
   if (SdOptimizeParam[j]==0){
     optimize_pop_name<-paste(optimize_param_name[j],"_pop",sep="")
     SdOptimizeParam[j]<-popParams[optimize_pop_name,"stochasticApproximation"]
   }
 }
+
+result<-matrix(0,nb_mc,length(time),length(model_name))
+param_and_init<-c(ode$parameter,ode$InitState)
+is_global<-1
+for (i in 1:nb_mc){
+  ParamMonteCarlo<-as.list(rep(NA,length(optimize_param_name)))
+  names(ParamMonteCarlo)<-optimize_param_name
+  for (j in 1:length(optimize_param_name)){
+    ParamMonteCarlo[j]<-as.numeric(OptimizeParam[j])+as.numeric(SdOptimizeParam[j])*rnorm(1,0)
+  }
+  #ode<-SetSomeParameter(ode,ParamMonteCarlo)
+  #ode<-SetSomeInit(ode,ParamMonteCarlo)
+  #ode<-SetSpecificInitState(ode,SpecificInitBloc)
+  #ode<-Estimate(ode, time,is_global)
+  
+  number_param_exept_init<-length(ode$parameter)
+  C <- list(name=ode$ModelName, time=time)
+  solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init)
+  result<-as.data.frame(solution)
+  result<-result[,c(1,seq(2,length(ode$ModelName)*2,by=2))]
+  colnames(result)<-c("time",ode$ModelName)
+}
+
 
 library(ggplot2)
 melanie<-read.table("/home/ddutartr/Projet/SISTM/testminpuls/SolutionIDF.txt",header=TRUE)
