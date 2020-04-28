@@ -33,6 +33,7 @@ data<-read.table(paste(path,dataname,sep=""),sep="\t",header=TRUE)
 for (i in 1:length(indivParams$id)){
   indivParams$r_sent[i]<-data$ascertainement[which((data$IDname==indivParams$id[i])&(data$day==0)&(data$obs_id==1))]
 }
+indivParams[,c("id","r_sent")]
 data$date<-lubridate::as_date(as.character(data$date))
 timesconfinement<-data[which((data$date=="2020-03-17")&(data$obs_id==1)),c("day","IDname")]
 ## Get population size
@@ -746,10 +747,10 @@ p <- ggplot(R0pred, aes(x=time)) +
                   fill = timeperiod), alpha = 0.4, size = 0.15) +
   geom_line(aes(y=R0mean, color = timeperiod), size=0.8) +
   geom_vline(aes(xintercept=as.Date("2020-03-17")))+#, linetype="Lockdown start")) +
-  geom_text(aes(x=as.Date("2020-03-17"), y=0, label="lockdown"),
+  geom_text(aes(x=as.Date("2020-03-17"), y=0, label="Lockdown"),
             angle=90, vjust=-0.4, hjust=0, size=5.5) +
   geom_vline(aes(xintercept=as.Date("2020-03-25")))+#,  linetype="One week\nafter Lockdown")) +
-  geom_text(aes(x=as.Date("2020-03-25"), y=0, label="One week\nafter Lockdown"),
+  geom_text(aes(x=as.Date("2020-03-25"), y=0, label="First Week\nafter Lockdown"),
             angle=90, vjust=0.5, hjust=0, size=5.5) +
   geom_hline(aes(yintercept = 1), color="grey25", linetype=2) +
   theme_bw() +
@@ -770,26 +771,37 @@ ggsave(plot = p, file="R0_FR.jpeg", width=6.5, height=4, dpi = 600)
 fill_info <- cbind.data.frame("name" = as.character(full_region_names(attack$reg)),
                               "fill_value" = as.numeric(sapply(strsplit(attack$summary52, " [", fixed=TRUE), "[", 1)),
                               stringsAsFactors = FALSE)
-fill_info$fill_value<-fill_info$fill_value*5/5.9
-french_regions_map(cauchemez, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
+fill_info<-fill_info[1:12,]
+fill_info$fill_valueNORM<-fill_info$fill_value
+fill_info$fill_value<-(fill_info$fill_value - min(fill_info$fill_value)) / (max(fill_info$fill_value) - min(fill_info$fill_value))
+
+french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
                    one_out_of = 1, show_labels = FALSE)
 
 fill_info_trueI<-fill_info
-fill_info_trueI$fill_value<-c(11950/12278210,769/5999982,2760/8032377,965/2559073,1283/2783039,614/3303500,2435/5962662,4416/5511747,747/3801797,430/3340379,804/5924858,1783/5055651,66/100)*5/max(c(11950/12278210,769/5999982,2760/8032377,965/2559073,1283/2783039,614/3303500,2435/5962662,4416/5511747,747/3801797,430/3340379,804/5924858,1783/5055651,66/100))
-
+fill_info_trueI$fill_valueNORM<-c(11950/12278210,769/5999982,2760/8032377,965/2559073,1283/2783039,614/3303500,2435/5962662,4416/5511747,747/3801797,430/3340379,804/5924858,1783/5055651)
+fill_info_trueI$fill_value<-(fill_info_trueI$fill_valueNORM - min(fill_info_trueI$fill_valueNORM)) / (max(fill_info_trueI$fill_valueNORM) - min(fill_info_trueI$fill_valueNORM))
 french_regions_map(fill_info_trueI, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
-                   one_out_of = 50, show_labels = TRUE)
-french_regions_map(cauchemez, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
-                   one_out_of = 1, show_labels = TRUE)
-
+                   one_out_of = 1, show_labels = FALSE)
 
 cauchemez<-fill_info
-cauchemez$fill_value<-c(12.3,1.4,4.4,3.1,5.7,2.6,6.1,11.8,1.9,1.8,3.1,3.4,0)*5/12.3
+cauchemez$fill_valueNORM<-c(12.3,1.4,4.4,3.1,5.7,2.6,6.1,11.8,1.9,1.8,3.1,3.4)
+cauchemez$fill_value<-(cauchemez$fill_valueNORM - min(cauchemez$fill_valueNORM)) / (max(cauchemez$fill_valueNORM) - min(cauchemez$fill_valueNORM))
 french_regions_map(cauchemez, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
                    one_out_of = 1, show_labels = FALSE)
 
+fill_info_trueD<-fill_info
+fill_info_trueD$fill_valueNORM<-c(5330/12278210,277/5999982,1167/8032377,334/2559073,753/2783039,307/3303500,1233/5962662,2646/5511747,291/3801797,191/3340379,342/5924858,575/5055651)
+fill_info_trueD$fill_value<-(fill_info_trueI$fill_valueNORM - min(fill_info_trueI$fill_valueNORM)) / (max(fill_info_trueI$fill_valueNORM) - min(fill_info_trueI$fill_valueNORM))
+french_regions_map(fill_info_trueD, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
+                   one_out_of = 1, show_labels = FALSE)
 
-
+fill_info_trueD$SPFD<-fill_info_trueD$fill_valueNORM*10000
+fill_info_trueD$SPFH<-fill_info_trueI$fill_valueNORM*10000
+fill_info_trueD$cauchemez<-cauchemez$fill_valueNORM
+fill_info_trueD$nous<-fill_info$fill_valueNORM
+fill_info_trueD<-fill_info_trueD[order(fill_info_trueD$SPFD),]
+fill_info_trueD[,c("name","SPFD","cauchemez","nous")]
 p1 <- french_regions_map(fill_info, mytitle = "Predicted proportion of cumulative\nCOVID-19 infections on May 11",
                         one_out_of = 1)
 
