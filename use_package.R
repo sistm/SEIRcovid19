@@ -130,6 +130,21 @@ is_global<-0
 
 ode_id<-Estimate(ode_id, time,is_global)
 resultat<-ode_id$solution
+ode<-ode_id
+# Set the parameter name thanks to monolix
+optimize_param_name<-c(names(ode$parameter[ode$Variability$param>0]),names(ode$InitState[ode$Variability$init>0]))
+SdOptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
+names(SdOptimizeParam)<-optimize_param_name
+indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
+popParams<-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/populationParameters.txt",sep=""),header=TRUE,sep=",")
+for (j in 1:length(optimize_param_name)){
+  optimize_monolix_name<-paste(optimize_param_name[j],"_sd",sep="")
+  SdOptimizeParam[j]<-indivParams[index_id,optimize_monolix_name]
+  if (SdOptimizeParam[j]==0){
+    optimize_pop_name<-paste(optimize_param_name[j],"_pop",sep="")
+    SdOptimizeParam[j]<-popParams[optimize_pop_name,"stochasticApproximation"]
+  }
+}
 
 library(ggplot2)
 melanie<-read.table("/home/ddutartr/Projet/SISTM/testminpuls/SolutionIDF.txt",header=TRUE)
