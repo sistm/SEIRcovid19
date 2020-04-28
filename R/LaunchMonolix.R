@@ -83,7 +83,7 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
     indiv_param<-cbind(indiv_mode,indiv_sd[,new_names_sd[2:length(new_names_sd)]])
     write.table(indiv_param,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/IndividualParameters/',"estimatedIndividualParameters.txt",sep=""),sep=",")
     
-    pop<-getEstimatedStandardErrors()
+    pop<-lixoftConnectors::getEstimatedStandardErrors()
     write.table(pop,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/',"populationParameters.txt",sep=""),sep=",")
 
   }
