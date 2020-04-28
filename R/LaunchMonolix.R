@@ -5,7 +5,7 @@
 #' @param ObservationType 
 #' @param Mapping 
 #' @export
-LaunchMonolix <- function(obj, ProjectName, ObservationType, Mapping)
+LaunchMonolix <- function(obj, ProjectName, ObservationType, Mapping,runToBeDone=TRUE)
 {
   UseMethod("LaunchMonolix",obj)
 }
@@ -17,7 +17,7 @@ LaunchMonolix.default <- function(obj,  ProjectName, ObservationType, Mapping)
 }
 #' @export
 #' @describeIn Launch monolix scenario for an object of class \code{OdeSystem}
-LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping)
+LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,runToBeDone=TRUE)
 {
   # Initialize the connection
   lixoftConnectors::initializeLixoftConnectors(software="monolix")
@@ -60,6 +60,6 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping)
   lixoftConnectors::setScenario(scenario)
   #Save the project
   lixoftConnectors::saveProject(projectFile = paste(here::here(),'/MonolixFile/',ProjectName,".mlxtran",sep=""))
-  #lixoftConnectors::runScenario()
+  if(runToBeDone)lixoftConnectors::runScenario()
   return(ode)
 }
