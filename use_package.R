@@ -102,7 +102,7 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 nameproject<-"LaunchTest"
-myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
+myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=TRUE)
 
 myOde$nameproject<-nameproject
 
@@ -123,9 +123,7 @@ TimeSpecificEquation<-c("transmission=b",
 ode_id<-ComputeEstimationAllId(myOde,time,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global)
 # Confidence interval
 # Number of monte carlo simulation
-devtools::load_all('.')
-
-nb_mc <- 20
+nb_mc <- 10
 # Global =1 for IC
 is_global<-1
 ode_id<-ComputeConfidenceIntervalAllId(ode_id,time,nb_mc,is_global)
