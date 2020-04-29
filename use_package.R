@@ -123,6 +123,8 @@ ode_id<-ComputeEstimationAllId(myOde,time,ModeFilename,TimeSpecificEquation,Spec
 # Confidence interval
 
 #Get the result
+index_id<-1
+ode<-ode_id[[index_id]]
 indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
 popParams<-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/populationParameters.txt",sep=""),header=TRUE,sep=",")
 # Number of monte carlo simulation
@@ -146,7 +148,7 @@ for (j in 1:length(optimize_param_name)){
   }
 }
 
-nb_mc <- 100
+nb_mc <- 20
 # Global =1 for IC?
 is_global<-1
 
@@ -164,12 +166,13 @@ mc_res <- parallel::mclapply(X = 1:nb_mc, mc.cores=1, FUN=function(mc_cur){
   for (j in 1:length(InitSpecific)){
     param_and_init[names(param_and_init)==names(InitSpecific[j])]<-InitSpecific[[j]]
   }
+  result<-SolveThroughSimulx(ode,is_global,time,param_and_init)
   # Estimate
-  solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init)
+  #solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init)
   # Formate result
-  result<-as.data.frame(solution)
-  result<-result[,c(1,seq(2,length(ode$ModelName)*2,by=2))]
-  colnames(result)<-c("time",ode$ModelName)
+  #result<-as.data.frame(solution)
+  #result<-result[,c(1,seq(2,length(ode$ModelName)*2,by=2))]
+  #colnames(result)<-c("time",ode$ModelName)
   return(result)
   }
 )
@@ -237,25 +240,3 @@ p<-ggplot(data2plot, aes(x=day)) +
   theme_classic() + ylab("Number of incident cases") +
   scale_color_manual("", values=c("black", "blue"))
 p
-
-# Compare result for IDf (old)
-library(ggplot2)
-melanie<-read.table("/home/ddutartr/Projet/SISTM/testminpuls/SolutionIDF.txt",header=TRUE)
-melanie<-melanie[melanie$time<101,c('time',"S","E","I","R","A","H")]
-compare_res<-resultat-melanie 
-compare_res$time<-resultat$time
-
-S <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = S), color = "darkred") 
-E <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = E), color = "darkred") 
-I <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = I), color = "darkred") 
-R <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = R), color = "darkred") 
-A <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = A), color = "darkred") 
-H <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = H), color = "darkred") 
-
-cowplot::plot_grid(S, E,I,R,A,H,labels=c("S","E","I","R","A","H"), ncol = 2, nrow = 3)
