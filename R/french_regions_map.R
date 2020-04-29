@@ -1,4 +1,4 @@
-#' Map of French region 
+#' Map of French region a
 #'
 #' @export
 french_regions_map <- function(fill_info_df,
