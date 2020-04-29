@@ -18,9 +18,16 @@ Estimate.default <- function(obj, time,is_global)
 #' @describeIn Estimation after optimisation for an object of class \code{OdeSystem}
 Estimate.OdeSystem <- function(ode, time,is_global=0)
 {
-  lixoftConnectors::initializeLixoftConnectors(software="simulx",force=TRUE)
+  lixoftConnectorsState<-lixoftConnectors::getLixoftConnectorsState(quietly = TRUE)
   
-  pk.model<-ode_id$ModelFileEstimation
+  if (lixoftConnectorsState$software == "simulx"){ # => nothing to be done
+  }else{
+    lixoftConnectors::initializeLixoftConnectors(software="simulx",force=TRUE)
+  }
+
+  
+  
+  pk.model<-ode$ModelFileEstimation
   # Get parameter and initState
   param_and_init<-c(ode$parameter,ode$InitState)
   number_param_exept_init<-length(ode$parameter)

@@ -102,7 +102,7 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 nameproject<-"LaunchTest"
-myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=TRUE)
+myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
 
 myOde$nameproject<-nameproject
 
@@ -112,29 +112,14 @@ myOde$nameproject<-nameproject
 #nameproject<-"Final_20200325/"
 #myOde$nameproject<-nameproject
 #Updating ofr id<-1 => IDF
-index_id<-1
-ode_id<-myOde
-ode_id<-UpdateOdeSystem(ode_id,index_id,SpecificInitBloc)
-ode_id$parameter
-ode_id$InitState
-# Write monolix model for estimation
+time<-seq(0,100, by=1)
+is_global<-0
 ModeFilename<-"model_estimation.txt"
 TimeSpecificEquation<-c("transmission=b",
                         "if (t>=tconf)",
                         "  transmission=b*exp(beta1)",
                         "end")
-
-ode_id<-WriteEstimationModel(ode_id,ModeFilename,TimeSpecificEquation,ModelMathBloc)
-
-time<-seq(0,100, by=1)
-is_global<-0
-
-ode_id<-Estimate(ode_id, time,is_global)
-resultat<-ode_id$solution
-ode<-ode_id
-
-
-
+ode_id<-ComputeEstimationAllId(myOde,time,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global)
 # Confidence interval
 
 #Get the result
@@ -161,7 +146,7 @@ for (j in 1:length(optimize_param_name)){
   }
 }
 
-nb_mc <- 10
+nb_mc <- 100
 # Global =1 for IC?
 is_global<-1
 
@@ -191,19 +176,17 @@ mc_res <- parallel::mclapply(X = 1:nb_mc, mc.cores=1, FUN=function(mc_cur){
 
 # Stre the result of monte carlo simulation in a dataframe
 # Data frame name is time , Vari_min, Vari_max, Vari_mean
-# mean useless ?
-df <- data.frame(matrix(ncol = 1+length(model_name)*3, nrow = length(time)))
+df <- data.frame(matrix(ncol = 1+length(model_name)*2, nrow = length(time)))
 dfnames<-c("time")
 for (i in 1:length(ode$ModelName)){
-  dfnames<-c(dfnames,paste(ode$ModelName[i],"_min",sep=""),paste(ode$ModelName[i],"_max",sep=""),paste(ode$ModelName[i],"_mean",sep=""))
+  dfnames<-c(dfnames,paste(ode$ModelName[i],"_min",sep=""),paste(ode$ModelName[i],"_max",sep=""))
 }
 colnames(df) <- dfnames
 # Store time
 df$time<-time
 # Store proportion info
 for (i in 1:length(ode$ModelName)){
-  df[,((i-1)*3+2):(i*3+1)] <- t(rbind(apply(sapply(mc_res, "[[", ode$ModelName[i]), 1, FUN=quantile, probs = c(0.025, 0.975)),
-                              rowMeans(sapply(mc_res, "[[",  ode$ModelName[i]), na.rm=TRUE)))
+  df[,(i*2):(i*2+1)] <- t(rbind(apply(sapply(mc_res, "[[", ode$ModelName[i]), 1, FUN=quantile, probs = c(0.025, 0.975))))
 }
 
 odemin <- data.frame(matrix(ncol = length(model_name), nrow = length(time)))
@@ -211,8 +194,8 @@ odemax <- data.frame(matrix(ncol = length(model_name), nrow = length(time)))
 names(odemin)<-ode$ModelName
 names(odemax)<-ode$ModelName
 for (i in 1:length(ode$ModelName)){
-  odemin[,i]<-pmax(0,df[,((i-1)*3+2)]-1.96*sqrt(pmax(0,ode$solution[,i+1])))
-  odemax[,i]<-pmax(0,df[,i*3]+1.96*sqrt(pmax(0,ode$solution[,i+1])))
+  odemin[,i]<-pmax(0,df[,((i)*2)]-1.96*sqrt(pmax(0,ode$solution[,i+1])))
+  odemax[,i]<-pmax(0,df[,i*2+1]+1.96*sqrt(pmax(0,ode$solution[,i+1])))
 }
 
 ode$ICmin<-odemin
