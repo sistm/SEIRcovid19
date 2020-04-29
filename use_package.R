@@ -127,10 +127,93 @@ nb_mc <- 20
 is_global<-1
 ode_id<-ComputeConfidenceIntervalAllId(ode_id,time,nb_mc,is_global)
 
-ode<-ode_id[[1]]
 ## For plot
 
+ModelObservationBloc<-c("Isim=ascertainement*E/De",
+                        "Hsim=I/Dq")
+ObservationResult <- vector(mode = "list", length = length(ModelObservationBloc))
+
+CutObservation<-strsplit(ModelObservationBloc,'=')
+data<-read.table(ode_id[[1]]$DataInfo$File,sep=ode_id[[1]]$DataInfo$Sep,header=TRUE)
+InputNames<-colnames(data)
+timename<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="time"]
+idname<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="id"]
+ObsIdName<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="obsid"]
+ObservationName<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="observation"]
+indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
+
+GetStatWithExp<-function(solution,parameter,exp,name){
+  #State<-data.frame(matrix(ncol = 1, nrow = dim(solution)[1]))
+  with(as.list(c(solution,parameter)),{
+    State<-data.frame((eval(parse(text=exp))))
+    names(State)<-name
+    return(State)
+  })
+}
+iobs<-1
+for (iobs in 1:length(ModelObservationBloc)){
+  for (id in 1:length(ode_id)){
+    name_variable[iobs]<-CutObservation[[iobs]][1]
+    Obssim<-GetStatWithExp(ode_id[[id]]$solution,ode_id[[id]]$parameter,ModelObservationBloc[iobs],name_variable[iobs])
+    Obssim<-cbind(Obssim,GetStatWithExp(ode_id[[id]]$ICmin,ode_id[[id]]$parameter,ModelObservationBloc[iobs],paste(name_variable[iobs],"_min",sep="")))
+    Obssim<-cbind(Obssim,GetStatWithExp(ode_id[[id]]$ICmax,ode_id[[id]]$parameter,ModelObservationBloc[iobs],paste(name_variable[iobs],"_max",sep="")))
+    Obssim<-cbind(Obssim,ode_id[[id]]$solution$time)
+    colnames(Obssim)[dim(Obssim)[2]]<-timename
+    Obssim<-cbind(Obssim,rep(indivParams$id[id],dim(Obssim)[[1]]))
+    colnames(Obssim)[dim(Obssim)[2]]<-"id"
+    Observation<-ode_id[[id]]$ObsData[which(ode_id[[id]]$ObsData[,ObsIdName]==iobs),]
+    ObservationResult[[iobs]][[id]] <-merge(Observation, Obssim, by = timename)
+    ode_id[[id]]$ObsSimu[[iobs]]<-ObservationResult[[iobs]][[id]]
+  }
+  ObservationDataFrame <- do.call(rbind.data.frame, ObservationResult[[iobs]])
+  p1 <- ggplot(ObservationDataFrame, aes_(x=as.name(timename), y=as.name(ObservationName), group=as.name("id"))) +
+    geom_point(aes(color = "Observed"))+
+    scale_shape_manual(values=c(NA, 16)) +
+    scale_color_manual(values="black") +
+    geom_line(aes_(x=as.name(timename), y=as.name(name_variable[iobs]),linetype="Estimate"), color="red3") +
+    geom_ribbon(aes_(ymin = as.name(paste(name_variable[iobs],"_min",sep="")), ymax=as.name(paste(name_variable[iobs],"_max",sep="")),alpha="95 %CI"), fill="red3")+
+    scale_alpha_manual(values=c(0.3)) +
+    facet_grid(vars(id), scales = "free_y") + facet_wrap(~ id, nrow=2)+
+    guides(color=guide_legend(title=""), linetype=guide_legend(title=""),
+           alpha=guide_legend(title=""))+
+    theme(legend.position = "bottom") +
+    ylab(map[[iobs]]) +
+    xlab("Day") +
+    theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
+    theme(strip.background = element_rect(fill="white"),
+          strip.text = element_text(size=8))
+  p1
+  ggsave(plot=p1, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/", map[[iobs]], ".jpg"), width=10, height=8)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 a<-"Isim=ascertainement*E/De"
+
+for (iobs in 1:length(ModelObservationBloc)){
+  name_variable<-CutObservation[[iobs]][1]
+  Obssim<-GetStatWithExp(ode$solution,ode$parameter,ModelObservationBloc[iobs],name_variable)
+  Obssim<-cbind(Obssim,GetStatWithExp(ode$ICmin,ode$parameter,ModelObservationBloc[iobs],paste(name_variable,"_min",sep="")))
+  Obssim<-cbind(Obssim,GetStatWithExp(ode$ICmax,ode$parameter,ModelObservationBloc[iobs],paste(name_variable,"_max",sep="")))
+  Obssim<-cbind(Obssim,ode$solution$time)
+  colnames(Obssim)[dim(Obssim)[2]]<-timename
+  Observation<-ode$ObsData[which(ode$ObsData[,ObsIdName]==iobs),]
+  ode$Obsplot <- c(ode$Obsplot,merge(Observation, Obssim, by = timename))
+}
+
+
 State<-data.frame(matrix(ncol = 1, nrow = dim(ode$solution)[1]))
 GetStatWithExp<-function(solution,parameter,exp,name){
   #State<-data.frame(matrix(ncol = 1, nrow = dim(solution)[1]))
