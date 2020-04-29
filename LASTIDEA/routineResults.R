@@ -294,9 +294,9 @@ plotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE, prop_g
 
   #adding the max value all the time to ensure that scales match
   Imax_obs <- max(all_data_df %>% filter(obs_id == "Incident confirmed cases") %>% pull(obs))
-  Imax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident confirmed cases") %>% pull(obs))
+  Imax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident confirmed cases") %>% pull(obs_max))
   Hmax_obs <- max(all_data_df %>% filter(obs_id == "Incident hospitalized cases") %>% pull(obs))
-  Hmax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident hospitalized cases") %>% pull(obs))
+  Hmax_sim <- max(all_fit_df_2plot %>% filter(obs_id == "Incident hospitalized cases") %>% pull(obs_max))
 
   dataObs2plot_1 <- all_data_df %>% filter(IDname %in% levels(all_data_df$IDname)[1:6])
   dataObs2plot_2 <- all_data_df %>% filter(IDname %in% levels(all_data_df$IDname)[7:12])
@@ -399,13 +399,14 @@ getPlotSolutionAll <- function(solutions_list, nameproject, log_scale=FALSE,
 
   old.loc <- Sys.getlocale("LC_TIME")
   Sys.setlocale("LC_TIME", "en_GB.UTF-8")
-  p <- plotSolutionAll(solutions_list,nameproject, log_scale, prop_geo)
+  p <- plotSolutionAll(solutions_list,nameproject, log_scale, prop_geo) +
+    theme(legend.text = element_text(size = 11))
   if(device == "pdf"){
     ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/fit_all", logindicator, rateindicator, ".pdf"),
-           device = "pdf", width=10, height=8)
+           device = "pdf", width=10.2, height=8)
   }else if(device == "jpg"){
     ggsave(plot=p, filename = paste0(path,"outputMonolix/", nameproject,"/graphics/fit_all", logindicator, rateindicator, ".jpg"),
-           device = "jpeg", dpi = 300, width=10, height=8)
+           device = "jpeg", dpi = 300, width=10.2, height=8)
   }
   Sys.setlocale("LC_TIME",old.loc)
 }
