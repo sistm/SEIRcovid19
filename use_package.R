@@ -102,54 +102,65 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 nameproject<-"LaunchTest"
-myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map)
+myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
+
 myOde$nameproject<-nameproject
 
 # @Melanie ne pas aller plus loin
 ## We want now to update the system after optimisation
 # Use the result from melanie
-nameproject<-"Final_20200325/"
-myOde$nameproject<-nameproject
+#nameproject<-"Final_20200325/"
+#myOde$nameproject<-nameproject
 #Updating ofr id<-1 => IDF
-index_id<-1
-ode_id<-myOde
-ode_id<-UpdateOdeSystem(ode_id,index_id,SpecificInitBloc)
-# Write monolix model for estimation
-WriteEmptyLine<-function(ModelFile){
-  write("\n",file=ModelFile,append=TRUE)
-  
-}
+time<-seq(0,100, by=1)
+is_global<-0
 ModeFilename<-"model_estimation.txt"
 TimeSpecificEquation<-c("transmission=b",
                         "if (t>=tconf)",
                         "  transmission=b*exp(beta1)",
                         "end")
+ode_id<-ComputeEstimationAllId(myOde,time,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global)
+# Confidence interval
+# Number of monte carlo simulation
+nb_mc <- 20
+# Global =1 for IC
+is_global<-1
+ode_id<-ComputeConfidenceIntervalAllId(ode_id,time,nb_mc,is_global)
 
-ode_id<-WriteEstimationModel(ode_id,ModeFilename,TimeSpecificEquation,ModelMathBloc)
+ode<-ode_id[[1]]
+## For plot
 
-time<-seq(0,100, by=1)
-is_global<-0
+a<-"Isim=ascertainement*E/De"
+State<-data.frame(matrix(ncol = 1, nrow = dim(ode$solution)[1]))
+GetStatWithExp<-function(solution,parameter,exp,name){
+  #State<-data.frame(matrix(ncol = 1, nrow = dim(solution)[1]))
+  with(as.list(c(solution,parameter)),{
+    State<-data.frame((eval(parse(text=exp))))
+    names(State)<-name
+    return(State)
+  })
+}
+b<-GetStatWithExp(ode$solution,ode$parameter,a,"Isim")
+c<-GetStatWithExp(ode$ICmin,ode$parameter,a,"Isim_min")
+d<-GetStatWithExp(ode$ICmax,ode$parameter,a,"Isim_max")
+e<-data.frame(ode$solution$time)
+names(e)<-"day"
+data<-read.table(ode$DataInfo$File,sep=ode$DataInfo$Sep,header=TRUE)
+InputNames<-colnames(data)
+timename<-InputNames[ode$DataInfo$HeaderType=="time"]
+idname<-InputNames[ode$DataInfo$HeaderType=="id"]
+obs<-data
 
-ode_id<-Estimate(ode_id, time,is_global)
-resultat<-ode_id$solution
+tot<-cbind(b,c,d,e)
 
-library(ggplot2)
-melanie<-read.table("/home/ddutartr/Projet/SISTM/testminpuls/SolutionIDF.txt",header=TRUE)
-melanie<-melanie[melanie$time<101,c('time',"S","E","I","R","A","H")]
-compare_res<-resultat-melanie 
-compare_res$time<-resultat$time
+temp<-data[which((data$obs_id==1) & (data$IDname=='IDF')),c("day","obs")]
+data2plot <- merge(temp, tot, by = "day")
 
-S <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = S), color = "darkred") 
-E <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = E), color = "darkred") 
-I <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = I), color = "darkred") 
-R <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = R), color = "darkred") 
-A <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = A), color = "darkred") 
-H <- ggplot(compare_res, aes(x=time) ) +
-  geom_line(aes(y = H), color = "darkred") 
 
-cowplot::plot_grid(S, E,I,R,A,H,labels=c("S","E","I","R","A","H"), ncol = 2, nrow = 3)
+p<-ggplot(data2plot, aes(x=day)) +
+  geom_point(aes(y = obs, color = "Observed")) +
+  geom_line(aes(y = Isim, color = "SEIRAH")) +
+  geom_ribbon(aes(ymin=Isim_min, ymax=Isim_max,fill="SEIRAH",alpha=0.5)) +
+  theme_classic() + ylab("Number of incident cases") +
+  scale_color_manual("", values=c("black", "blue"))
+p
