@@ -119,9 +119,12 @@ TimeSpecificEquation<-c("transmission=b",
                         "if (t>=tconf)",
                         "  transmission=b*exp(beta1)",
                         "end")
+
 ode_id<-ComputeEstimationAllId(myOde,time,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global)
 # Confidence interval
 # Number of monte carlo simulation
+devtools::load_all('.')
+
 nb_mc <- 20
 # Global =1 for IC
 is_global<-1
@@ -140,7 +143,7 @@ timename<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="time"]
 idname<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="id"]
 ObsIdName<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="obsid"]
 ObservationName<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="observation"]
-indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
+indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_id[[1]]$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
 
 GetStatWithExp<-function(solution,parameter,exp,name){
   #State<-data.frame(matrix(ncol = 1, nrow = dim(solution)[1]))
@@ -151,6 +154,7 @@ GetStatWithExp<-function(solution,parameter,exp,name){
   })
 }
 iobs<-1
+name_variable<-list()
 for (iobs in 1:length(ModelObservationBloc)){
   for (id in 1:length(ode_id)){
     name_variable[iobs]<-CutObservation[[iobs]][1]
@@ -170,8 +174,8 @@ for (iobs in 1:length(ModelObservationBloc)){
     geom_point(aes(color = "Observed"))+
     scale_shape_manual(values=c(NA, 16)) +
     scale_color_manual(values="black") +
-    geom_line(aes_(x=as.name(timename), y=as.name(name_variable[iobs]),linetype="Estimate"), color="red3") +
-    geom_ribbon(aes_(ymin = as.name(paste(name_variable[iobs],"_min",sep="")), ymax=as.name(paste(name_variable[iobs],"_max",sep="")),alpha="95 %CI"), fill="red3")+
+    geom_line(aes_(x=as.name(timename), y=as.name(name_variable[[iobs]]),linetype="Estimate"), color="red3") +
+    geom_ribbon(aes_(ymin = as.name(paste(name_variable[[iobs]],"_min",sep="")), ymax=as.name(paste(name_variable[[iobs]],"_max",sep="")),alpha="95 %CI"), fill="red3")+
     scale_alpha_manual(values=c(0.3)) +
     facet_grid(vars(id), scales = "free_y") + facet_wrap(~ id, nrow=2)+
     guides(color=guide_legend(title=""), linetype=guide_legend(title=""),
@@ -185,65 +189,3 @@ for (iobs in 1:length(ModelObservationBloc)){
   p1
   ggsave(plot=p1, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/", map[[iobs]], ".jpg"), width=10, height=8)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-a<-"Isim=ascertainement*E/De"
-
-for (iobs in 1:length(ModelObservationBloc)){
-  name_variable<-CutObservation[[iobs]][1]
-  Obssim<-GetStatWithExp(ode$solution,ode$parameter,ModelObservationBloc[iobs],name_variable)
-  Obssim<-cbind(Obssim,GetStatWithExp(ode$ICmin,ode$parameter,ModelObservationBloc[iobs],paste(name_variable,"_min",sep="")))
-  Obssim<-cbind(Obssim,GetStatWithExp(ode$ICmax,ode$parameter,ModelObservationBloc[iobs],paste(name_variable,"_max",sep="")))
-  Obssim<-cbind(Obssim,ode$solution$time)
-  colnames(Obssim)[dim(Obssim)[2]]<-timename
-  Observation<-ode$ObsData[which(ode$ObsData[,ObsIdName]==iobs),]
-  ode$Obsplot <- c(ode$Obsplot,merge(Observation, Obssim, by = timename))
-}
-
-
-State<-data.frame(matrix(ncol = 1, nrow = dim(ode$solution)[1]))
-GetStatWithExp<-function(solution,parameter,exp,name){
-  #State<-data.frame(matrix(ncol = 1, nrow = dim(solution)[1]))
-  with(as.list(c(solution,parameter)),{
-    State<-data.frame((eval(parse(text=exp))))
-    names(State)<-name
-    return(State)
-  })
-}
-b<-GetStatWithExp(ode$solution,ode$parameter,a,"Isim")
-c<-GetStatWithExp(ode$ICmin,ode$parameter,a,"Isim_min")
-d<-GetStatWithExp(ode$ICmax,ode$parameter,a,"Isim_max")
-e<-data.frame(ode$solution$time)
-names(e)<-"day"
-data<-read.table(ode$DataInfo$File,sep=ode$DataInfo$Sep,header=TRUE)
-InputNames<-colnames(data)
-timename<-InputNames[ode$DataInfo$HeaderType=="time"]
-idname<-InputNames[ode$DataInfo$HeaderType=="id"]
-obs<-data
-
-tot<-cbind(b,c,d,e)
-
-temp<-data[which((data$obs_id==1) & (data$IDname=='IDF')),c("day","obs")]
-data2plot <- merge(temp, tot, by = "day")
-
-
-p<-ggplot(data2plot, aes(x=day)) +
-  geom_point(aes(y = obs, color = "Observed")) +
-  geom_line(aes(y = Isim, color = "SEIRAH")) +
-  geom_ribbon(aes(ymin=Isim_min, ymax=Isim_max,fill="SEIRAH",alpha=0.5)) +
-  theme_classic() + ylab("Number of incident cases") +
-  scale_color_manual("", values=c("black", "blue"))
-p

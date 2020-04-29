@@ -87,11 +87,11 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
     pop<-lixoftConnectors::getEstimatedStandardErrors()
     write.table(pop,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/',"populationParameters.txt",sep=""),sep=",")
     # Log Likehood
-    likehood<-getEstimatedLogLikelihood()
+    likehood<-lixoftConnectors::getEstimatedLogLikelihood()
     write.table(likehood,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/',"logLikelihood.txt",sep=""),sep=",")
     # Covariance Fisher info
-    corr<-getCorrelationOfEstimates()
-    se<-getEstimatedStandardErrors()
+    corr<-lixoftConnectors::getCorrelationOfEstimates()
+    se<-lixoftConnectors::getEstimatedStandardErrors()
     dimension<-dim(corr$stochasticApproximation)
     covariance<-corr
     for (i in 1:dimension[1]){
