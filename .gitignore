@@ -9,3 +9,5 @@
 ./MonolixFile/*.txt
 TRASH
 *.Rd
+**.txt
+**.jpg
