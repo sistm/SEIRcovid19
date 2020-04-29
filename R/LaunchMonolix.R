@@ -64,6 +64,7 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
     lixoftConnectors::runScenario()
     dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,sep=""))
     dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/IndividualParameters/',sep=""))
+    # Indiv Param
     indiv<-lixoftConnectors::getEstimatedIndividualParameters()    
     indiv_mode<-indiv$conditionalMode
     indiv_sd<-indiv$conditionalSD
@@ -82,9 +83,23 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
     names(indiv_sd)<-new_names_sd
     indiv_param<-cbind(indiv_mode,indiv_sd[,new_names_sd[2:length(new_names_sd)]])
     write.table(indiv_param,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/IndividualParameters/',"estimatedIndividualParameters.txt",sep=""),sep=",")
-    
+    # Pop standard error
     pop<-lixoftConnectors::getEstimatedStandardErrors()
     write.table(pop,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/',"populationParameters.txt",sep=""),sep=",")
+    # Log Likehood
+    likehood<-getEstimatedLogLikelihood()
+    write.table(likehood,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/',"logLikelihood.txt",sep=""),sep=",")
+    # Covariance Fisher info
+    corr<-getCorrelationOfEstimates()
+    se<-getEstimatedStandardErrors()
+    dimension<-dim(corr$stochasticApproximation)
+    covariance<-corr
+    for (i in 1:dimension[1]){
+      for (j in 1:dimension[2]){
+        covariance$stochasticApproximation[i,j]<-corr$stochasticApproximation[i,j]*se$stochasticApproximation[i]*se$stochasticApproximation[j]
+      }
+    }
+    write.table(covariance,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/',"covarianceEstimatesSA.txt",sep=""),sep=",",col.names = FALSE)
 
   }
   return(ode)
