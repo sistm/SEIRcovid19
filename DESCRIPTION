@@ -13,7 +13,9 @@ Imports: deSolve,
          reshape2,
          lubridate,
          tidyr,
-         stats
+         stats,
+         mlxR
+Suggest: lixoftConnectors
 License: MIT license
 Encoding: UTF-8
 LazyData: true
