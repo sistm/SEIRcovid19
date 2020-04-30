@@ -189,3 +189,27 @@ for (iobs in 1:length(ModelObservationBloc)){
   p1
   ggsave(plot=p1, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/", map[[iobs]], ".jpg"), width=10, height=8)
 }
+
+
+solutionsREBOUND_list <- list()
+solutionmin<-list()
+solutionmax<-list()
+for (id in 1:length(ode_id)){
+  solution <- ode_id[[id]]$solution
+  solution$date <- seq.Date(from =as.Date(ode_id[[id]]$ObsData$date[1]), by = 1, length.out = nrow(ode_id[[id]]$solution))
+  solution$popsize <- ode_id[[id]]$parameter[names(ode_id[[id]]$parameter)=='popsize']
+
+  solutionsREBOUND_list[[id]] <- solution
+  solutionsREBOUND_list[[id]]$reg<-as.character(indivParams$id[id])
+  
+  solutionmin[[id]]<-ode_id[[id]]$ICmin
+  solutionmin[[id]]$date <- solution$date
+  solutionmin[[id]]$popsize <- solution$popsize
+  solutionmin[[id]]$reg <- as.character(indivParams$id[id])
+  
+  solutionmax[[id]]<-ode_id[[id]]$ICmax
+  solutionmax[[id]]$date <- solution$date
+  solutionmax[[id]]$popsize <- solution$popsize
+  solutionmax[[id]]$reg <- as.character(indivParams$id[id])
+  
+}
