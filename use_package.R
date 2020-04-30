@@ -102,7 +102,7 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 nameproject<-"LaunchTest"
-myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=TRUE)
+myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
 
 myOde$nameproject<-nameproject
 
@@ -123,7 +123,7 @@ TimeSpecificEquation<-c("transmission=b",
 ode_id<-ComputeEstimationAllId(myOde,time,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global)
 # Confidence interval
 # Number of monte carlo simulation
-nb_mc <- 10
+nb_mc <- 100
 # Global =1 for IC
 is_global<-1
 ode_id<-ComputeConfidenceIntervalAllId(ode_id,time,nb_mc,is_global)
@@ -168,11 +168,12 @@ for (iobs in 1:length(ModelObservationBloc)){
     ode_id[[id]]$ObsSimu[[iobs]]<-ObservationResult[[iobs]][[id]]
   }
   ObservationDataFrame <- do.call(rbind.data.frame, ObservationResult[[iobs]])
-  p1 <- ggplot(ObservationDataFrame, aes_(x=as.name(timename), y=as.name(ObservationName), group=as.name("id"))) +
+  ObservationDataFrame$date<-as.Date(ObservationDataFrame$date)
+  p1 <- ggplot(ObservationDataFrame, aes_(x=as.name("date"), y=as.name(ObservationName), group=as.name("id"))) +
     geom_point(aes(color = "Observed"))+
     scale_shape_manual(values=c(NA, 16)) +
     scale_color_manual(values="black") +
-    geom_line(aes_(x=as.name(timename), y=as.name(name_variable[[iobs]]),linetype="Estimate"), color="red3") +
+    geom_line(aes_(x=as.name("date"), y=as.name(name_variable[[iobs]]),linetype="Estimate"), color="red3") +
     geom_ribbon(aes_(ymin = as.name(paste(name_variable[[iobs]],"_min",sep="")), ymax=as.name(paste(name_variable[[iobs]],"_max",sep="")),alpha="95 %CI"), fill="red3")+
     scale_alpha_manual(values=c(0.3)) +
     facet_grid(vars(id), scales = "free_y") + facet_wrap(~ id, nrow=2)+
@@ -181,7 +182,8 @@ for (iobs in 1:length(ModelObservationBloc)){
     theme(legend.position = "bottom") +
     ylab(map[[iobs]]) +
     xlab("Day") +
-    theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
+    theme(axis.text.x = element_text(angle=45, hjust=1),
+          axis.title.y = element_text(hjust=1.4)) +
     theme(strip.background = element_rect(fill="white"),
           strip.text = element_text(size=8))
   p1

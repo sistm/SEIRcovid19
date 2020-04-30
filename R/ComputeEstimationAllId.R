@@ -23,7 +23,7 @@ ComputeEstimationAllId<-function(ode,time,ModeFilename,TimeSpecificEquation,Spec
     # Estimation for time value
     ode_id[[index_id]]<-Estimate(ode_id[[index_id]], time,is_global)
     # Store the observation data
-    ode_id[[index_id]]$ObsData<-data[which(data[,idname]==indivParams$id[index_id]),c(timename,ObservationName,ObsIdName)]
+    ode_id[[index_id]]$ObsData<-data[which(data[,idname]==indivParams$id[index_id]),c(timename,ObservationName,ObsIdName,"date")]
   }
   return(ode_id)
 }
