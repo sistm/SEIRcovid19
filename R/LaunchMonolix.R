@@ -62,6 +62,7 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
   lixoftConnectors::saveProject(projectFile = paste(here::here(),'/MonolixFile/',ProjectName,".mlxtran",sep=""))
   if(runToBeDone){
     lixoftConnectors::runScenario()
+    dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',sep=""))
     dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,sep=""))
     dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/IndividualParameters/',sep=""))
     # Indiv Param
