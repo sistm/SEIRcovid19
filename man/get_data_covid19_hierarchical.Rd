@@ -4,16 +4,11 @@
 \alias{get_data_covid19_hierarchical}
 \title{Scrap and format data from opencovid19-fr}
 \usage{
-get_data_covid19_hierarchical(
-  maille_cd = "FRA",
+get_data_covid19_hierarchical(maille_cd = "FRA",
   sources_hierarchy = c("sante-publique-france", "ministere-sante",
-    "agences-regionales-sante", "opencovid19-fr"),
-  date_start = NULL,
-  date_end = NULL,
-  metropole = FALSE,
-  update_from_source_url = FALSE,
-  epidemic_start = TRUE
-)
+  "agences-regionales-sante", "opencovid19-fr"), date_start = NULL,
+  date_end = NULL, metropole = FALSE, update_from_source_url = FALSE,
+  epidemic_start = TRUE)
 }
 \arguments{
 \item{maille_cd}{a character sting indicating the code}

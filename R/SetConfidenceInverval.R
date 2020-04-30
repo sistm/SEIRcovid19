@@ -18,6 +18,7 @@ SetConfidenceInverval.default <- function(obj,MonteCarloSolution,time)
 }
 
 #' @describeIn Calculate IC and set it for an object of class \code{OdeSystem} after MonteCarlo Simultion
+#' @export
 SetConfidenceInverval.OdeSystem <- function(ode,MonteCarloSolution,time){
   # Prepare dataframe Result format
   df <- data.frame(matrix(ncol = 1+length(ode$ModelName)*2, nrow = length(time)))

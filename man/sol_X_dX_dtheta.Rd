@@ -4,9 +4,7 @@
 \name{sol_X_dX_dtheta}
 \alias{sol_X_dX_dtheta}
 \title{# Solve system using lsoda}
-\format{
-An object of class \code{deSolve} (inherits from \code{matrix}) with 11 rows and 49 columns.
-}
+\format{An object of class \code{deSolve} (inherits from \code{matrix}) with 11 rows and 49 columns.}
 \usage{
 sol_X_dX_dtheta
 }

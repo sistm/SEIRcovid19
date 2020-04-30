@@ -4,8 +4,7 @@
 \name{spfI_sursaudH}
 \alias{spfI_sursaudH}
 \title{Regional incident numbers of confirmed cases and hospitalizations from Emergency room for Covid-19}
-\format{
-A data frame with and 8 variables:
+\format{A data frame with and 8 variables:
 \describe{
   \item{reg_id}{administrative regional code}
   \item{region_name}{French name of the region}
@@ -16,8 +15,7 @@ A data frame with and 8 variables:
   \item{obs_id}{Number of 'acte SOS medecin' for Covid-19 suspicion}
   \item{obs}{observed number}
   \item{confinement}{binary variable indicating wether confinement is in place (\code{1}) or not (\code{0})}
-}
-}
+}}
 \usage{
 spfI_sursaudH
 }

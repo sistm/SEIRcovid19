@@ -21,6 +21,7 @@ WriteEstimationModel.default <- function(obj,  ModeFilename, TimeSpecificEquatio
 }
 
 #' @describeIn Write estimation model for an object of class an object of class \code{OdeSystem}
+#' @export
 WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquation, ModelMathChunck)
 {
   WriteEmptyLine<-function(ModelFile){

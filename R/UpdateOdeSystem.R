@@ -17,6 +17,7 @@ UpdateOdeSystem.default <- function(obj, index_id,SpecificInitBloc)
 }
 
 #' @describeIn Set Path Model for an object of class \code{OdeSystem}
+#' @export
 UpdateOdeSystem.OdeSystem <-function(ode,index_id=1,SpecificInitBloc){
   # Read Optimisation result from Monolix => Used in order to update optimizable paramter/initState
   indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")

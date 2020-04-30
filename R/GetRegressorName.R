@@ -19,6 +19,7 @@ GetRegressorName.default <- function(obj)
 }
 
 #' @describeIn Get the regressor name  of an object of class \code{OdeSystem} based on the Headernames
+#' @export
 GetRegressorName.OdeSystem <- function(ode)
 {
   #Read Input Data

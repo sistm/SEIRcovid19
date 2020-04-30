@@ -20,6 +20,7 @@ SetInitDistribution.default <- function(obj, InitDist)
 }
 
 #' @describeIn Set Distribution for init attribute of an object of class \code{OdeSystem}
+#' @export
 SetInitDistribution.OdeSystem <- function(ode, InitDist)
 {
   if (length(InitDist)==length(ode$Distribution$init)){

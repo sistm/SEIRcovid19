@@ -20,6 +20,7 @@ SetParamIsRegressor.default <- function(obj, ParamRegressor)
 }
 
 #' @describeIn Set Regressor info for parameter attribute of an object of class \code{OdeSystem}
+#' @export
 SetParamIsRegressor.OdeSystem <- function(ode, ParamRegressor)
 {
   if (length(ParamRegressor)==length(ode$IsRegressor$param)){

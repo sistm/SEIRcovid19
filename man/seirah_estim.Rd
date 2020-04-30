@@ -4,30 +4,13 @@
 \alias{seirah_estim}
 \title{Fitting a SEIRAH by OLS}
 \usage{
-seirah_estim(
-  binit,
-  data = NULL,
-  stateinit = NULL,
-  initwithdata = TRUE,
-  alpha = 1,
-  De = 5.2,
-  Di = 2.3,
-  Dq = 10,
-  Dh = 30,
-  popSize = 6.5e+07,
-  dailyMove = 0.1 * popSize,
-  verbose = TRUE,
-  optim_ols = TRUE,
-  timeconf = 1000,
-  lengthconf = 1000,
-  newdailyMove = 1e-05,
-  factorreductrans = 3,
-  obs = "1Y",
-  E0given = NULL,
-  A0given = NULL,
-  b2 = NULL,
-  pred = FALSE
-)
+seirah_estim(binit, data = NULL, stateinit = NULL,
+  initwithdata = TRUE, alpha = 1, De = 5.2, Di = 2.3, Dq = 10,
+  Dh = 30, popSize = 6.5e+07, dailyMove = 0.1 * popSize,
+  verbose = TRUE, optim_ols = TRUE, timeconf = 1000,
+  lengthconf = 1000, newdailyMove = 1e-05, factorreductrans = 3,
+  obs = "1Y", E0given = NULL, A0given = NULL, b2 = NULL,
+  pred = FALSE)
 }
 \description{
 Fitting a SEIRAH by OLS

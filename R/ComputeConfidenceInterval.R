@@ -23,6 +23,8 @@ ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,time,nb_mc,is_glo
 }
 
 #' @describeIn Compute monte Carlo estimation for an object of class \code{OdeSystem}
+#' @export
+
 ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,time,nb_mc,is_global=1){
   optimize_param_name<-c(names(systemode$parameter[systemode$Variability$param>0]),names(systemode$InitState[systemode$Variability$init>0]))
   SdOptimizeParam<-as.list(rep(NA,length(optimize_param_name)))

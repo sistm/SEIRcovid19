@@ -17,6 +17,7 @@ SetSpecificInitState.default <- function(obj, SpecificInitBloc)
 }
 
 #' @describeIn Set Some specific InitState for an object of class \code{OdeSystem} through exp
+#' @export
 SetSpecificInitState.OdeSystem<-function(ode,SpecificInitBloc){
   SetInitWithExp<-function(ode,exp,name){
     with(as.list(c(ode$InitState,ode$parameter)),{

@@ -15,8 +15,8 @@ LaunchMonolix.default <- function(obj,  ProjectName, ObservationType, Mapping)
   print("No method implemented for this class")
   return(obj)
 }
-#' @export
 #' @describeIn Launch monolix scenario for an object of class \code{OdeSystem}
+#' @export
 LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,runToBeDone=TRUE)
 {
   # Initialize the connection

@@ -4,14 +4,12 @@
 \name{popreg}
 \alias{popreg}
 \title{Population numbers in France}
-\format{
-A data frame with 19 rows and 3 variables:
+\format{A data frame with 19 rows and 3 variables:
 \describe{
   \item{maille_nom}{name in French}
   \item{maille_code}{administrative code}
   \item{population}{population}
-}
-}
+}}
 \source{
 INED \url{https://www.ined.fr/fichier/s_rubrique/159/estim.pop.nreg.sexe.gca.1975.2020.fr.xls}
 stored in \code{'data/raw/population_regionsFR_INED1erjan2020.tsv'}

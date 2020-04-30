@@ -20,6 +20,7 @@ SetInitVariability.default <- function(obj, InitVaria)
 }
 
 #' @describeIn Set Variability info for init attribute of an object of class \code{OdeSystem}
+#' @export
 SetInitVariability.OdeSystem <- function(ode, InitVaria)
 {
   if (length(InitVaria)==length(ode$Variability$init)){

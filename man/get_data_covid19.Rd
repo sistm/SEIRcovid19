@@ -4,15 +4,10 @@
 \alias{get_data_covid19}
 \title{Scrap and format data from opencovid19-fr}
 \usage{
-get_data_covid19(
-  maille_cd = "FRA",
-  source_ch = "sante-publique-france",
-  date_start = NULL,
-  date_end = NULL,
-  metropole = FALSE,
-  update_from_source_url = FALSE,
-  epidemic_start = TRUE
-)
+get_data_covid19(maille_cd = "FRA",
+  source_ch = "sante-publique-france", date_start = NULL,
+  date_end = NULL, metropole = FALSE, update_from_source_url = FALSE,
+  epidemic_start = TRUE)
 }
 \arguments{
 \item{maille_cd}{a character sting indicating the code}

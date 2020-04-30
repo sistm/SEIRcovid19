@@ -15,6 +15,7 @@ SetSpecificInit.default <- function(obj, isspecific)
 }
 
 #' @describeIn Set IsSpecificInit attribute for an object of class \code{OdeSystem}
+#' @export
 SetSpecificInit.OdeSystem <- function(ode, isspecific)
 {
   if (length(isspecific)==length(ode$IsSpecificInit)){

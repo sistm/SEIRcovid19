@@ -23,6 +23,7 @@ WriteMonolixModel.default <- function(obj,  ModelFile, SpecificInitChunck, Model
 }
 
 #' @describeIn Write optimisation model of an object of class an object of class \code{OdeSystem}
+#' @export
 WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, ModelStatChunck, ModelMathChunck, ModelObservationChunck)
 {
   WriteEmptyLine<-function(ModelFile){

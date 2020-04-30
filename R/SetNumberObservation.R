@@ -17,6 +17,7 @@ SetNumberObservation.default <- function(obj, Nobs)
 }
 
 #' @describeIn Set number of observation for an object of class \code{OdeSystem}
+#' @export
 SetNumberObservation.OdeSystem <- function(ode, Nobs)
 {
   if (length(Nobs)==1 & is.numeric(Nobs)){

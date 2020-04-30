@@ -16,6 +16,7 @@ SetAllInit.default <- function(obj, init)
 }
 
 #' @describeIn Set InitState for an object of class \code{OdeSystem}
+#' @export
 SetAllInit.OdeSystem <- function(ode, init)
 {
   print("Set all init state for OdeSytem")

@@ -4,32 +4,9 @@
 \alias{seirah_confidence_interval_response}
 \title{Monte Carlo estimator of  5% and 95% percent quantiles of model response}
 \usage{
-seirah_confidence_interval_response(
-  b,
-  bsd,
-  Dq,
-  Dqsd,
-  E0,
-  E0sd,
-  A0,
-  A0sd,
-  beta,
-  betasd,
-  De,
-  Di,
-  Dh,
-  r,
-  alpha,
-  R0,
-  I0,
-  H0,
-  N,
-  n,
-  time_beg,
-  time_end,
-  time_beg_conf,
-  length_confinment
-)
+seirah_confidence_interval_response(b, bsd, Dq, Dqsd, E0, E0sd, A0, A0sd,
+  beta, betasd, De, Di, Dh, r, alpha, R0, I0, H0, N, n, time_beg, time_end,
+  time_beg_conf, length_confinment)
 }
 \description{
 Monte Carlo estimator of  5% and 95% percent quantiles of model response

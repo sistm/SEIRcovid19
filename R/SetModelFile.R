@@ -17,6 +17,7 @@ SetModelFile.default <- function(obj, path_file)
 }
 
 #' @describeIn Set Path Model for an object of class \code{OdeSystem}
+#' @export
 SetModelFile.OdeSystem <- function(ode, path_file)
 {
   if (length(path_file)==1 & is.character(path_file)){

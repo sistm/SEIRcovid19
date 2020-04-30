@@ -20,6 +20,7 @@ SetInitIsRegressor.default <- function(obj, InitRegressor)
 }
 
 #' @describeIn Set Regressor info for init attribute of an object of class \code{OdeSystem}
+#' @export
 SetInitIsRegressor.OdeSystem <- function(ode, InitRegressor)
 {
   if (length(InitRegressor)==length(ode$IsRegressor$init)){

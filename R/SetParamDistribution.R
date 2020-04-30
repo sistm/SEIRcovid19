@@ -20,6 +20,7 @@ SetParamDistribution.default <- function(obj, ParamDist)
 }
 
 #' @describeIn Set Distribution for parameter attribute of an object of class \code{OdeSystem}
+#' @export
 SetParamDistribution.OdeSystem <- function(ode, ParamDist)
 {
   if (length(ParamDist)==length(ode$Distribution$param)){

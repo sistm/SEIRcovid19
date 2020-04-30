@@ -16,6 +16,7 @@ Estimate.default <- function(obj, time,is_global)
 }
 
 #' @describeIn Estimation after optimisation for an object of class \code{OdeSystem}
+#' @export
 Estimate.OdeSystem <- function(ode, time,is_global=0)
 {
   lixoftConnectorsState<-lixoftConnectors::getLixoftConnectorsState(quietly = TRUE)

@@ -17,6 +17,7 @@ SetParamRandomEffect.default <- function(obj, Nrand)
 }
 
 #' @describeIn Set parameter with random effect for an object of class \code{OdeSystem}
+#' @export
 SetParamRandomEffect.OdeSystem <- function(ode, Nrand)
 {
   # If List => Set value

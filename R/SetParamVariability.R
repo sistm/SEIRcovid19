@@ -20,6 +20,7 @@ SetParamVariability.default <- function(obj, ParamVaria)
 }
 
 #' @describeIn Set Variability for parameter attribute of an object of class \code{OdeSystem}
+#' @export
 SetParamVariability.OdeSystem <- function(ode, ParamVaria)
 {
   if (length(ParamVaria)==length(ode$Variability$param)){

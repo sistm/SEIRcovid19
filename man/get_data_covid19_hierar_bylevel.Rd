@@ -4,16 +4,11 @@
 \alias{get_data_covid19_hierar_bylevel}
 \title{Get data from opencovid19-fr for all french region or dpt}
 \usage{
-get_data_covid19_hierar_bylevel(
-  level = "region",
+get_data_covid19_hierar_bylevel(level = "region",
   sources_hierarchy = c("sante-publique-france", "ministere-sante",
-    "agences-regionales-sante", "opencovid19-fr"),
-  date_start = NULL,
-  date_end = NULL,
-  update_from_source = FALSE,
-  epidemic_start = TRUE,
-  metropole = TRUE
-)
+  "agences-regionales-sante", "opencovid19-fr"), date_start = NULL,
+  date_end = NULL, update_from_source = FALSE, epidemic_start = TRUE,
+  metropole = TRUE)
 }
 \arguments{
 \item{maille_cd}{a character sting indicating the code}
