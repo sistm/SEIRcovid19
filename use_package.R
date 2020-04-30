@@ -191,7 +191,7 @@ for (iobs in 1:length(ModelObservationBloc)){
 }
 
 
-solutionsREBOUND_list <- list()
+solutions_list <- list()
 solutionmin<-list()
 solutionmax<-list()
 for (id in 1:length(ode_id)){
@@ -199,8 +199,8 @@ for (id in 1:length(ode_id)){
   solution$date <- seq.Date(from =as.Date(ode_id[[id]]$ObsData$date[1]), by = 1, length.out = nrow(ode_id[[id]]$solution))
   solution$popsize <- ode_id[[id]]$parameter[names(ode_id[[id]]$parameter)=='popsize']
 
-  solutionsREBOUND_list[[id]] <- solution
-  solutionsREBOUND_list[[id]]$reg<-as.character(indivParams$id[id])
+  solutions_list[[id]] <- solution
+  solutions_list[[id]]$reg<-as.character(indivParams$id[id])
   
   solutionmin[[id]]<-ode_id[[id]]$ICmin
   solutionmin[[id]]$date <- solution$date
@@ -213,3 +213,30 @@ for (id in 1:length(ode_id)){
   solutionmax[[id]]$reg <- as.character(indivParams$id[id])
   
 }
+
+
+solutions_allsim <- do.call(rbind.data.frame,solutions_list) %>% select(!c("time")) %>% reshape2::melt(id.vars=c("date", "reg", "popsize"))
+solutions_allmin <- do.call(rbind.data.frame,solutionmin)  %>% reshape2::melt(id.vars=c("date", "reg","popsize"), value.name  = "value.min")
+solutions_allmax <- do.call(rbind.data.frame,solutionmax) %>% reshape2::melt(id.vars=c("date", "reg","popsize"), value.name  = "value.max")
+solutions_2plot <- cbind.data.frame(solutions_allsim,
+                                           "value.min" = solutions_allmin$value.min,
+                                           "value.max" = solutions_allmax$value.max)
+
+p <- ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
+  geom_line(aes(y=value/popsize, colour = reg)) +
+  geom_ribbon(aes(ymin=value.min/popsize, ymax=value.max/popsize), alpha = 0.3) +
+  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lockdown start")) +
+  geom_vline(aes(xintercept=as.Date("2020-05-11"),  linetype="Lockdown lift")) +
+  scale_linetype_manual("", values=c(2,3), breaks=c("Lockdown start", "Lockdown lift")) +
+  xlim(c(as.Date(min(solutionsREBOUND_2plot$date)), as.Date(max(solutionsREBOUND_2plot$date)))) +
+  theme_bw() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 0.01)) +
+  facet_wrap(~variable, scales="free_y", ncol=2) +
+  ylab("Proportion of region population") +
+  xlab("Date") +
+  colorspace::scale_color_discrete_qualitative(name = "Region", palette = "Dark3") +
+  colorspace::scale_fill_discrete_qualitative(name = "Region", palette = "Dark3") +
+  theme(legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10)) +
+  theme(legend.position = "bottom", legend.box = "vertical")
+p
