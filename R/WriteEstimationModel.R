@@ -36,6 +36,16 @@ WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquati
   mlx_input<-paste(c(names(ode$paramete),names(ode$InitState)),collapse=',')
   input_line<-paste(input_line,mlx_input,'}',sep='')
   write(input_line, file=ModelFile,append=TRUE)
+  
+  regressor_line<-""
+  regressor<-paste(c(names(ode$InitState[ode$EstimationRegressor$init>0]),names(ode$parameter[ode$EstimationRegressor$param>0])),collapse=',')
+  if (length(regressor)>0){
+    for (ireg in 1:length(regressor)){
+      regressor_line<-paste(regressor_line,regressor[[ireg]]," = {use = regressor}",sep='')
+    }
+  }
+  write(regressor_line, file=ModelFile,append=TRUE)
+  
   # Eqaution
   write(paste("\nEQUATION:\n","odeType = stiff\n",sep=""), file=ModelFile,append=TRUE)
   # Etats initiaux

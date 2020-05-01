@@ -1,11 +1,13 @@
-SolveThroughSimulx<-function(ode,is_global,time,param_and_init){
-  number_param_exept_init<-length(ode$parameter)
+SolveThroughSimulx<-function(ode,is_global,time,param_and_init,regressor_info){
+  number_param_exept_init<-length(ode$parameter[ode$EstimationRegressor$param==0])
+
   pk.model<-ode$ModelFileEstimation
   
   if (is_global==1){
     # mlxR format
     C <- list(name=ode$ModelName, time=time)
-    solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init)
+    #solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init)
+    solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init,regressor=regressor_info)
     #Output format of mlxR is : time obs_1,time obs_2 ... time obs_n
     result<-as.data.frame(solution)
     result<-result[,c(1,seq(2,length(ode$ModelName)*2,by=2))]
