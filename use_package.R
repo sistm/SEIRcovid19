@@ -106,6 +106,11 @@ myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
 
 myOde$nameproject<-nameproject
 
+EstiomationRegressor<-list(isolation=1)
+myOde<-SetParamEstimationRegressor(myOde, EstiomationRegressor)
+myOde$EstimationRegressor$param
+
+
 # @Melanie ne pas aller plus loin
 ## We want now to update the system after optimisation
 # Use the result from melanie
