@@ -4,23 +4,20 @@
 #' @param ModeFilename Output Name
 #' @param TimeSpecificEquation List of string defining time-dependant equation
 #' @param ModelMathChunck List of string defining the mathematical system
-
-
-
-
-
+#' @export
 WriteEstimationModel <- function(obj,ModeFilename, TimeSpecificEquation, ModelMathChunck)
 {
   UseMethod("WriteEstimationModel",obj)
 }
-#' @describeIn default
+
+#' @export
 WriteEstimationModel.default <- function(obj,  ModeFilename, TimeSpecificEquation, ModelMathChunck)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Write estimation model for an object of class an object of class \code{OdeSystem}
+#' @describeIn WriteEstimationModel Write estimation model for an object of class an object of class \code{OdeSystem}
 #' @export
 WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquation, ModelMathChunck)
 {
@@ -36,7 +33,7 @@ WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquati
   mlx_input<-paste(c(names(ode$paramete),names(ode$InitState)),collapse=',')
   input_line<-paste(input_line,mlx_input,'}',sep='')
   write(input_line, file=ModelFile,append=TRUE)
-  
+
   regressor_line<-""
   regressor<-paste(c(names(ode$InitState[ode$EstimationRegressor$init>0]),names(ode$parameter[ode$EstimationRegressor$param>0])),collapse=',')
   if (length(regressor)>0){
@@ -45,7 +42,7 @@ WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquati
     }
   }
   write(regressor_line, file=ModelFile,append=TRUE)
-  
+
   # Eqaution
   write(paste("\nEQUATION:\n","odeType = stiff\n",sep=""), file=ModelFile,append=TRUE)
   # Etats initiaux
@@ -57,13 +54,13 @@ WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquati
     init_line<-paste(init_line,variable_name,'_0=',names(ode$InitState[names(ode$InitState)==init_name[i]]),'\n',sep='')
   }
   write(init_line,file=ModelFile,append=TRUE)
-  
+
   # Time dependant equation
   write(paste(TimeSpecificEquation,collapse = "\n"),file=ModelFile,append=TRUE)
   WriteEmptyLine(ModelFile)
   # Math model chucnk
   write(paste(ModelMathBloc,collapse = "\n"),file=ModelFile,append=TRUE)
-  
+
   ode$ModelFileEstimation<-ModelFile
   return(ode)
 }

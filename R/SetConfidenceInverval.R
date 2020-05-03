@@ -4,20 +4,19 @@
 #' @param MonteCarloSolution monte carlo resultat of simulation
 #' @param time time vector of the simulation
 #' @export
-#' 
-
 SetConfidenceInverval <- function(obj,MonteCarloSolution,time)
 {
   UseMethod("SetConfidenceInverval",obj)
 }
 
+#' @export
 SetConfidenceInverval.default <- function(obj,MonteCarloSolution,time)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Calculate IC and set it for an object of class \code{OdeSystem} after MonteCarlo Simultion
+#' @describeIn SetConfidenceInverval Calculate IC and set it for an object of class \code{OdeSystem} after MonteCarlo Simultion
 #' @export
 SetConfidenceInverval.OdeSystem <- function(ode,MonteCarloSolution,time){
   # Prepare dataframe Result format

@@ -3,23 +3,19 @@
 #' @param obj Object to set
 #' @param ParamVaria List of new variability
 #' @export
-
-
-
-
-
 SetParamVariability <- function(obj, ParamVaria)
 {
   UseMethod("SetParamVariability",obj)
 }
-#' @describeIn default
+
+#' @export
 SetParamVariability.default <- function(obj, ParamVaria)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Set Variability for parameter attribute of an object of class \code{OdeSystem}
+#' @describeIn SetParamVariability Set Variability for parameter attribute of an object of class \code{OdeSystem}
 #' @export
 SetParamVariability.OdeSystem <- function(ode, ParamVaria)
 {

@@ -4,7 +4,8 @@
 \name{sursaud_covid19}
 \alias{sursaud_covid19}
 \title{Emergency Covid-19 numbers}
-\format{A data frame with 2904 rows and 7 variables:
+\format{
+A data frame with 2904 rows and 7 variables:
 \describe{
   \item{maille_cd}{administrative code}
   \item{date_de_passage}{Date of ER visits}
@@ -13,7 +14,8 @@
   \item{nbre_hospit_corona}{Number of Hospitalization for Covid-19 suspicion}
   \item{nbre_acte_corona}{Number of 'acte SOS medecin' for Covid-19 suspicion}
   \item{nbre_acte_tot}{Total number of 'acte SOS medecin'}
-}}
+}
+}
 \source{
 SURSAUD database share by Santé Publique France \url{https://www.data.gouv.fr/fr/datasets/r/941ff2b4-ea24-4cdf-b0a7-655f2a332fb2}
 stored in \code{'data/raw/sursaud-covid19-quotidien-2020-04-07-19h00.xlsx'}

@@ -4,10 +4,24 @@
 \alias{seirah_ols}
 \title{OLS Estimation of parameters in SIERAH models}
 \usage{
-seirah_ols(b, stateinit, data, alpha = 1, De = 5.2, Di = 2.3,
-  Dq = 10, Dh = 30, popSize = 6.5e+07, dailyMove = 1e+06,
-  timeconf = 1000, lengthconf = 1000, newdailyMove = 1e-05 * popSize,
-  factorreductrans = 3, verbose = TRUE, obs = "1Y")
+seirah_ols(
+  b,
+  stateinit,
+  data,
+  alpha = 1,
+  De = 5.2,
+  Di = 2.3,
+  Dq = 10,
+  Dh = 30,
+  popSize = 6.5e+07,
+  dailyMove = 1e+06,
+  timeconf = 1000,
+  lengthconf = 1000,
+  newdailyMove = 1e-05 * popSize,
+  factorreductrans = 3,
+  verbose = TRUE,
+  obs = "1Y"
+)
 }
 \description{
 OLS Estimation of parameters in SIERAH models

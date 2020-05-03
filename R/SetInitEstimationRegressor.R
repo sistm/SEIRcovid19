@@ -3,23 +3,19 @@
 #' @param obj Object to set
 #' @param InitRegressor List of new Regressor info
 #' @export
-
-
-
-
-
 SetInitEstimationRegressor <- function(obj, InitRegressor)
 {
   UseMethod("SetInitEstimationRegressor",obj)
 }
-#' @describeIn default
+
+#' @export
 SetInitEstimationRegressor.default <- function(obj, InitRegressor)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Set Regressor info for parameter attribute of an object of class \code{OdeSystem}
+#' @describeIn SetInitEstimationRegressor Set Regressor info for parameter attribute of an object of class \code{OdeSystem}
 #' @export
 SetInitEstimationRegressor.OdeSystem <- function(ode, InitRegressor)
 {

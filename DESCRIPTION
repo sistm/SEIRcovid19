@@ -14,7 +14,8 @@ Imports: deSolve,
          lubridate,
          tidyr,
          stats,
-         mlxR
+         mlxR,
+         pracma
 Suggest: lixoftConnectors
 License: MIT license
 Encoding: UTF-8

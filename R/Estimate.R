@@ -3,24 +3,24 @@
 #' @param obj Object to set
 #' @param time List of new initState
 #' @export
-#' 
 Estimate <- function(obj, time,is_global,regressor_value)
 {
   UseMethod("Estimate",obj)
 }
-#' @describeIn default
+
+#' @export
 Estimate.default <- function(obj, time,is_global,regressor_value)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Estimation after optimisation for an object of class \code{OdeSystem}
+#' @describeIn Estimate Estimation after optimisation for an object of class \code{OdeSystem}
 #' @export
 Estimate.OdeSystem <- function(ode, time,is_global=0,regressor_value)
 {
   lixoftConnectorsState<-lixoftConnectors::getLixoftConnectorsState(quietly = TRUE)
-  
+
   if (lixoftConnectorsState$software == "simulx"){ # => nothing to be done
   }else{
     lixoftConnectors::initializeLixoftConnectors(software="simulx",force=TRUE)
@@ -40,5 +40,5 @@ Estimate.OdeSystem <- function(ode, time,is_global=0,regressor_value)
   result<-SolveThroughSimulx(ode,is_global,time,param_and_init,regressor_info)
   ode$solution<-result
   return(ode)
-  
+
 }

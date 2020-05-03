@@ -3,20 +3,21 @@
 #' @param obj Object to set
 #' @param SpecificInitBloc List
 #' @export
-#' 
+#'
 
 SetSpecificInitState <- function(obj, SpecificInitBloc)
 {
   UseMethod("SetSpecificInitState",obj)
 }
 
+#' @export
 SetSpecificInitState.default <- function(obj, SpecificInitBloc)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Set Some specific InitState for an object of class \code{OdeSystem} through exp
+#' @describeIn SetSpecificInitState Set Some specific InitState for an object of class \code{OdeSystem} through exp
 #' @export
 SetSpecificInitState.OdeSystem<-function(ode,SpecificInitBloc){
   SetInitWithExp<-function(ode,exp,name){

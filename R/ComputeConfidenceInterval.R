@@ -7,24 +7,22 @@
 #' @param indiv Individual parameter of monolix optimisation
 #' @param pop Population parameter of monolix optimisation
 #' @param id Index of actual id
-
+#'
 #' @export
-#' 
-
 ComputeConfidenceInterval <- function(obj,indiv,pop,id,time,nb_mc,is_global=1,regressor_value)
 {
   UseMethod("ComputeConfidenceInterval",obj)
 }
 
+#' @export
 ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,time,nb_mc,is_global=1,regressor_value)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Compute monte Carlo estimation for an object of class \code{OdeSystem}
+#' @describeIn ComputeConfidenceInterval Compute monte Carlo estimation for an object of class \code{OdeSystem}
 #' @export
-
 ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,time,nb_mc,is_global=1,regressor_value){
   optimize_param_name<-c(names(systemode$parameter[systemode$Variability$param>0]),names(systemode$InitState[systemode$Variability$init>0]))
   SdOptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
