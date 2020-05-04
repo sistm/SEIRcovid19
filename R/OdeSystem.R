@@ -7,6 +7,7 @@ OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),
                       isregressor=list(),
                       distribution=list(),
                       Data=list(),
+                      estiomationregressor=list(),
                       isspecificinit=rep(0,length(init)))
 {
   # Set all variability info to 0
@@ -23,6 +24,10 @@ OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),
   if (length(distribution)==0){
     distribution$param<-rep("logNormal",length(param))
     distribution$init<-rep("logNormal",length(init))
+  }
+  if (length(estiomationregressor)==0){
+    estiomationregressor$param<-rep(0,length(param))
+    estiomationregressor$init<-rep(0,length(init))
   }
   # Struct of the data Input
   Data$File=""
@@ -42,6 +47,7 @@ OdeSystem <- function(func,param,init,modname=c("S","E","I","R","A","H"),
     ModelName= modname,
     IsRegressor=isregressor,
     Distribution=distribution,
+    EstimationRegressor=estiomationregressor,
     DataInfo=Data,
     IsSpecificInit=isspecificinit, 
     ParamRandomEffect=list() # not used any more

@@ -8,13 +8,14 @@ SetSpecificInit <- function(obj, isspecific)
   UseMethod("SetSpecificInit",obj)
 }
 
+#' @export
 SetSpecificInit.default <- function(obj, isspecific)
 {
   error("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Set IsSpecificInit attribute for an object of class \code{OdeSystem}
+#' @describeIn SetSpecificInit Set \code{IsSpecificInit} attribute for an object of class \code{OdeSystem}
 #' @export
 SetSpecificInit.OdeSystem <- function(ode, isspecific)
 {

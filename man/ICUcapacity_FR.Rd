@@ -4,7 +4,9 @@
 \name{ICUcapacity_FR}
 \alias{ICUcapacity_FR}
 \title{Numbers of ICU beds in France}
-\format{A data frame with 19 rows and 2 variables}
+\format{
+A data frame with 19 rows and 2 variables
+}
 \source{
 DREEES 2018 \url{https://www.sae-diffusion.sante.gouv.fr/sae-diffusion/recherche.htm}
 obtaine on 2020-03-25 and stored in

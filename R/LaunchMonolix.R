@@ -2,26 +2,27 @@
 #'
 #' @param obj Object to set
 #' @param ProjectName Output Name
-#' @param ObservationType 
-#' @param Mapping 
+#' @param ObservationType Observation type
+#' @param Mapping mapping
 #' @export
 LaunchMonolix <- function(obj, ProjectName, ObservationType, Mapping,runToBeDone=TRUE)
 {
   UseMethod("LaunchMonolix",obj)
 }
-#' @describeIn default
+
+#' @export
 LaunchMonolix.default <- function(obj,  ProjectName, ObservationType, Mapping)
 {
   print("No method implemented for this class")
   return(obj)
 }
-#' @describeIn Launch monolix scenario for an object of class \code{OdeSystem}
+#' @describeIn LaunchMonolix Launch monolix scenario for an object of class \code{OdeSystem}
 #' @export
 LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,runToBeDone=TRUE)
 {
   # Initialize the connection
   lixoftConnectors::initializeLixoftConnectors(software="monolix")
-  
+
   # Function to set Distribution and Parameter
   mlxProject.setIndividualParameterDistribution <- function(a) {
     eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterDistribution(',a,'= "normal")' )))
@@ -29,14 +30,14 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
   mlxProject.setIndividualParameterVariability <- function(a) {
     eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterVariability(',a,'= FALSE)' )))
   }
-  
+
   # Create the project
   lixoftConnectors::newProject(modelFile = ode$ModelFile,
                                data = list(dataFile = ode$DataInfo$File,
                                            headerTypes =ode$DataInfo$HeaderType,
                                            observationTypes = ObservationType,
                                            mapping = Mapping))
-  # Set the distrution and variability 
+  # Set the distrution and variability
   parameter_with_no_random_effect<-(c(names(ode$parameter[ode$Variability$param==1]),names(ode$InitState[ode$Variability$init==1])))
   if (length(parameter_with_no_random_effect)>0){
     for (i in 1:length(parameter_with_no_random_effect)){
@@ -62,10 +63,11 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
   lixoftConnectors::saveProject(projectFile = paste(here::here(),'/MonolixFile/',ProjectName,".mlxtran",sep=""))
   if(runToBeDone){
     lixoftConnectors::runScenario()
+    dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',sep=""))
     dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,sep=""))
     dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/IndividualParameters/',sep=""))
     # Indiv Param
-    indiv<-lixoftConnectors::getEstimatedIndividualParameters()    
+    indiv<-lixoftConnectors::getEstimatedIndividualParameters()
     indiv_mode<-indiv$conditionalMode
     indiv_sd<-indiv$conditionalSD
     new_names_mode<-rep("",length(names(indiv_mode)))

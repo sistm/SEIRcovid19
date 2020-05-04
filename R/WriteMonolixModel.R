@@ -6,29 +6,26 @@
 #' @param ModelStatChunck List of string defining the statistic system
 #' @param ModelMathChunck List of string defining the mathematical system
 #' @param ModelObservationChunck List of string defining the observation system
-
-
-
-
-
+#' @export
 WriteMonolixModel <- function(obj, ModelFile, SpecificInitChunck, ModelStatChunck, ModelMathChunck, ModelObservationChunck)
 {
   UseMethod("WriteMonolixModel",obj)
 }
-#' @describeIn default
+
+#' @export
 WriteMonolixModel.default <- function(obj,  ModelFile, SpecificInitChunck, ModelStatChunck, ModelMathChunck, ModelObservationChunck)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Write optimisation model of an object of class an object of class \code{OdeSystem}
+#' @describeIn WriteMonolixModel Write optimisation model of an object of class an object of class \code{OdeSystem}
 #' @export
 WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, ModelStatChunck, ModelMathChunck, ModelObservationChunck)
 {
   WriteEmptyLine<-function(ModelFile){
     write("\n",file=ModelFile,append=TRUE)
-    
+
   }
   #Description
   write(paste("DESCRIPTION: FIT ",paste(ode$ModelName, collapse = '')," MODEL","\n","\n",sep=""),file=ModelFile)
@@ -41,17 +38,17 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
   param_line<-paste(param_line,mlx_param,'}',sep='')
   ## Ceux avec une distribution
   write(param_line, file=ModelFile,append=TRUE)
-  
-  
+
+
   #Regressor
   regressor_line<-"regressor = {"
   RegressorName<-GetRegressorName(ode)
   regressor_line<-paste(regressor_line,paste(RegressorName,collapse = ','),'}',sep='')
   write(regressor_line,file=ModelFile,append=TRUE)
-  
+
   # Eqaution
   write(paste("\nEQUATION:\n","odeType = stiff\n","t0 = 0  ; t0 is a reserved keyword (initiation of therapy) \n",sep=""), file=ModelFile,append=TRUE)
-  
+
   # Parametres constants
   scalar_parameter<-names(ode$parameter[(ode$Variability$param==0 & ode$IsRegressor$param==0)])
   scalar_line<-""
@@ -59,8 +56,8 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
     scalar_line<-paste(scalar_line,scalar_parameter[i],'=',as.character( ode$parameter[names(ode$parameter)==scalar_parameter[i]]),'\n',sep='')
   }
   write(scalar_line,file=ModelFile,append=TRUE)
-  
-  
+
+
   # Etats initiaux
   init_line<-""
   # Regressor
@@ -87,7 +84,7 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
     init_line<-paste(init_line,variable_name,'_0=',ode$InitState[names(ode$InitState)==init_scalar[i]],'\n',sep='')
   }
   write(init_line,file=ModelFile,append=TRUE)
-  
+
   # Init specific Chunk
 
   write(paste(SpecificInitChunck,collapse = "\n"),file=ModelFile,append=TRUE)
@@ -98,19 +95,19 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
   # Math model chucnk
   write(paste(ModelMathBloc,collapse = "\n"),file=ModelFile,append=TRUE)
   WriteEmptyLine(ModelFile)
-  
+
   #Observation chucnk
   write(paste(ModelObservationChunck,collapse = "\n"),file=ModelFile,append=TRUE)
   WriteEmptyLine(ModelFile)
-  
+
   ## TO do remplacer par un set
   ode<-SetNumberObservation(ode,length(ModelObservationChunck))
-  
+
   CutObservation<-strsplit(ModelObservationChunck,'=')
   def_line<-""
   output_line<-"output = {"
   for (i in 1:length(ModelObservationChunck)){
-    
+
     variable_name<-CutObservation[[i]][1]
     def_line<-paste(def_line,"Y",as.character(i),"= {type = count, log(P(Y",as.character(i),"=k)) = -",variable_name,"+ k*log(",variable_name,") - factln(k) }\n",sep="")
     if  (i==length(ModelObservationChunck)){
@@ -118,15 +115,15 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
     }else{
       output_line<-paste(output_line,"Y",as.character(i),", ",sep="")
     }
-    
+
   }
-  
+
   write("\nDEFINITION:\n",file=ModelFile,append=TRUE)
   write(def_line,file=ModelFile,append=TRUE)
-  
+
   write("\nOUTPUT:\n",file=ModelFile,append=TRUE)
   write(output_line,file=ModelFile,append=TRUE)
-  
+
   ode<-SetModelFile(ode,ModelFile)
   #ode$ModelFile<-ModelFile
   return(ode)

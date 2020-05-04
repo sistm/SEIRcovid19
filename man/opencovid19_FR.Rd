@@ -4,7 +4,9 @@
 \name{opencovid19_FR}
 \alias{opencovid19_FR}
 \title{Key numbers about covid in France}
-\format{A data frame with 2123 rows and 10 variables}
+\format{
+A data frame with 2123 rows and 10 variables
+}
 \source{
 opencovid-19 data \url{https://github.com/opencovid19-fr/data/blob/master/dist/chiffres-cles.csv}
 stored in \code{'data/raw/chiffres-cles_25mars00h30.csv'}

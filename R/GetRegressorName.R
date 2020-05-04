@@ -2,23 +2,19 @@
 #'
 #' @param obj Object to set
 #' @export
-
-
-
-
-
 GetRegressorName <- function(obj)
 {
   UseMethod("GetRegressorName",obj)
 }
-#' @describeIn default
+
+#' @export
 GetRegressorName.default <- function(obj)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Get the regressor name  of an object of class \code{OdeSystem} based on the Headernames
+#' @describeIn GetRegressorName Get the regressor name  of an object of class \code{OdeSystem} based on header names
 #' @export
 GetRegressorName.OdeSystem <- function(ode)
 {

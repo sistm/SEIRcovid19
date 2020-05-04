@@ -5,23 +5,19 @@
 #' @param header header of the file
 #' @param sep separator
 #' @export
-
-
-
-
-
 SetDataInput <- function(obj, path,header,sep)
 {
   UseMethod("SetDataInput",obj)
 }
-#' @describeIn default
+
+#' @export
 SetDataInput.default <- function(obj, path,header,sep)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Set Data Input info of an object of class \code{OdeSystem}
+#' @describeIn SetDataInput Set Data Input info of an object of class \code{OdeSystem}
 #' @export
 SetDataInput.OdeSystem <- function(ode, path,header,sep)
 {

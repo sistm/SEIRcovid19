@@ -4,8 +4,7 @@
 \alias{predict.seirah_estim}
 \title{Prediction of Epidemics and ICU utilization}
 \usage{
-\method{predict}{seirah_estim}(object, thresholdICU = 5000,
-  verbose = TRUE, kICU = 0.1)
+\method{predict}{seirah_estim}(object, thresholdICU = 5000, verbose = TRUE, kICU = 0.1)
 }
 \arguments{
 \item{object}{an object of class \code{seirah_estim}}

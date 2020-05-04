@@ -3,20 +3,19 @@
 #' @param obj Object to set
 #' @param Nrand List of parameter wtih Random Effect
 #' @export
-#' 
-
 SetParamRandomEffect <- function(obj, Nrand)
 {
   UseMethod("SetParamRandomEffect",obj)
 }
 
+#' @export
 SetParamRandomEffect.default <- function(obj, Nrand)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Set parameter with random effect for an object of class \code{OdeSystem}
+#' @describeIn SetParamRandomEffect Set parameter with random effect for an object of class \code{OdeSystem}
 #' @export
 SetParamRandomEffect.OdeSystem <- function(ode, Nrand)
 {
@@ -39,5 +38,5 @@ SetParamRandomEffect.OdeSystem <- function(ode, Nrand)
   }
 
   return(ode)
-  
+
 }

@@ -8,13 +8,14 @@ SetSomeParameter <- function(obj, parameter)
   UseMethod("SetSomeParameter",obj)
 }
 
+#' @export
 SetSomeParameter.default <- function(obj, parameter)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Set some parameter for an object of class \code{OdeSystem}
+#' @describeIn SetSomeParameter Set some parameter for an object of class \code{OdeSystem}
 #' @export
 
 SetSomeParameter.OdeSystem <- function(ode, param)

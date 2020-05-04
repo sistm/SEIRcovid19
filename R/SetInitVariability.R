@@ -3,23 +3,19 @@
 #' @param obj Object to set
 #' @param InitVaria List of new variability
 #' @export
-
-
-
-
-
 SetInitVariability <- function(obj, InitVaria)
 {
   UseMethod("SetInitVariability",obj)
 }
-#' @describeIn default
+
+#' @export
 SetInitVariability.default <- function(obj, InitVaria)
 {
   print("No method implemented for this class")
   return(obj)
 }
 
-#' @describeIn Set Variability info for init attribute of an object of class \code{OdeSystem}
+#' @describeIn SetInitVariability Set Variability info for init attribute of an object of class \code{OdeSystem}
 #' @export
 SetInitVariability.OdeSystem <- function(ode, InitVaria)
 {

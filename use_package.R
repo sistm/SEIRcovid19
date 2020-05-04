@@ -106,27 +106,28 @@ myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
 
 myOde$nameproject<-nameproject
 
-# @Melanie ne pas aller plus loin
-## We want now to update the system after optimisation
-# Use the result from melanie
-#nameproject<-"Final_20200325/"
-#myOde$nameproject<-nameproject
-#Updating ofr id<-1 => IDF
-time<-seq(0,100, by=1)
-is_global<-0
-ModeFilename<-"model_estimation.txt"
-TimeSpecificEquation<-c("transmission=b",
-                        "if (t>=tconf)",
-                        "  transmission=b*exp(beta1)",
-                        "end")
+EstiomationRegressor<-list(isolation=1)
+myOde<-SetParamEstimationRegressor(myOde, EstiomationRegressor)
+myOde$EstimationRegressor$param
 
-ode_id<-ComputeEstimationAllId(myOde,time,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global)
+
+# @Melanie : ATTENTION Cela ne fonctionne que pour pour resolution globale
+time<-seq(0,100, by=1)
+is_global<-1
+ModeFilename<-"model_estimation.txt"
+TimeSpecificEquation<-ModelStatBloc
+value<-rep(0,length(time))
+value[16:length(time)]<-1
+regressor_value<-list(isolation=value)
+
+ode_id<-ComputeEstimationAllId(myOde,time,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global,regressor_value)
+ode_id[[12]]$solution
 # Confidence interval
 # Number of monte carlo simulation
 nb_mc <- 100
 # Global =1 for IC
 is_global<-1
-ode_id<-ComputeConfidenceIntervalAllId(ode_id,time,nb_mc,is_global)
+ode_id<-ComputeConfidenceIntervalAllId(ode_id,time,nb_mc,is_global,regressor_value)
 
 ## For plot
 

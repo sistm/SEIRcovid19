@@ -4,12 +4,26 @@
 \alias{seidrah_estim}
 \title{Fitting a SEIRAH by OLS}
 \usage{
-seidrah_estim(binit, data = NULL, stateinit = NULL,
-  initwithdata = TRUE, alpha = 1, De = 5.2, Di = 2.3, Dq = 10,
-  Dh = 30, popSize = 6.5e+07, dailyMove = 0.1 * popSize,
-  verbose = TRUE, optim_ols = TRUE, timeconf = 1000,
-  lengthconf = 1000, newdailyMove = 1e-05, factorreductrans = 3,
-  obs = c("S", "E", "I", "D", "R", "A", "H"))
+seidrah_estim(
+  binit,
+  data = NULL,
+  stateinit = NULL,
+  initwithdata = TRUE,
+  alpha = 1,
+  De = 5.2,
+  Di = 2.3,
+  Dq = 10,
+  Dh = 30,
+  popSize = 6.5e+07,
+  dailyMove = 0.1 * popSize,
+  verbose = TRUE,
+  optim_ols = TRUE,
+  timeconf = 1000,
+  lengthconf = 1000,
+  newdailyMove = 1e-05,
+  factorreductrans = 3,
+  obs = c("S", "E", "I", "D", "R", "A", "H")
+)
 }
 \description{
 Fitting a SEIRAH by OLS
