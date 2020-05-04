@@ -1,6 +1,5 @@
 devtools::load_all('.')
 Sys.setlocale("LC_NUMERIC","C")
-
 # Define all paremeter for Ode system with initial value (0), including regressor parameter
 param<-c(bbefore=2,
          boneweek=2,

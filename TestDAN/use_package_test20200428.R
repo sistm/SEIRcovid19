@@ -1,3 +1,5 @@
+#install.packages("/Applications/MonolixSuite2019R2.app/Contents/Resources/monolixSuite/connectors/lixoftConnectors.tar.gz",
+#                 repos=NULL,type="source",INSTALL_opts="--no-multiarch")
 devtools::load_all('.')
 Sys.setlocale("LC_NUMERIC","C")
 param<-c(bbefore=2,
@@ -88,6 +90,7 @@ obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 
 myOde<-LaunchMonolix.OdeSystem(myOde, "LaunchTest", obs, map)
+
 
 
 
