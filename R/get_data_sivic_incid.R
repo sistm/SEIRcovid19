@@ -20,9 +20,10 @@
 #'
 #'@examples
 #'
-#'temp <- get_data_sivic_incid()
-#'write.table(temp, file = "data/SantePubliqueFranceData_fromDataGouv_20200503_incid.tsv",
-#'            sep="\t", row.names=FALSE)
+#'sivic_incid_20200503 <- get_data_sivic_incid()
+#'#save(sivic_incid_20200503, file = "data/sivic_incid_20200503.RData")
+#'#write.table(sivic_incid_20200503, file = "data/SantePubliqueFranceData_fromDataGouv_20200503_incid.tsv",
+#'#            sep="\t", row.names=FALSE)
 
 get_data_sivic_incid <- function(update_from_source_url = TRUE){
 
