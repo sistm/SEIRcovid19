@@ -132,7 +132,141 @@ nameproject<-"LauchTestTESTDAN"
 myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map)
 myOde$nameproject<-nameproject
 
+ EstiomationRegressor<-list(isolation=1,timesinceconf=1)
+ myOde<-SetParamEstimationRegressor(myOde, EstiomationRegressor)
+ myOde$EstimationRegressor$param
 
+
+# @Melanie : ATTENTION Cela ne fonctionne que pour pour resolution globale
+time<-seq(0,100, by=1)
+is_global<-1
+ModeFilename<-"model_estimation.txt"
+TimeSpecificEquation<-ModelStatBloc
+value<-rep(0,length(time))
+value[16:length(time)]<-1
+regressor_value<-list(isolation=value,timesinceconf=value)
+
+ode_id<-ComputeEstimationAllId(myOde,time,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global,regressor_value)
+ode_id[[12]]$solution
+# Confidence interval
+# Number of monte carlo simulation
+nb_mc <- 100
+# Global =1 for IC
+is_global<-1
+ode_id<-ComputeConfidenceIntervalAllId(ode_id,time,nb_mc,is_global,regressor_value)
+
+## For plot
+
+ModelObservationBloc<-c("Isim=ascertainement*E/De",
+                        "Hsim=I/Dq")
+ObservationResult <- vector(mode = "list", length = length(ModelObservationBloc))
+
+CutObservation<-strsplit(ModelObservationBloc,'=')
+data<-read.table(ode_id[[1]]$DataInfo$File,sep=ode_id[[1]]$DataInfo$Sep,header=TRUE)
+InputNames<-colnames(data)
+timename<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="time"]
+idname<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="id"]
+ObsIdName<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="obsid"]
+ObservationName<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="observation"]
+indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_id[[1]]$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
+
+GetStatWithExp<-function(solution,parameter,exp,name){
+  #State<-data.frame(matrix(ncol = 1, nrow = dim(solution)[1]))
+  with(as.list(c(solution,parameter)),{
+    State<-data.frame((eval(parse(text=exp))))
+    names(State)<-name
+    return(State)
+  })
+}
+iobs<-1
+name_variable<-list()
+for (iobs in 1:length(ModelObservationBloc)){
+  for (id in 1:length(ode_id)){
+    name_variable[iobs]<-CutObservation[[iobs]][1]
+    Obssim<-GetStatWithExp(ode_id[[id]]$solution,ode_id[[id]]$parameter,ModelObservationBloc[iobs],name_variable[iobs])
+    Obssim<-cbind(Obssim,GetStatWithExp(ode_id[[id]]$ICmin,ode_id[[id]]$parameter,ModelObservationBloc[iobs],paste(name_variable[iobs],"_min",sep="")))
+    Obssim<-cbind(Obssim,GetStatWithExp(ode_id[[id]]$ICmax,ode_id[[id]]$parameter,ModelObservationBloc[iobs],paste(name_variable[iobs],"_max",sep="")))
+    Obssim<-cbind(Obssim,ode_id[[id]]$solution$time)
+    colnames(Obssim)[dim(Obssim)[2]]<-timename
+    Obssim<-cbind(Obssim,rep(indivParams$id[id],dim(Obssim)[[1]]))
+    colnames(Obssim)[dim(Obssim)[2]]<-"id"
+    Observation<-ode_id[[id]]$ObsData[which(ode_id[[id]]$ObsData[,ObsIdName]==iobs),]
+    ObservationResult[[iobs]][[id]] <-merge(Observation, Obssim, by = timename)
+    ode_id[[id]]$ObsSimu[[iobs]]<-ObservationResult[[iobs]][[id]]
+  }
+  ObservationDataFrame <- do.call(rbind.data.frame, ObservationResult[[iobs]])
+  ObservationDataFrame$date<-as.Date(ObservationDataFrame$date)
+  p1 <- ggplot(ObservationDataFrame, aes_(x=as.name("date"), y=as.name(ObservationName), group=as.name("id"))) +
+    geom_point(aes(color = "Observed"))+
+    scale_shape_manual(values=c(NA, 16)) +
+    scale_color_manual(values="black") +
+    geom_line(aes_(x=as.name("date"), y=as.name(name_variable[[iobs]]),linetype="Estimate"), color="red3") +
+    geom_ribbon(aes_(ymin = as.name(paste(name_variable[[iobs]],"_min",sep="")), ymax=as.name(paste(name_variable[[iobs]],"_max",sep="")),alpha="95 %CI"), fill="red3")+
+    scale_alpha_manual(values=c(0.3)) +
+    facet_grid(vars(id), scales = "free_y") + facet_wrap(~ id, nrow=2)+
+    guides(color=guide_legend(title=""), linetype=guide_legend(title=""),
+           alpha=guide_legend(title=""))+
+    theme(legend.position = "bottom") +
+    ylab(map[[iobs]]) +
+    xlab("Day") +
+    theme(axis.text.x = element_text(angle=45, hjust=1),
+          axis.title.y = element_text(hjust=1.4)) +
+    theme(strip.background = element_rect(fill="white"),
+          strip.text = element_text(size=8))
+  p1
+  ggsave(plot=p1, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/", map[[iobs]], ".jpg"), width=10, height=8)
+}
+
+
+solutions_list <- list()
+solutionmin<-list()
+solutionmax<-list()
+for (id in 1:length(ode_id)){
+  solution <- ode_id[[id]]$solution
+  solution$date <- seq.Date(from =as.Date(ode_id[[id]]$ObsData$date[1]), by = 1, length.out = nrow(ode_id[[id]]$solution))
+  solution$popsize <- ode_id[[id]]$parameter[names(ode_id[[id]]$parameter)=='popsize']
+  
+  solutions_list[[id]] <- solution
+  solutions_list[[id]]$reg<-as.character(indivParams$id[id])
+  
+  solutionmin[[id]]<-ode_id[[id]]$ICmin
+  solutionmin[[id]]$date <- solution$date
+  solutionmin[[id]]$popsize <- solution$popsize
+  solutionmin[[id]]$reg <- as.character(indivParams$id[id])
+  
+  solutionmax[[id]]<-ode_id[[id]]$ICmax
+  solutionmax[[id]]$date <- solution$date
+  solutionmax[[id]]$popsize <- solution$popsize
+  solutionmax[[id]]$reg <- as.character(indivParams$id[id])
+  
+}
+
+
+solutions_allsim <- do.call(rbind.data.frame,solutions_list) %>% select(!c("time")) %>% reshape2::melt(id.vars=c("date", "reg", "popsize"))
+solutions_allmin <- do.call(rbind.data.frame,solutionmin)  %>% reshape2::melt(id.vars=c("date", "reg","popsize"), value.name  = "value.min")
+solutions_allmax <- do.call(rbind.data.frame,solutionmax) %>% reshape2::melt(id.vars=c("date", "reg","popsize"), value.name  = "value.max")
+solutions_2plot <- cbind.data.frame(solutions_allsim,
+                                    "value.min" = solutions_allmin$value.min,
+                                    "value.max" = solutions_allmax$value.max)
+
+p <- ggplot(solutionsREBOUND_2plot, aes(fill=reg, x=date)) +
+  geom_line(aes(y=value/popsize, colour = reg)) +
+  geom_ribbon(aes(ymin=value.min/popsize, ymax=value.max/popsize), alpha = 0.3) +
+  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lockdown start")) +
+  geom_vline(aes(xintercept=as.Date("2020-05-11"),  linetype="Lockdown lift")) +
+  scale_linetype_manual("", values=c(2,3), breaks=c("Lockdown start", "Lockdown lift")) +
+  xlim(c(as.Date(min(solutionsREBOUND_2plot$date)), as.Date(max(solutionsREBOUND_2plot$date)))) +
+  theme_bw() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 0.01)) +
+  facet_wrap(~variable, scales="free_y", ncol=2) +
+  ylab("Proportion of region population") +
+  xlab("Date") +
+  colorspace::scale_color_discrete_qualitative(name = "Region", palette = "Dark3") +
+  colorspace::scale_fill_discrete_qualitative(name = "Region", palette = "Dark3") +
+  theme(legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10)) +
+  theme(legend.position = "bottom", legend.box = "vertical")
+p
 
 
 

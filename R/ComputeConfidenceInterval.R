@@ -40,12 +40,13 @@ ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,time,nb_mc
     }
   }
   regressor<-paste(c(names(systemode$InitState[systemode$EstimationRegressor$init>0]),names(systemode$parameter[systemode$EstimationRegressor$param>0])),collapse=',')
+  regressor<-unlist(strsplit(regressor, ","))
   regressor_info<-list()
   if (length(regressor)>0){
     for (ireg in 1:length(regressor)){
       regressor_info[[ireg]]<-list(name=regressor[[ireg]],
                                    time=time,
-                                   value=regressor_value[[names(regressor_value)==regressor[[ireg]]]])
+                                   value=regressor_value[[which(names(regressor_value)==regressor[ireg])]])
     }
   }
   mc_res <- parallel::mclapply(X = 1:nb_mc, mc.cores=1, FUN=function(mc_cur){

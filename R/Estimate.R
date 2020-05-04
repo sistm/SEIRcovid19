@@ -29,14 +29,16 @@ Estimate.OdeSystem <- function(ode, time,is_global=0,regressor_value)
   param_and_init<-c(ode$parameter,ode$InitState)
   param_and_init<-c(ode$parameter[ode$EstimationRegressor$param==0],ode$InitState[ode$EstimationRegressor$init==0])
   regressor<-paste(c(names(ode$InitState[ode$EstimationRegressor$init>0]),names(ode$parameter[ode$EstimationRegressor$param>0])),collapse=',')
+  regressor<-unlist(strsplit(regressor, ","))
   regressor_info<-list()
   if (length(regressor)>0){
     for (ireg in 1:length(regressor)){
-      regressor_info[[ireg]]<-list(name=regressor[[ireg]],
+      regressor_info[[ireg]]<-list(name=regressor[ireg],
                                    time=time,
-                                   value=regressor_value[[names(regressor_value)==regressor[[ireg]]]])
+                                   value=regressor_value[[which(names(regressor_value)==regressor[ireg])]])
     }
   }
+  
   result<-SolveThroughSimulx(ode,is_global,time,param_and_init,regressor_info)
   ode$solution<-result
   return(ode)

@@ -3,6 +3,7 @@ DESCRIPTION: FIT SEIRAH MODEL
 
 [LONGITUDINAL]
 INPUT:
+
 parameter = {initE,bbefore,boneweek,btwoweek,bthreeweek,bfourweek,Dq}
 regressor = {initI,initH,isolation,popsize,timesinceconf}
 
