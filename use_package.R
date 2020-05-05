@@ -145,11 +145,11 @@ myOde$nameproject<-nameproject
 # @Melanie : ATTENTION Cela ne fonctionne que pour pour resolution globale
 is_global<-1
 ModeFilename<-"model_estimation.txt"
-TimeSpecificEquation<-ModelStatBloc
 
 
+TimeDependantParameter<-c("transmission")
 
-ode_id<-ComputeEstimationAllId(myOde,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global)
+ode_id<-ComputeEstimationAllId(myOde,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global,TimeDependantParameter)
 ode_id[[1]]$solution
 nb_mc <- 100
 # Global =1 for IC
@@ -225,6 +225,8 @@ for (iobs in 1:length(ModelObservationBloc)){
   }
   ggsave(plot=p1, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/", map[[iobs]], ".jpg"), width=10, height=8)
 }
+
+# R0 plot
 
 
 

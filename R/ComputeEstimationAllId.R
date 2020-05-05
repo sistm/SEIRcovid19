@@ -1,4 +1,4 @@
-ComputeEstimationAllId<-function(ode,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global){
+ComputeEstimationAllId<-function(ode,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global,TimeDependantParameter){
   # Read individual parameter
   indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
   
@@ -43,7 +43,7 @@ ComputeEstimationAllId<-function(ode,ModeFilename,TimeSpecificEquation,SpecificI
     # Write monolix model for estimation
     ode_id[[index_id]]<-WriteEstimationModel(ode_id[[index_id]],ModeFilename,TimeSpecificEquation,ModelMathBloc,SpecificInitBloc)
     # Estimation for time value
-    ode_id[[index_id]]<-Estimate(ode_id[[index_id]], time,is_global,regressor_value)
+    ode_id[[index_id]]<-Estimate(ode_id[[index_id]], time,is_global,regressor_value,TimeDependantParameter)
   }
   return(ode_id)
 }

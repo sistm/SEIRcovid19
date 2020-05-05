@@ -1,20 +1,21 @@
-SolveThroughSimulx<-function(ode,is_global,time,param_and_init,regressor_info){
+SolveThroughSimulx<-function(ode,is_global,time,param_and_init,regressor_info,TimeDependantParameter=c()){
   number_param_exept_init<-length(ode$parameter[ode$EstimationRegressor$param==0])
 
   pk.model<-ode$ModelFileEstimation
   
   if (is_global==1){
     # mlxR format
-    C <- list(name=ode$ModelName, time=time)
+    C <- list(name=c(ode$ModelName,TimeDependantParameter), time=time)
     #solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init)
     solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init,regressor=regressor_info)
     #Output format of mlxR is : time obs_1,time obs_2 ... time obs_n
     result<-as.data.frame(solution)
-    result<-result[,c(1,seq(2,length(ode$ModelName)*2,by=2))]
-    colnames(result)<-c("time",ode$ModelName)
+    result<-result[,c(1,seq(2,(length(ode$ModelName)+length(TimeDependantParameter))*2,by=2))]
+    colnames(result)<-c("time",ode$ModelName,TimeDependantParameter)
   }else{
     #Initialisation of the solution
     C <- list(name=c(ode$ModelName), time=time[1:2])
+    ## Todo regressor, add parameter time dependant
     #Predict the estimation
     solution <- mlxR::simulx(model     = pk.model, output    = C,parameter = param_and_init)
     #Output format of mlxR is : time obs_1,time obs_2 ... time obs_n
