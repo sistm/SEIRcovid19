@@ -8,13 +8,13 @@
 #' @param id Index of actual id
 #'
 #' @export
-ComputeConfidenceInterval <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename)
+ComputeConfidenceInterval <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c())
 {
   UseMethod("ComputeConfidenceInterval",obj)
 }
 
 #' @export
-ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename)
+ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c())
 {
   print("No method implemented for this class")
   return(obj)
@@ -22,7 +22,7 @@ ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,nb_mc,is_global=1
 
 #' @describeIn ComputeConfidenceInterval Compute monte Carlo estimation for an object of class \code{OdeSystem}
 #' @export
-ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_global=1,timename){
+ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c()){
   optimize_param_name<-c(names(systemode$parameter[systemode$Variability$param>0]),names(systemode$InitState[systemode$Variability$init>0]))
   SdOptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
   names(SdOptimizeParam)<-optimize_param_name
@@ -74,10 +74,10 @@ ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_g
     for (j in 1:length(InitSpecific)){
       param_and_init[names(param_and_init)==names(InitSpecific[j])]<-InitSpecific[[j]]
     }
-    result<-SolveThroughSimulx(systemode,is_global,time,param_and_init,regressor_info)
+    result<-SolveThroughSimulx(systemode,is_global,time,param_and_init,regressor_info,TimeDependantParameter)
     return(result)
   }
   )
-  systemode<-SetConfidenceInverval(systemode,mc_res,time)
+  systemode<-SetConfidenceInverval(systemode,mc_res,time,TimeDependantParameter)
   return(systemode)
 }

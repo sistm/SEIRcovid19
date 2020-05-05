@@ -146,15 +146,23 @@ myOde$nameproject<-nameproject
 is_global<-1
 ModeFilename<-"model_estimation.txt"
 
-
-TimeDependantParameter<-c("transmission")
+# On rajoute ici l'équation du R0
+TimeSpecificEquation<-c(ModelStatBloc,"R0=Di*transmission/(A+I)*(alpha*A+Dq*I/(Di+Dq))")
+TimeDependantParameter<-c("transmission","R0")
+#TimeDependantParameter => Nom des paramètres temps-dépendant à récupérer lors de l'estimation
 
 ode_id<-ComputeEstimationAllId(myOde,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global,TimeDependantParameter)
 ode_id[[1]]$solution
 nb_mc <- 100
 # Global =1 for IC
 is_global<-1
-ode_id<-ComputeConfidenceIntervalAllId(ode_id,nb_mc,is_global)
+TimeDependantParameter<-c("R0")
+
+# Attention il est nécessaire que pour l'estimation des intervalles de confiance pour un parametre "temps-dépendant"
+# qu'il ait été au préalable estimer via "ComputeEstimationAllId" et son paramètre "TimeDependantParameter"
+devtools::load_all('.')
+
+ode_id<-ComputeConfidenceIntervalAllId(ode_id,nb_mc,is_global,TimeDependantParameter)
 
 
 
@@ -227,6 +235,59 @@ for (iobs in 1:length(ModelObservationBloc)){
 }
 
 # R0 plot
+
+R0_formula<-"Di*transmission/(A+I)*(alpha*A+Dq*I/(Di+Dq))"
+GetR0WithExp<-function(solution,parameter,timeparam,exp,name){
+  #State<-data.frame(matrix(ncol = 1, nrow = dim(solution)[1]))
+  with(as.list(c(solution,parameter,timeparam)),{
+    State<-data.frame((eval(parse(text=exp))))
+    names(State)<-name
+    return(State)
+  })
+}
+R0<-GetR0WithExp(ode_id[[id]]$solution,ode_id[[id]]$parameter,ode_id[[id]]$TimeDependantParameter,R0_formula,"R0")
+R0_id<-list()
+for (id in 1:length(ode_id)){
+  R0_sim<-GetR0WithExp(ode_id[[id]]$solution,ode_id[[id]]$parameter,ode_id[[id]]$TimeDependantParameter,R0_formula,"R0")
+  R0_sim<-cbind(R0_sim,ode_id[[id]]$solution$time)
+  colnames(R0_sim)[dim(R0_sim)[2]]<-timename
+  R0_sim<-cbind(R0_sim,rep(indivParams$id[id],dim(R0_sim)[[1]]))
+  colnames(R0_sim)[dim(R0_sim)[2]]<-"id"
+  R0_sim<-cbind(R0_sim,ode_id[[id]]$ParamICmin[,"R0"])
+  colnames(R0_sim)[dim(R0_sim)[2]]<-"R0_min"
+  R0_sim<-cbind(R0_sim,ode_id[[id]]$ParamICmax[,"R0"])
+  colnames(R0_sim)[dim(R0_sim)[2]]<-"R0_max"
+  Observation<-ode_id[[id]]$ObsData[which(ode_id[[id]]$ObsData[,ObsIdName]==iobs),]
+  R0_id[[id]] <-merge(Observation, R0_sim, by = timename)
+  R0_id[[id]]$popsize <- ode_id[[id]]$parameter[names(ode_id[[id]]$parameter)=='popsize']
+  
+}
+R0DataFrame <- do.call(rbind.data.frame, R0_id)
+R0DataFrame$date<-as.Date(R0DataFrame$date)
+all_date<-unique(R0DataFrame$date)
+for (idate in 1:length(all_date)){
+  data_per_date<-R0DataFrame[which(R0DataFrame$date==all_date[idate]),]
+  R0DataFrame[which(R0DataFrame$date==all_date[idate]),"R0_national"]<-sum(data_per_date$R0*data_per_date$popsize)/sum(data_per_date$popsize)
+}
+
+p<-ggplot(R0DataFrame, aes_(x=as.name("date"),y=as.name("R0"),group=as.name("id"))) +
+  geom_line(aes(linetype="Region-wise value\n(95% CI)"),color="red3") +
+  geom_line(aes_(y=as.name("R0_national"),linetype="France\nnational average"),color="black")+
+  scale_linetype_manual("", values = c(2, 1)) +
+  geom_ribbon(aes_(ymin = as.name("R0_min"), ymax=as.name("R0_max"),alpha="Region-wise value\n(95% CI)"), fill="red3")+
+  facet_grid(vars(id), scales = "free_y") + facet_wrap(~ id, ncol=3)+
+  geom_hline(yintercept = 1)+
+  scale_alpha_manual(values=c(0.3)) +
+  theme_bw() +
+  theme(strip.background = element_rect(fill="white")) +
+  ylab(expression(paste("Effective Reproductive Number ", R[e](t, xi[i])))) +
+  guides(linetype=guide_legend(title=""),alpha=guide_legend(title=""))+
+  theme(legend.position = "bottom") +
+  theme(axis.text.x = element_text(angle=45, hjust=1)) +
+  theme(axis.text.y = element_text(size=8)) +
+  theme(strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=8))
+p
 
 
 

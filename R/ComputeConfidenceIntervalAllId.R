@@ -1,4 +1,4 @@
-ComputeConfidenceIntervalAllId<-function(ode_list,nb_mc,is_global){
+ComputeConfidenceIntervalAllId<-function(ode_list,nb_mc,is_global,TimeDependantParameter=c()){
   # Get the optimisation result
   
   indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_list[[1]]$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
@@ -8,7 +8,7 @@ ComputeConfidenceIntervalAllId<-function(ode_list,nb_mc,is_global){
   timename<-InputNames[ode_list[[1]]$DataInfo$HeaderType=="time"]
   for (index_id in 1:length(indivParams$id)){
     # Compute CI for each ID and set result
-    ode_list[[index_id]]<-ComputeConfidenceInterval(ode_list[[index_id]],indivParams,popParams,index_id,nb_mc,is_global,timename)
+    ode_list[[index_id]]<-ComputeConfidenceInterval(ode_list[[index_id]],indivParams,popParams,index_id,nb_mc,is_global,timename,TimeDependantParameter)
   }
   return (ode_list)
 }
