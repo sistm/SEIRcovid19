@@ -1,3 +1,4 @@
+#' @export
 SolveThroughSimulx<-function(ode,is_global,time,param_and_init,regressor_info,TimeDependantParameter=c()){
   number_param_exept_init<-length(ode$parameter[ode$EstimationRegressor$param==0])
 

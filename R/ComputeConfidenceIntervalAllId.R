@@ -1,3 +1,4 @@
+#' @export
 ComputeConfidenceIntervalAllId<-function(ode_list,nb_mc,is_global,TimeDependantParameter=c()){
   # Get the optimisation result
   

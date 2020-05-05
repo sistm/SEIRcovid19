@@ -126,17 +126,15 @@ ModelMathBloc<-c("ddt_S = -transmission*S*(I+alpha*A)/popsize",
 ModelObservationBloc<-c("Isim=r*E/De",
                         "Hsim=I/Dq")
 myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMathBloc,ModelObservationBloc)
-
 ## Launch monolix
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 nameproject<-"Model4Week"
 myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
-
-
-
 myOde$nameproject<-nameproject
 
+
+# Not used any more
 #EstiomationRegressor<-list(isolation=1,timesinceconf=1)
 #myOde<-SetParamEstimationRegressor(myOde, EstiomationRegressor)
 #myOde$EstimationRegressor$param
@@ -160,81 +158,22 @@ TimeDependantParameter<-c("R0")
 
 # Attention il est nécessaire que pour l'estimation des intervalles de confiance pour un parametre "temps-dépendant"
 # qu'il ait été au préalable estimer via "ComputeEstimationAllId" et son paramètre "TimeDependantParameter"
-devtools::load_all('.')
-
 ode_id<-ComputeConfidenceIntervalAllId(ode_id,nb_mc,is_global,TimeDependantParameter)
 
-
+# Plot fitted value over observation
 
 ## For plot over observation data
 
 ModelObservationBloc<-c("Isim=r*E/De",
                         "Hsim=I/Dq")
-ObservationResult <- vector(mode = "list", length = length(ModelObservationBloc))
 
-CutObservation<-strsplit(ModelObservationBloc,'=')
-data<-read.table(ode_id[[1]]$DataInfo$File,sep=ode_id[[1]]$DataInfo$Sep,header=TRUE)
-InputNames<-colnames(data)
-timename<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="time"]
-idname<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="id"]
-ObsIdName<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="obsid"]
-ObservationName<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="observation"]
-indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_id[[1]]$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
-
-GetStatWithExp<-function(solution,parameter,exp,name){
-  #State<-data.frame(matrix(ncol = 1, nrow = dim(solution)[1]))
-  with(as.list(c(solution,parameter)),{
-    State<-data.frame((eval(parse(text=exp))))
-    names(State)<-name
-    return(State)
-  })
-}
-iobs<-1
-name_variable<-list()
-for (iobs in 1:length(ModelObservationBloc)){
-  for (id in 1:length(ode_id)){
-    name_variable[iobs]<-CutObservation[[iobs]][1]
-    Obssim<-GetStatWithExp(ode_id[[id]]$solution,ode_id[[id]]$parameter,ModelObservationBloc[iobs],name_variable[iobs])
-    Obssim<-cbind(Obssim,GetStatWithExp(ode_id[[id]]$ICmin,ode_id[[id]]$parameter,ModelObservationBloc[iobs],paste(name_variable[iobs],"_min",sep="")))
-    Obssim<-cbind(Obssim,GetStatWithExp(ode_id[[id]]$ICmax,ode_id[[id]]$parameter,ModelObservationBloc[iobs],paste(name_variable[iobs],"_max",sep="")))
-    Obssim<-cbind(Obssim,ode_id[[id]]$solution$time)
-    colnames(Obssim)[dim(Obssim)[2]]<-timename
-    Obssim<-cbind(Obssim,rep(indivParams$id[id],dim(Obssim)[[1]]))
-    colnames(Obssim)[dim(Obssim)[2]]<-"id"
-    Observation<-ode_id[[id]]$ObsData[which(ode_id[[id]]$ObsData[,ObsIdName]==iobs),]
-    ObservationResult[[iobs]][[id]] <-merge(Observation, Obssim, by = timename)
-    ode_id[[id]]$ObsSimu[[iobs]]<-ObservationResult[[iobs]][[id]]
-  }
-  ObservationDataFrame <- do.call(rbind.data.frame, ObservationResult[[iobs]])
-  ObservationDataFrame$date<-as.Date(ObservationDataFrame$date)
-  p1 <- ggplot(ObservationDataFrame, aes_(x=as.name("date"), y=as.name(ObservationName), group=as.name("id"))) +
-    geom_point(aes(color = "Observed"))+
-    scale_shape_manual(values=c(NA, 16)) +
-    scale_color_manual(values="black") +
-    geom_line(aes_(x=as.name("date"), y=as.name(name_variable[[iobs]]),linetype="Estimate"), color="red3") +
-    geom_ribbon(aes_(ymin = as.name(paste(name_variable[[iobs]],"_min",sep="")), ymax=as.name(paste(name_variable[[iobs]],"_max",sep="")),alpha="95 %CI"), fill="red3")+
-    scale_alpha_manual(values=c(0.3)) +
-    facet_grid(vars(id), scales = "free_y") + facet_wrap(~ id, nrow=2)+
-    guides(color=guide_legend(title=""), linetype=guide_legend(title=""),
-           alpha=guide_legend(title=""))+
-    theme(legend.position = "bottom") +
-    ylab(map[[iobs]]) +
-    xlab("Day") +
-    theme(axis.text.x = element_text(angle=45, hjust=1),
-          axis.title.y = element_text(hjust=1.4)) +
-    theme(strip.background = element_rect(fill="white"),
-          strip.text = element_text(size=8))
-  p1
-  if (dir.exists(paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/"))){
-    
-  }
-  else{
-    dir.create(paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/"))
-  }
-  ggsave(plot=p1, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/", map[[iobs]], ".jpg"), width=10, height=8)
-}
+# Data used for plot are store in ""ObsSimu" attribute
+devtools::load_all('.')
+is_normalize<-1
+ode_id<-PlotSolutionOverObservation(ode_id,ModelObservationBloc,is_normalize)
 
 # R0 plot
+
 
 R0_formula<-"Di*transmission/(A+I)*(alpha*A+Dq*I/(Di+Dq))"
 GetR0WithExp<-function(solution,parameter,timeparam,exp,name){
