@@ -5,13 +5,13 @@
 #' @param TimeSpecificEquation List of string defining time-dependant equation
 #' @param ModelMathChunck List of string defining the mathematical system
 #' @export
-WriteEstimationModel <- function(obj,ModeFilename, TimeSpecificEquation, ModelMathChunck)
+WriteEstimationModel <- function(obj,ModeFilename, TimeSpecificEquation, ModelMathChunck,SpecificInitChunck)
 {
   UseMethod("WriteEstimationModel",obj)
 }
 
 #' @export
-WriteEstimationModel.default <- function(obj,  ModeFilename, TimeSpecificEquation, ModelMathChunck)
+WriteEstimationModel.default <- function(obj,  ModeFilename, TimeSpecificEquation, ModelMathChunck,SpecificInitChunck)
 {
   print("No method implemented for this class")
   return(obj)
@@ -19,7 +19,7 @@ WriteEstimationModel.default <- function(obj,  ModeFilename, TimeSpecificEquatio
 
 #' @describeIn WriteEstimationModel Write estimation model for an object of class an object of class \code{OdeSystem}
 #' @export
-WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquation, ModelMathChunck)
+WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquation, ModelMathChunck, SpecificInitChunck)
 {
   WriteEmptyLine<-function(ModelFile){
     write("\n",file=ModelFile,append=TRUE)
@@ -35,7 +35,7 @@ WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquati
   write(input_line, file=ModelFile,append=TRUE)
 
   regressor_line<-""
-  regressor<-(paste(c(names(ode$InitState[ode$EstimationRegressor$init>0]),names(ode$parameter[ode$EstimationRegressor$param>0])),collapse=','))
+  regressor<-(paste(c(names(ode$InitState[ode$IsRegressor$init>0]),names(ode$parameter[ode$IsRegressor$param>0])),collapse=','))
   regressor<-unlist(strsplit(regressor, ","))
   if (length(regressor)>0){
     for (ireg in 1:length(regressor)){
@@ -46,16 +46,21 @@ WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquati
 
   # Eqaution
   write(paste("\nEQUATION:\n","odeType = stiff\n",sep=""), file=ModelFile,append=TRUE)
+  
   # Etats initiaux
   init_line<-""
-  # Regressor
-  init_name<-names(ode$InitState)
-  for (i in 1:length(init_name)){
-    variable_name<-substr(init_name[i], nchar(init_name[i]), nchar(init_name[i]))
-    init_line<-paste(init_line,variable_name,'_0=',names(ode$InitState[names(ode$InitState)==init_name[i]]),'\n',sep='')
+  # Non Specific
+  init_regressor_optim<-names(ode$InitState[(ode$IsSpecificInit==0 ) ])
+  for (i in 1:length(init_regressor_optim)){
+    variable_name<-substr(init_regressor_optim[i], nchar(init_regressor_optim[i]), nchar(init_regressor_optim[i]))
+    init_line<-paste(init_line,variable_name,'_0=',names(ode$InitState[names(ode$InitState)==init_regressor_optim[i]]),'\n',sep='')
   }
   write(init_line,file=ModelFile,append=TRUE)
-
+  
+  # Init specific Chunk
+  
+  write(paste(SpecificInitChunck,collapse = "\n"),file=ModelFile,append=TRUE)
+  WriteEmptyLine(ModelFile)
   # Time dependant equation
   write(paste(TimeSpecificEquation,collapse = "\n"),file=ModelFile,append=TRUE)
   WriteEmptyLine(ModelFile)

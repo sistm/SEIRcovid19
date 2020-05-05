@@ -17,7 +17,7 @@ ComputeEstimationAllId<-function(ode,ModeFilename,TimeSpecificEquation,SpecificI
   RegressorNames<-GetRegressorName(ode)
   
   
-  EstimationReg<-c(names(ode$param[ode$EstimationRegressor$param>0]),names(ode$InitState[ode$EstimationRegressor$init>0]))
+  EstimationReg<-c(names(ode$param[ode$IsRegressor$param>0]),names(ode$InitState[ode$IsRegressor$init>0]))
   
   # Loop over id
   for (index_id in 1:length(indivParams$id)){
@@ -41,7 +41,7 @@ ComputeEstimationAllId<-function(ode,ModeFilename,TimeSpecificEquation,SpecificI
     names(regressor_value)<-EstimationReg
     
     # Write monolix model for estimation
-    ode_id[[index_id]]<-WriteEstimationModel(ode_id[[index_id]],ModeFilename,TimeSpecificEquation,ModelMathBloc)
+    ode_id[[index_id]]<-WriteEstimationModel(ode_id[[index_id]],ModeFilename,TimeSpecificEquation,ModelMathBloc,SpecificInitBloc)
     # Estimation for time value
     ode_id[[index_id]]<-Estimate(ode_id[[index_id]], time,is_global,regressor_value)
   }

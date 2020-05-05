@@ -150,7 +150,7 @@ TimeSpecificEquation<-ModelStatBloc
 
 
 ode_id<-ComputeEstimationAllId(myOde,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global)
-
+ode_id[[1]]$solution
 nb_mc <- 100
 # Global =1 for IC
 is_global<-1
