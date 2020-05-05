@@ -2,20 +2,19 @@
 #'
 #' @param obj Object to set
 #' @param nb_mc Number of monte carlo simulation
-#' @param time time vector of the simulation
 #' @param is_global integer for global estimation of time step
 #' @param indiv Individual parameter of monolix optimisation
 #' @param pop Population parameter of monolix optimisation
 #' @param id Index of actual id
 #'
 #' @export
-ComputeConfidenceInterval <- function(obj,indiv,pop,id,time,nb_mc,is_global=1,regressor_value)
+ComputeConfidenceInterval <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename)
 {
   UseMethod("ComputeConfidenceInterval",obj)
 }
 
 #' @export
-ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,time,nb_mc,is_global=1,regressor_value)
+ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename)
 {
   print("No method implemented for this class")
   return(obj)
@@ -23,7 +22,7 @@ ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,time,nb_mc,is_glo
 
 #' @describeIn ComputeConfidenceInterval Compute monte Carlo estimation for an object of class \code{OdeSystem}
 #' @export
-ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,time,nb_mc,is_global=1,regressor_value){
+ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_global=1,timename){
   optimize_param_name<-c(names(systemode$parameter[systemode$Variability$param>0]),names(systemode$InitState[systemode$Variability$init>0]))
   SdOptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
   names(SdOptimizeParam)<-optimize_param_name
@@ -39,16 +38,28 @@ ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,time,nb_mc
       SdOptimizeParam[j]<-pop[optimize_pop_name,"stochasticApproximation"]
     }
   }
-  regressor<-paste(c(names(systemode$InitState[systemode$EstimationRegressor$init>0]),names(systemode$parameter[systemode$EstimationRegressor$param>0])),collapse=',')
-  regressor<-unlist(strsplit(regressor, ","))
+  # Prepare Regressor for estimation
+  EstimationReg<-c(names(systemode$param[systemode$EstimationRegressor$param>0]),names(systemode$InitState[systemode$EstimationRegressor$init>0]))
+  time<-seq(min(systemode$ObsData[,timename]),max(systemode$ObsData[,timename]),1)
+  RegressorNames<-GetRegressorName(systemode)
+  regressor_value<-list()
   regressor_info<-list()
-  if (length(regressor)>0){
-    for (ireg in 1:length(regressor)){
-      regressor_info[[ireg]]<-list(name=regressor[[ireg]],
+  if (length(EstimationReg)>0){
+    for (ireg in 1:length(EstimationReg)){
+      value<-rep(0,length(time))
+      for (itime in 1:length(time)){
+        value[itime] <- systemode$ObsData[which(systemode$ObsData[,timename]==time[itime]),EstimationReg[[ireg]]][1]
+      }
+      regressor_value[[ireg]]<-value
+      regressor_info[[ireg]]<-list(name=EstimationReg[[ireg]],
                                    time=time,
-                                   value=regressor_value[[which(names(regressor_value)==regressor[ireg])]])
+                                   value=regressor_value[[ireg]])
     }
-  }
+    names(regressor_value)<-EstimationReg
+  }  
+  
+  
+  
   mc_res <- parallel::mclapply(X = 1:nb_mc, mc.cores=1, FUN=function(mc_cur){
     param_and_init<-c(systemode$parameter,systemode$InitState)
     param_and_init<-c(systemode$parameter[systemode$EstimationRegressor$param==0],systemode$InitState[systemode$EstimationRegressor$init==0])

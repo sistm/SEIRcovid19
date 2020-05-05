@@ -2,20 +2,20 @@ devtools::load_all('.')
 Sys.setlocale("LC_NUMERIC","C")
 
 # Define all paremeter for Ode system with initial value (0), including regressor parameter
-param<-c(b=0,
-         ascertainement=0,
+param<-c(bbefore=2,
+         boneweek=2,
+         btwoweek=2,
+         bthreeweek=2,
+         bfourweek=2,
+         r=10000,
          alpha=0.55,
-         De=5.1,
+         De=5.2,
          Di=2.3,
-         Dq=0,
+         Dq=2,
          Dh=30,
-         popsize=0,
-         tconf=15,
-         lengthconf=1000,
-         dailyMove=0,
-         isolation=0,
-         beta1=0,
-         beta3=0)# Regressor parameter
+         popsize=12278210,
+         isolation=-100,
+         timesinceconf=-100)
 # Define all init state of the ODE systme with value, it should be initVar
 init  <- c(initS=0, 
            initE=0,
@@ -37,7 +37,11 @@ myOde$IsSpecificInit
 # Variability => 0 = fixed, 1 mobile sans effet aléatoire, 2 mobile avec effet aléatoire (ajout d'un beta)
 ## Variability has to be defined for Parameter and InitState
 #Param
-ParamVar<-list(b=2,Dq=2,beta1=1)
+ParamVar<-list(bbefore=2,
+               boneweek=2,
+               btwoweek=2,
+               bthreeweek=2,
+               bfourweek=2,Dq=1)
 myOde<-SetParamVariability(myOde,ParamVar)
 # Param
 InitVar<-list(initE=2)
@@ -45,7 +49,7 @@ myOde<-SetInitVariability(myOde,InitVar)
 # Distribution of the parameter, default is logNormal
 # Distribution as to be define for Parameter and IniState
 #Param
-Paramdist<-list(beta1="normal")
+Paramdist<-list(bbefore="logNormal")
 myOde<-SetParamDistribution(myOde,Paramdist)
 # Init (not used in actual example)
 #Initdist<-list(initS="logNormal")
@@ -53,7 +57,7 @@ myOde<-SetParamDistribution(myOde,Paramdist)
 # Regressor => 1 is regressor , it mean that this value is available in the data input
 # Regressor as to be defined for parameter and init
 # Param
-ParamRegressor<-list(ascertainement=1,popsize=1,isolation=1)
+ParamRegressor<-list(r=1,popsize=1,isolation=1,timesinceconf=1)
 myOde<-SetParamIsRegressor(myOde,ParamRegressor)
 myOde$IsRegressor$param
 # Init
@@ -62,10 +66,10 @@ myOde<-SetInitIsRegressor(myOde,InitRegressor)
 myOde$IsRegressor$init
 # Data input info
 #path<-"./MonolixFile/data_monolix_20200403.txt"
-path<-"./MonolixFile/data_monolix_20200325.txt"
+path<-"./MonolixFile/data_monolix_20200427.txt"
 sep<-"\t"
 #header<-c("ignore","ignore","time","regressor","regressor","obsid","observation","regressor","regressor","regressor","ignore","ignore","ignore","id")
-header<-c("ignore","ignore","time","regressor","regressor","obsid","observation","regressor","regressor","regressor","id","ignore","ignore","ignore")
+header<-c("ignore","ignore","time","regressor","regressor","obsid","observation","regressor","regressor","regressor","id","regressor")
 
 myOde<-SetDataInput(myOde,path,header,sep)
 myOde$DataInfo
@@ -85,53 +89,78 @@ myOde$DataInfo
 # - The observation model
 ## TODO keep this info for the estimation (specific,stat,math,obs)
 ModelFile<-paste('./MonolixFile/','mlxmodel',".txt",sep="")
-SpecificInitBloc<-c("A_0=I_0*(1-ascertainement)/ascertainement",
+SpecificInitBloc<-c("A_0=I_0*(1-r)/r",
                     "S_0=popsize-E_0-I_0-R_0-A_0-H_0")
-ModelStatBloc<-c("transmission=b*exp(beta1*isolation)")
-ModelMathBloc<-c("ddt_S = -transmission*S*(I+alpha*A)/popsize+dailyMove-dailyMove*S/(popsize-I-H)",
-                 "ddt_E = transmission*S*(I+alpha*A)/popsize-E/De-dailyMove*E/(popsize-I-H)",
-                 "ddt_I = ascertainement*E/De-I/Dq-I/Di",
-                 "ddt_R = (I+A)/Di+H/Dh-dailyMove*R/(popsize-I-H)",
-                 "ddt_A = (1-ascertainement)*E/De-A/Di-dailyMove*A/(popsize-I-H)",
+ModelStatBloc<-c("if (timesinceconf<7)",
+                 "before = 1",
+                 "else",
+                 "before = 0",
+                 "end",
+                 "if (timesinceconf>=7) & (timesinceconf<14)",
+                 "oneweek = 1",
+                 "else",
+                 "oneweek = 0",
+                 "end",
+                 "if (timesinceconf>=14) & (timesinceconf<21)",
+                 "twoweek = 1",
+                 "else",
+                 "twoweek = 0",
+                 "end",
+                 "if (timesinceconf>=21) & (timesinceconf<28)",
+                 "threeweek = 1",
+                 "else",
+                 "threeweek = 0",
+                 "end",
+                 "if (timesinceconf>=28) ",
+                 "fourweek = 1",
+                 "else",
+                 "fourweek = 0",
+                 "end",
+                 "transmission=bbefore*before+boneweek*oneweek+btwoweek*twoweek+bthreeweek*threeweek+bfourweek*fourweek")
+ModelMathBloc<-c("ddt_S = -transmission*S*(I+alpha*A)/popsize",
+                 "ddt_E = transmission*S*(I+alpha*A)/popsize-E/De",
+                 "ddt_I = r*E/De-I/Dq-I/Di",
+                 "ddt_R = (I+A)/Di+H/Dh",
+                 "ddt_A = (1-r)*E/De-A/Di",
                  "ddt_H = I/Dq-H/Dh")
-ModelObservationBloc<-c("Isim=ascertainement*E/De",
+ModelObservationBloc<-c("Isim=r*E/De",
                         "Hsim=I/Dq")
 myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMathBloc,ModelObservationBloc)
 
 ## Launch monolix
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
-nameproject<-"LaunchTest"
+nameproject<-"Model4Week"
 myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
+
+
 
 myOde$nameproject<-nameproject
 
-EstiomationRegressor<-list(isolation=1)
+EstiomationRegressor<-list(isolation=1,timesinceconf=1)
 myOde<-SetParamEstimationRegressor(myOde, EstiomationRegressor)
 myOde$EstimationRegressor$param
 
 
 # @Melanie : ATTENTION Cela ne fonctionne que pour pour resolution globale
-time<-seq(0,100, by=1)
 is_global<-1
 ModeFilename<-"model_estimation.txt"
 TimeSpecificEquation<-ModelStatBloc
-value<-rep(0,length(time))
-value[16:length(time)]<-1
-regressor_value<-list(isolation=value)
 
-ode_id<-ComputeEstimationAllId(myOde,time,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global,regressor_value)
-ode_id[[12]]$solution
-# Confidence interval
-# Number of monte carlo simulation
+
+
+ode_id<-ComputeEstimationAllId(myOde,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global)
+
 nb_mc <- 100
 # Global =1 for IC
 is_global<-1
-ode_id<-ComputeConfidenceIntervalAllId(ode_id,time,nb_mc,is_global,regressor_value)
+ode_id<-ComputeConfidenceIntervalAllId(ode_id,nb_mc,is_global)
+
+
 
 ## For plot
 
-ModelObservationBloc<-c("Isim=ascertainement*E/De",
+ModelObservationBloc<-c("Isim=r*E/De",
                         "Hsim=I/Dq")
 ObservationResult <- vector(mode = "list", length = length(ModelObservationBloc))
 
@@ -188,8 +217,15 @@ for (iobs in 1:length(ModelObservationBloc)){
     theme(strip.background = element_rect(fill="white"),
           strip.text = element_text(size=8))
   p1
+  if (dir.exists(paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/"))){
+    
+  }
+  else{
+    dir.create(paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/"))
+  }
   ggsave(plot=p1, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_id[[1]]$nameproject,"/graphics/", map[[iobs]], ".jpg"), width=10, height=8)
 }
+
 
 
 solutions_list <- list()

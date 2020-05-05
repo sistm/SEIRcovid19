@@ -1,4 +1,4 @@
-ComputeEstimationAllId<-function(ode,time,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global,regressor_value){
+ComputeEstimationAllId<-function(ode,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global){
   # Read individual parameter
   indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
   
@@ -14,16 +14,36 @@ ComputeEstimationAllId<-function(ode,time,ModeFilename,TimeSpecificEquation,Spec
   idname<-InputNames[ode$DataInfo$HeaderType=="id"]
   ObsIdName<-InputNames[ode$DataInfo$HeaderType=="obsid"]
   ObservationName<-InputNames[ode$DataInfo$HeaderType=="observation"]
+  RegressorNames<-GetRegressorName(ode)
+  
+  
+  EstimationReg<-c(names(ode$param[ode$EstimationRegressor$param>0]),names(ode$InitState[ode$EstimationRegressor$init>0]))
+  
   # Loop over id
   for (index_id in 1:length(indivParams$id)){
     # Update the parameter and inist state thanks monolix optimisation
     ode_id[[index_id]]<-UpdateOdeSystem(ode_id[[index_id]],index_id,SpecificInitBloc)
+    
+    # Store the observation data
+  
+    ode_id[[index_id]]$ObsData<-data[which(data[,idname]==indivParams$id[index_id]),c(timename,ObservationName,ObsIdName,"date",RegressorNames)]
+    
+    # Get the regressor
+    time<-seq(min(ode_id[[index_id]]$ObsData[,timename]),max(ode_id[[index_id]]$ObsData[,timename]),1)
+    regressor_value<-list()
+    for (ireg in 1:length(EstimationReg)){
+      value<-rep(0,length(time))
+      for (itime in 1:length(time)){
+        value[itime] <- ode_id[[index_id]]$ObsData[which(ode_id[[index_id]]$ObsData[,timename]==time[itime]),EstimationReg[[ireg]]][1]
+      }
+      regressor_value[[ireg]]<-value
+    }
+    names(regressor_value)<-EstimationReg
+    
     # Write monolix model for estimation
     ode_id[[index_id]]<-WriteEstimationModel(ode_id[[index_id]],ModeFilename,TimeSpecificEquation,ModelMathBloc)
     # Estimation for time value
     ode_id[[index_id]]<-Estimate(ode_id[[index_id]], time,is_global,regressor_value)
-    # Store the observation data
-    ode_id[[index_id]]$ObsData<-data[which(data[,idname]==indivParams$id[index_id]),c(timename,ObservationName,ObsIdName,"date")]
   }
   return(ode_id)
 }
