@@ -39,7 +39,8 @@ ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_g
     }
   }
   # Prepare Regressor for estimation
-  EstimationReg<-c(names(systemode$param[systemode$EstimationRegressor$param>0]),names(systemode$InitState[systemode$EstimationRegressor$init>0]))
+  EstimationReg<-c(names(systemode$param[systemode$IsRegressor$param>0]),names(systemode$InitState[systemode$IsRegressor$init>0]))
+  
   time<-seq(min(systemode$ObsData[,timename]),max(systemode$ObsData[,timename]),1)
   RegressorNames<-GetRegressorName(systemode)
   regressor_value<-list()

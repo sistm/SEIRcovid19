@@ -137,9 +137,9 @@ myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
 
 myOde$nameproject<-nameproject
 
-EstiomationRegressor<-list(isolation=1,timesinceconf=1)
-myOde<-SetParamEstimationRegressor(myOde, EstiomationRegressor)
-myOde$EstimationRegressor$param
+#EstiomationRegressor<-list(isolation=1,timesinceconf=1)
+#myOde<-SetParamEstimationRegressor(myOde, EstiomationRegressor)
+#myOde$EstimationRegressor$param
 
 
 # @Melanie : ATTENTION Cela ne fonctionne que pour pour resolution globale
@@ -158,7 +158,7 @@ ode_id<-ComputeConfidenceIntervalAllId(ode_id,nb_mc,is_global)
 
 
 
-## For plot
+## For plot over observation data
 
 ModelObservationBloc<-c("Isim=r*E/De",
                         "Hsim=I/Dq")
@@ -228,6 +228,8 @@ for (iobs in 1:length(ModelObservationBloc)){
 
 
 
+
+# Trajectorie Plot
 solutions_list <- list()
 solutionmin<-list()
 solutionmax<-list()
