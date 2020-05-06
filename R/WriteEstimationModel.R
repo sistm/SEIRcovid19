@@ -46,7 +46,6 @@ WriteEstimationModel.OdeSystem <- function(ode, ModeFilename, TimeSpecificEquati
 
   # Eqaution
   write(paste("\nEQUATION:\n","odeType = stiff\n",sep=""), file=ModelFile,append=TRUE)
-  
   # Etats initiaux
   init_line<-""
   # Non Specific

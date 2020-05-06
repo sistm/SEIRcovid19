@@ -141,7 +141,7 @@ myOde$nameproject<-nameproject
 
 
 # @Melanie : ATTENTION Cela ne fonctionne que pour pour resolution globale
-is_global<-1
+is_global<-0
 ModeFilename<-"model_estimation.txt"
 
 # On rajoute ici l'équation du R0
@@ -149,7 +149,11 @@ TimeSpecificEquation<-c(ModelStatBloc,"R0=Di*transmission/(A+I)*(alpha*A+Dq*I/(D
 TimeDependantParameter<-c("transmission","R0")
 #TimeDependantParameter => Nom des paramètres temps-dépendant à récupérer lors de l'estimation
 
-ode_id<-ComputeEstimationAllId(myOde,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,is_global,TimeDependantParameter)
+ode_id<-ComputeEstimationAllId(myOde,ModeFilename,TimeSpecificEquation,SpecificInitBloc,ModelMathBloc,1,TimeDependantParameter)
+ode_id[[1]]$solution
+
+
+
 nb_mc <- 100
 # Global =1 for IC
 is_global<-1
