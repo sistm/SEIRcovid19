@@ -24,8 +24,8 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
   lixoftConnectors::initializeLixoftConnectors(software="monolix")
 
   # Function to set Distribution and Parameter
-  mlxProject.setIndividualParameterDistribution <- function(a) {
-    eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterDistribution(',a,'= "normal")' )))
+  mlxProject.setIndividualParameterDistribution <- function(a,b) {
+    eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterDistribution(',a,'= "',b,'")' )))
   }
   mlxProject.setIndividualParameterVariability <- function(a) {
     eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterVariability(',a,'= FALSE)' )))
@@ -45,11 +45,19 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
       mlxProject.setIndividualParameterVariability(parameter_with_no_random_effect[i])
     }
   }
-  parameter_with_no_normal_dist<-(c(names(ode$parameter[ode$Distribution$param=="normal"]),names(ode$InitState[ode$Distribution$init=="normal"])))
-  if (length(parameter_with_no_normal_dist)>0){
-    for (i in 1:length(parameter_with_no_normal_dist)){
+  #parameter_with_no_normal_dist<-(c(names(ode$parameter[ode$Distribution$param=="normal"]),names(ode$InitState[ode$Distribution$init=="normal"])))
+  #if (length(parameter_with_no_normal_dist)>0){
+  #  for (i in 1:length(parameter_with_no_normal_dist)){
       #mlxProject.setIndividualParameterDistribution(var_name)
-      mlxProject.setIndividualParameterDistribution(parameter_with_no_normal_dist[i])
+  #    mlxProject.setIndividualParameterDistribution(parameter_with_no_normal_dist[i])
+  #  }
+  #}
+  parameter_with_no_lognormal_dist<-(c(names(ode$parameter[ode$Distribution$param!="logNormal"]),names(ode$InitState[ode$Distribution$init!="logNormal"])))
+  if (length(parameter_with_no_lognormal_dist)>0){
+    dist<-(c(ode$Distribution$param[ode$Distribution$param!="logNormal"],(ode$Distribution$init[ode$Distribution$init!="logNormal"])))
+    for (i in 1:length(parameter_with_no_lognormal_dist)){
+      #mlxProject.setIndividualParameterDistribution(var_name)
+      mlxProject.setIndividualParameterDistribution(parameter_with_no_lognormal_dist[i],dist[i])
     }
   }
   # Set all task to True (default for us)
