@@ -45,6 +45,14 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
                                            mapping = Mapping))
   # Set initial value of the optimizable parameter
   # first take the value of the system
+  parameter_with_normal_dist<-(c(names(ode$parameter[ode$Distribution$param=="normal"]),names(ode$InitState[ode$Distribution$ini=="normal"])))
+  if (length(parameter_with_normal_dist)>0){
+    dist<-(c(ode$Distribution$param[ode$Distribution$param=="normal"],(ode$Distribution$init[ode$Distribution$init=="normal"])))
+    for (i in 1:length(parameter_with_normal_dist)){
+      #mlxProject.setIndividualParameterDistribution(var_name)
+      mlxProject.setIndividualParameterDistribution(parameter_with_normal_dist[i],dist[i])
+    }
+  }
   optimizable_param<-c(names(ode$InitState[ode$Variability$init>0]),names(ode$parameter[ode$Variability$param>0]))
   for (i in 1:length(optimizable_param)){
     init_value<-c(ode$InitState[names(ode$InitState)==optimizable_param[i]],ode$parameter[names(ode$parameter)==optimizable_param[i]])
@@ -55,6 +63,14 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
     PopName<-names(PopInitValue)
     for (i in 1:length(PopInitValue)){
       mlxProject.setPopulationParameterInitValue(PopName[[i]],PopInitValue[[i]])
+    }
+  }
+  parameter_with_logitnormal_dist<-(c(names(ode$parameter[ode$Distribution$param=="logitNormal"]),names(ode$InitState[ode$Distribution$ini=="logitNormal"])))
+  if (length(parameter_with_logitnormal_dist)>0){
+    dist<-(c(ode$Distribution$param[ode$Distribution$param=="logitNormal"],(ode$Distribution$init[ode$Distribution$init=="logitNormal"])))
+    for (i in 1:length(parameter_with_logitnormal_dist)){
+      #mlxProject.setIndividualParameterDistribution(var_name)
+      mlxProject.setIndividualParameterDistribution(parameter_with_logitnormal_dist[i],dist[i])
     }
   }
   # Set the prior, mean, std, and method
@@ -72,14 +88,6 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
       mlxProject.setIndividualParameterVariability(parameter_with_no_random_effect[i])
     }
   }
-  parameter_with_no_lognormal_dist<-(c(names(ode$parameter[ode$Distribution$param!="logNormal"]),names(ode$InitState[ode$Distribution$init!="logNormal"])))
-  if (length(parameter_with_no_lognormal_dist)>0){
-    dist<-(c(ode$Distribution$param[ode$Distribution$param!="logNormal"],(ode$Distribution$init[ode$Distribution$init!="logNormal"])))
-    for (i in 1:length(parameter_with_no_lognormal_dist)){
-      #mlxProject.setIndividualParameterDistribution(var_name)
-      mlxProject.setIndividualParameterDistribution(parameter_with_no_lognormal_dist[i],dist[i])
-    }
-  }
   # Set all task to True (default for us)
   scenario <- lixoftConnectors::getScenario()
   for (itask in 1:length(scenario$tasks)){
@@ -88,6 +96,11 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
   scenario$linearization<-FALSE
   lixoftConnectors::setScenario(scenario)
   #Save the project
+  info = lixoftConnectors::getPopulationParameterInformation()
+  info
+  indivModel = lixoftConnectors::getIndividualParameterModel()
+  
+  indivModel$variability
   lixoftConnectors::saveProject(projectFile = paste(here::here(),'/MonolixFile/',ProjectName,".mlxtran",sep=""))
   if(runToBeDone){
     lixoftConnectors::runScenario()

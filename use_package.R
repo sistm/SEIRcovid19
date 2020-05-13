@@ -136,7 +136,7 @@ prior_mean<-list(initE = 1200,bbefore=2.1)
 prior_sd<-list(initE = 300,bbefore=0.5)
 PopInitValue<-list(boneweek=1.3)
 #devtools::load_all('.')
-myOde<-LaunchMonolix(myOde, nameproject, obs, map,runToBeDone=TRUE,prior_mean,prior_sd,PopInitValue)
+myOde<-LaunchMonolix(myOde, nameproject, obs, map,runToBeDone=FALSE,prior_mean,prior_sd,PopInitValue)
 end_time<-Sys.time()
 start_time-end_time
 myOde$nameproject<-nameproject
