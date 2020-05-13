@@ -18,7 +18,7 @@ param<-c(bbefore=2,
          timesinceconf=-100)
 # Define all init state of the ODE systme with value, it should be initVar
 init  <- c(initS=0, 
-           initE=0,
+           initE=500,
            initI=0,
            initR=0,
            initA=0,
@@ -130,7 +130,15 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
 nameproject<-"Model4Week"
-myOde<-LaunchMonolix.OdeSystem(myOde, nameproject, obs, map,runToBeDone=FALSE)
+start_time<-Sys.time()
+
+prior_mean<-list(initE = 1200,bbefore=2.1)
+prior_sd<-list(initE = 150,bbefore=0.02)
+PopInitValue<-list(boneweek=1.3)
+#devtools::load_all('.')
+myOde<-LaunchMonolix(myOde, nameproject, obs, map,runToBeDone=FALSE,prior_mean,prior_sd,PopInitValue)
+end_time<-Sys.time()
+start_time-end_time
 myOde$nameproject<-nameproject
 
 

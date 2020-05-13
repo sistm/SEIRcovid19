@@ -5,20 +5,20 @@
 #' @param ObservationType Observation type
 #' @param Mapping mapping
 #' @export
-LaunchMonolix <- function(obj, ProjectName, ObservationType, Mapping,runToBeDone=TRUE)
+LaunchMonolix <- function(obj, ProjectName, ObservationType, Mapping,runToBeDone=TRUE,prior_mean=list(),prior_std=list(),PopInitValue=list())
 {
   UseMethod("LaunchMonolix",obj)
 }
 
 #' @export
-LaunchMonolix.default <- function(obj,  ProjectName, ObservationType, Mapping)
+LaunchMonolix.default <- function(obj,  ProjectName, ObservationType, Mapping,runToBeDone=TRUE,prior_mean=list(),prior_std=list(),PopInitValue=list())
 {
   print("No method implemented for this class")
   return(obj)
 }
 #' @describeIn LaunchMonolix Launch monolix scenario for an object of class \code{OdeSystem}
 #' @export
-LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,runToBeDone=TRUE)
+LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,runToBeDone=TRUE,prior_mean=list(),prior_std=list(),PopInitValue=list())
 {
   # Initialize the connection
   lixoftConnectors::initializeLixoftConnectors(software="monolix")
@@ -30,7 +30,13 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
   mlxProject.setIndividualParameterVariability <- function(a) {
     eval.parent(parse(text =paste0('r <- lixoftConnectors::setIndividualParameterVariability(',a,'= FALSE)' )))
   }
-
+  mlxProject.setPopulationParameterInitValue <- function(a,b) {
+    eval.parent(parse(text =paste0('r <- lixoftConnectors::setPopulationParameterInformation(',a,'_pop= list(initialValue =',b,'))' )))
+  }
+  mlxProject.setPopulationParameterPriorInfo <- function(name,value_mean,value_sd) {
+    eval.parent(parse(text =paste0('r <- lixoftConnectors::setPopulationParameterInformation(',name,'_pop= list( method = "MAP" , priorValue =',value_mean,
+                                   ', priorSD = ',value_sd,') )' )))
+  }
   # Create the project
   lixoftConnectors::newProject(modelFile = ode$ModelFile,
                                data = list(dataFile = ode$DataInfo$File,
@@ -45,13 +51,6 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
       mlxProject.setIndividualParameterVariability(parameter_with_no_random_effect[i])
     }
   }
-  #parameter_with_no_normal_dist<-(c(names(ode$parameter[ode$Distribution$param=="normal"]),names(ode$InitState[ode$Distribution$init=="normal"])))
-  #if (length(parameter_with_no_normal_dist)>0){
-  #  for (i in 1:length(parameter_with_no_normal_dist)){
-      #mlxProject.setIndividualParameterDistribution(var_name)
-  #    mlxProject.setIndividualParameterDistribution(parameter_with_no_normal_dist[i])
-  #  }
-  #}
   parameter_with_no_lognormal_dist<-(c(names(ode$parameter[ode$Distribution$param!="logNormal"]),names(ode$InitState[ode$Distribution$init!="logNormal"])))
   if (length(parameter_with_no_lognormal_dist)>0){
     dist<-(c(ode$Distribution$param[ode$Distribution$param!="logNormal"],(ode$Distribution$init[ode$Distribution$init!="logNormal"])))
@@ -67,6 +66,27 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
   }
   scenario$linearization<-FALSE
   lixoftConnectors::setScenario(scenario)
+  # Set initial value of the optimizable parameter
+  # first take the value of the system
+  optimizable_param<-c(names(ode$InitState[ode$Variability$init>0]),names(ode$parameter[ode$Variability$param>0]))
+  for (i in 1:length(optimizable_param)){
+    init_value<-c(ode$InitState[names(ode$InitState)==optimizable_param[i]],ode$parameter[names(ode$parameter)==optimizable_param[i]])
+    mlxProject.setPopulationParameterInitValue(optimizable_param[[i]],init_value[[1]])
+  }
+  # Now set with the value specified by the user
+  if (length(PopInitValue)>0){
+    PopName<-names(PopInitValue)
+    for (i in 1:length(PopInitValue)){
+      mlxProject.setPopulationParameterInitValue(PopName[[i]],PopInitValue[[i]])
+    }
+  }
+  # Set the prior, mean, std, and method
+  if (length(prior_mean)>0){
+    prior_param_name<-names(prior_mean)
+    for (i in 1:length(prior_mean)){
+      mlxProject.setPopulationParameterPriorInfo(prior_param_name[[i]],prior_mean[[i]],prior_std[[i]])
+    }
+  }
   #Save the project
   lixoftConnectors::saveProject(projectFile = paste(here::here(),'/MonolixFile/',ProjectName,".mlxtran",sep=""))
   if(runToBeDone){
