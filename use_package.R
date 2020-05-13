@@ -129,14 +129,14 @@ myOde<-WriteMonolixModel(myOde,ModelFile,SpecificInitBloc,ModelStatBloc,ModelMat
 ## Launch monolix
 obs<-list(cas_confirmes_incident="discrete",hospitalisation_incident="discrete")
 map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
-nameproject<-"Model4Week"
+nameproject<-"Model4WeekPrior"
 start_time<-Sys.time()
 
 prior_mean<-list(initE = 1200,bbefore=2.1)
-prior_sd<-list(initE = 150,bbefore=0.02)
+prior_sd<-list(initE = 300,bbefore=0.5)
 PopInitValue<-list(boneweek=1.3)
 #devtools::load_all('.')
-myOde<-LaunchMonolix(myOde, nameproject, obs, map,runToBeDone=FALSE,prior_mean,prior_sd,PopInitValue)
+myOde<-LaunchMonolix(myOde, nameproject, obs, map,runToBeDone=TRUE,prior_mean,prior_sd,PopInitValue)
 end_time<-Sys.time()
 start_time-end_time
 myOde$nameproject<-nameproject
@@ -182,6 +182,18 @@ R0_formula<-"Di*transmission/(A+I)*(alpha*A+Dq*I/(Di+Dq))"
 R0min_formula<-"Di*transmission_min/(A_max+I_max)*(alpha*A_min+Dq_min*I_min/(Di+Dq_max))"
 R0max_formula<-"Di*transmission_max/(A_min+I_min)*(alpha*A_max+Dq_max*I_max/(Di+Dq_min))"
 ode_id<-PlotR0(ode_id,R0_formula,R0min_formula,R0max_formula)
+
+
+
+
+test<-ode_id[[1]]
+
+
+
+
+
+
+
 
 # Trajectorie Plot
 solutions_list <- list()

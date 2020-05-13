@@ -102,6 +102,7 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula){
     theme_bw() +
     theme(strip.background = element_rect(fill="white")) +
     ylab(expression(paste("Effective Reproductive Number ", R[e](t, xi[i])))) +
+    ylim(c(0,5)) +
     guides(linetype=guide_legend(title=""),alpha=guide_legend(title=""))+
     theme(legend.position = "bottom") +
     theme(axis.text.x = element_text(angle=45, hjust=1)) +
