@@ -183,7 +183,7 @@ R0min_formula<-"Di*transmission_min/(A_max+I_max)*(alpha*A_min+Dq_min*I_min/(Di+
 R0max_formula<-"Di*transmission_max/(A_min+I_min)*(alpha*A_max+Dq_max*I_max/(Di+Dq_min))"
 ode_id<-PlotR0(ode_id,R0_formula,R0min_formula,R0max_formula)
 
-
+## LONG TERM ANALYSIS
 
 time_date<-seq(as.Date("2020-03-02"), as.Date("2020-06-30"), "days")
 time<-seq(0,length(time_date)-1,1)
@@ -198,4 +198,40 @@ reg_info<-x
 ode_id<-EstimateLongTerm(ode_id,time_date,time,reg_info)
 
 plot_info<-PlotSolutionLongTerm(ode_id)
+
+## TABLE
+systemode<-ode_id[[1]]
+indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",systemode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
+popParams<-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",systemode$nameproject,"/populationParameters.txt",sep=""),header=TRUE,sep=",")
+optimize_param_name<-c(names(systemode$parameter[systemode$Variability$param>0]),names(systemode$InitState[systemode$Variability$init>0]))
+SdOptimizeParam<-as.data.frame(matrix(NA,length(ode_id),length(optimize_param_name)))
+colnames(SdOptimizeParam)<-optimize_param_name
+rownames(SdOptimizeParam)<-indivParams$id
+OptimizeParam<-as.data.frame(matrix(NA,length(ode_id),length(optimize_param_name)))
+colnames(OptimizeParam)<-optimize_param_name
+rownames(OptimizeParam)<-indivParams$id
+TableParam<-OptimizeParam
+for (id in 1:length(ode_id)){
+  for (j in 1:length(optimize_param_name)){
+    optimize_monolix_name<-paste(optimize_param_name[j],"_sd",sep="")
+    SdOptimizeParam[id,j]<-indivParams[id,optimize_monolix_name]
+    optimize_monolix_name<-paste(optimize_param_name[j],"_mode",sep="")
+    OptimizeParam[id,j]<-indivParams[id,optimize_monolix_name]
+    if (SdOptimizeParam[id,j]==0){
+      optimize_pop_name<-paste(optimize_param_name[j],"_pop",sep="")
+      SdOptimizeParam[id,j]<-popParams[optimize_pop_name,"stochasticApproximation"]
+    }
+    OptimizeParamMin<-format(round(OptimizeParam[id,j]-1.96*SdOptimizeParam[id,j], 2), nsmall = 2)
+    OptimizeParamMax<-format(round(OptimizeParam[id,j]+1.96*SdOptimizeParam[id,j], 2), nsmall = 2)
+    TableParam[id,j]<-paste(format(round(OptimizeParam[id,j],2), nsmall = 2)," [",OptimizeParamMin,";",OptimizeParamMax,"]",sep="")
+  }
+}
+TableParam$Reg<-row.names(TableParam)
+print(xtable::xtable(TableParam[,c("Reg",optimize_param_name)]),include.rownames = FALSE,
+      file = paste(here::here(),'/MonolixFile/',"/outputMonolix/",systemode$nameproject,"/TableOptimizeParameter.txt",sep=""))
+
+
+fileConn<-file("table.txt")
+writeLines(print(xtable::xtable(TableParam[,c("Reg",optimize_param_name)]),include.rownames = FALSE), fileConn)
+close(fileConn)
 
