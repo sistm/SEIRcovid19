@@ -200,6 +200,7 @@ ode_id<-EstimateLongTerm(ode_id,time_date,time,reg_info)
 plot_info<-PlotSolutionLongTerm(ode_id)
 
 ## TABLE
+popsize_name<-"popsize"
 systemode<-ode_id[[1]]
 indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",systemode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
 popParams<-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",systemode$nameproject,"/populationParameters.txt",sep=""),header=TRUE,sep=",")
@@ -211,7 +212,9 @@ OptimizeParam<-as.data.frame(matrix(NA,length(ode_id),length(optimize_param_name
 colnames(OptimizeParam)<-optimize_param_name
 rownames(OptimizeParam)<-indivParams$id
 TableParam<-OptimizeParam
+popsize_per_id<-rep(0,length(ode_id))
 for (id in 1:length(ode_id)){
+  popsize_per_id[id]<-ode_id[[id]]$parameter[names(ode_id[[id]]$parameter)==popsize_name]
   for (j in 1:length(optimize_param_name)){
     optimize_monolix_name<-paste(optimize_param_name[j],"_sd",sep="")
     SdOptimizeParam[id,j]<-indivParams[id,optimize_monolix_name]
@@ -226,7 +229,15 @@ for (id in 1:length(ode_id)){
     TableParam[id,j]<-paste(format(round(OptimizeParam[id,j],2), nsmall = 2)," [",OptimizeParamMin,";",OptimizeParamMax,"]",sep="")
   }
 }
+for (j in 1:length(optimize_param_name)){
+  TableParam[dim(OptimizeParam)[1]+1,j]<-paste(format(round(sum(OptimizeParam[,j]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=0)," [",
+                                               format(round(sum((OptimizeParam[,j]-1.96*SdOptimizeParam[,j])*(popsize_per_id))/sum(popsize_per_id),2),nsmall=0),";",
+                                               format(round(sum((OptimizeParam[,j]+1.96*SdOptimizeParam[,j])*(popsize_per_id))/sum(popsize_per_id),2),nsmall=0),"]",sep="")
+}
+rownames(TableParam)<-c(rownames(OptimizeParam),"France")
+
 TableParam$Reg<-row.names(TableParam)
+
 print(xtable::xtable(TableParam[,c("Reg",optimize_param_name)]),include.rownames = FALSE,
       file = paste(here::here(),'/MonolixFile/',"/outputMonolix/",systemode$nameproject,"/TableOptimizeParameter.txt",sep=""))
 
