@@ -1,3 +1,5 @@
+#' @export
+
 PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula){
   data<-read.table(ode_list[[1]]$DataInfo$File,sep=ode_list[[1]]$DataInfo$Sep,header=TRUE)
   InputNames<-colnames(data)

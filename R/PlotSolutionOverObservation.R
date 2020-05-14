@@ -1,3 +1,5 @@
+#' @export
+
 PlotSolutionOverObservation<-function(ode_list,ModelObservationBloc,is_normalize=0){
   
   # Init result list
@@ -114,7 +116,7 @@ PlotSolutionOverObservation<-function(ode_list,ModelObservationBloc,is_normalize
         theme(strip.background = element_rect(fill="white"),
               strip.text = element_text(size=8))
       #Save plot
-      
+      ggsave(plot=p1, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/", map[[iobs]], "_norm.jpg"), width=10, height=8)
       
     }
     

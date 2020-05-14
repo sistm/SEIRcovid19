@@ -185,8 +185,6 @@ ode_id<-PlotR0(ode_id,R0_formula,R0min_formula,R0max_formula)
 
 
 
-
-
 time_date<-seq(as.Date("2020-03-02"), as.Date("2020-06-30"), "days")
 time<-seq(0,length(time_date)-1,1)
 x<-list()
@@ -196,90 +194,8 @@ x[[1]] <- list(name='timesinceconf',
 x[[1]]$value[17:length(time)]<-seq(1,length(time)-17+1,1)
 
 reg_info<-x
-indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_id[[1]]$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
-popParams<-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_id[[1]]$nameproject,"/populationParameters.txt",sep=""),header=TRUE,sep=",")
-data<-read.table(ode_id[[1]]$DataInfo$File,sep=ode_id[[1]]$DataInfo$Sep,header=TRUE)
-InputNames<-colnames(data)
-timename<-InputNames[ode_id[[1]]$DataInfo$HeaderType=="time"]
-for (id in 1:length(ode_id)){
-  print(id)
-  ode<-ode_id[[id]]
-  reg_ode<-reg_info
-  index<-which(time_date==min(as.Date(ode$ObsData$date)))
-  for (i in 1:length(reg_ode)){
-    
-    reg_ode[[i]]$time<-reg_ode[[i]]$time[index:length(time_date)]
-    reg_ode[[i]]$value<-reg_ode[[i]]$value[index:length(time_date)]
-    
-  }
-  reg_ode[[i]]$value
-  time_ode<-time[index:length(time_date)]
-  
-  ode<-WriteEstimationModelLongTerm(ode, ModeFilename, TimeSpecificEquation, ModelMathBloc,reg_info)
-  # Long terme estiamtion
-  param_and_init<-c(ode$parameter,ode$InitState)
-  pk.model<-ode$ModelFileEstimationLongTerm
-  regressor_info<-reg_ode
-  TimeDependantParameter<-c()
-  # Solve
-  result<-SolveThroughSimulx(ode,is_global = 1,time_ode,param_and_init,reg_ode,TimeDependantParameter,IsLongTerm = TRUE)
-  result$date<-time_date[index:length(time_date)]
-  ode_id[[id]]$LongTerm<-result
-  # Long terme ICmin
-  toto<-ComputeConfidenceInterval(ode,indivParams,popParams,id,nb_mc,is_global=1,timename,TimeDependantParameter=c(),IsLongTerm=TRUE,LongTermReg=reg_ode)
-  ode_id[[id]]$LongTermMin<-toto$LongTermMin
-  ode_id[[id]]$LongTermMax<-toto$LongTermMax
-  
-}
 
+ode_id<-EstimateLongTerm(ode_id,time_date,time,reg_info)
 
-solutions_list <- list()
-solutionmin<-list()
-solutionmax<-list()
+plot_info<-PlotSolutionLongTerm(ode_id)
 
-
-for (id in 1:length(ode_id)){
-  solution <- ode_id[[id]]$LongTerm
-  solution$popsize <- ode_id[[id]]$parameter[names(ode_id[[id]]$parameter)=='popsize']
-  
-  solutions_list[[id]] <- solution
-  solutions_list[[id]]$reg<-as.character(indivParams$id[id])
-  
-  solutionmin[[id]]<-ode_id[[id]]$LongTermMin
-  solutionmin[[id]]$date <- solution$date
-  solutionmin[[id]]$popsize <- solution$popsize
-  solutionmin[[id]]$reg <- as.character(indivParams$id[id])
-  
-  solutionmax[[id]]<-ode_id[[id]]$LongTermMax
-  solutionmax[[id]]$date <- solution$date
-  solutionmax[[id]]$popsize <- solution$popsize
-  solutionmax[[id]]$reg <- as.character(indivParams$id[id])
-  
-}
-
-
-solutions_allsim <- do.call(rbind.data.frame,solutions_list) %>% select(!c("time")) %>% reshape2::melt(id.vars=c("date", "reg", "popsize"))
-solutions_allmin <- do.call(rbind.data.frame,solutionmin)  %>% reshape2::melt(id.vars=c("date", "reg","popsize"), value.name  = "value.min")
-solutions_allmax <- do.call(rbind.data.frame,solutionmax) %>% reshape2::melt(id.vars=c("date", "reg","popsize"), value.name  = "value.max")
-solutions_2plot <- cbind.data.frame(solutions_allsim,
-                                    "value.min" = solutions_allmin$value.min,
-                                    "value.max" = solutions_allmax$value.max)
-
-p <- ggplot(solutions_2plot, aes(fill=reg, x=date)) +
-  geom_line(aes(y=value/popsize, colour = reg)) +
-  geom_ribbon(aes(ymin=value.min/popsize, ymax=value.max/popsize), alpha = 0.3) +
-  geom_vline(aes(xintercept=as.Date("2020-03-17"), linetype="Lockdown start")) +
-  geom_vline(aes(xintercept=as.Date("2020-05-11"),  linetype="Lockdown lift")) +
-  scale_linetype_manual("", values=c(2,3), breaks=c("Lockdown start", "Lockdown lift")) +
-  xlim(c(as.Date(min(solutions_2plot$date)), as.Date(max(solutions_2plot$date)))) +
-  theme_bw() +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 0.01)) +
-  facet_wrap(~variable, scales="free_y", ncol=2) +
-  ylab("Proportion of region population") +
-  xlab("Date") +
-  colorspace::scale_color_discrete_qualitative(name = "Region", palette = "Dark3") +
-  colorspace::scale_fill_discrete_qualitative(name = "Region", palette = "Dark3") +
-  theme(legend.text = element_text(size = 8),
-        legend.title = element_text(size = 10)) +
-  theme(legend.position = "bottom", legend.box = "vertical")
-p
