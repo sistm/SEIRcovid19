@@ -8,13 +8,13 @@
 #' @param id Index of actual id
 #'
 #' @export
-ComputeConfidenceInterval <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c())
+ComputeConfidenceInterval <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c(),IsLongTerm=FALSE)
 {
   UseMethod("ComputeConfidenceInterval",obj)
 }
 
 #' @export
-ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c())
+ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c(),IsLongTerm=FALSE)
 {
   print("No method implemented for this class")
   return(obj)
@@ -22,7 +22,7 @@ ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,nb_mc,is_global=1
 
 #' @describeIn ComputeConfidenceInterval Compute monte Carlo estimation for an object of class \code{OdeSystem}
 #' @export
-ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c()){
+ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c(),IsLongTerm=FALSE){
   optimize_param_name<-c(names(systemode$parameter[systemode$Variability$param>0]),names(systemode$InitState[systemode$Variability$init>0]))
   SdOptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
   names(SdOptimizeParam)<-optimize_param_name
@@ -39,25 +39,30 @@ ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_g
     }
   }
   # Prepare Regressor for estimation
-  EstimationReg<-c(names(systemode$param[systemode$IsRegressor$param>0]),names(systemode$InitState[systemode$IsRegressor$init>0]))
-  
-  time<-seq(min(systemode$ObsData[,timename]),max(systemode$ObsData[,timename]),1)
-  RegressorNames<-GetRegressorName(systemode)
-  regressor_value<-list()
-  regressor_info<-list()
-  if (length(EstimationReg)>0){
-    for (ireg in 1:length(EstimationReg)){
-      value<-rep(0,length(time))
-      for (itime in 1:length(time)){
-        value[itime] <- systemode$ObsData[which(systemode$ObsData[,timename]==time[itime]),EstimationReg[[ireg]]][1]
+  if (IsLongTerm){
+    
+  }else{
+    EstimationReg<-c(names(systemode$param[systemode$IsRegressor$param>0]),names(systemode$InitState[systemode$IsRegressor$init>0]))
+    
+    time<-seq(min(systemode$ObsData[,timename]),max(systemode$ObsData[,timename]),1)
+    RegressorNames<-GetRegressorName(systemode)
+    regressor_value<-list()
+    regressor_info<-list()
+    if (length(EstimationReg)>0){
+      for (ireg in 1:length(EstimationReg)){
+        value<-rep(0,length(time))
+        for (itime in 1:length(time)){
+          value[itime] <- systemode$ObsData[which(systemode$ObsData[,timename]==time[itime]),EstimationReg[[ireg]]][1]
+        }
+        regressor_value[[ireg]]<-value
+        regressor_info[[ireg]]<-list(name=EstimationReg[[ireg]],
+                                     time=time,
+                                     value=regressor_value[[ireg]])
       }
-      regressor_value[[ireg]]<-value
-      regressor_info[[ireg]]<-list(name=EstimationReg[[ireg]],
-                                   time=time,
-                                   value=regressor_value[[ireg]])
-    }
-    names(regressor_value)<-EstimationReg
-  }  
+      names(regressor_value)<-EstimationReg
+    }  
+  }
+
   
   
   
@@ -78,6 +83,6 @@ ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_g
     return(result)
   }
   )
-  systemode<-SetConfidenceInverval(systemode,mc_res,time,TimeDependantParameter)
+  systemode<-SetConfidenceInverval(systemode,mc_res,time,TimeDependantParameter,IsLongTerm)
   return(systemode)
 }
