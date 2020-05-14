@@ -1,7 +1,11 @@
 #' @export
-SolveThroughSimulx<-function(ode,is_global,time,param_and_init,regressor_info,TimeDependantParameter=c()){
+SolveThroughSimulx<-function(ode,is_global,time,param_and_init,regressor_info,TimeDependantParameter=c(),IsLongTerm=FALSE){
   number_param_exept_init<-length(ode$parameter[ode$IsRegressor$param==0])
-  pk.model<-ode$ModelFileEstimation
+  if (IsLongTerm){
+    pk.model<-ode$ModelFileEstimationLongTerm
+  }else{
+    pk.model<-ode$ModelFileEstimation
+  }
   
   if (is_global==1){
     # mlxR format

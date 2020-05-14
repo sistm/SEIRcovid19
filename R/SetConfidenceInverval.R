@@ -39,8 +39,14 @@ SetConfidenceInverval.OdeSystem <- function(ode,MonteCarloSolution,time,TimeDepe
   names(odemax)<-ode$ModelName
   # Compute ICmin and ICmax
   for (i in 1:length(ode$ModelName)){
-    odemin[,i]<-pmax(0,df[,((i)*2)]-1.96*sqrt(pmax(0,ode$solution[,i+1])))
-    odemax[,i]<-pmax(0,df[,i*2+1]+1.96*sqrt(pmax(0,ode$solution[,i+1])))
+    if (IsLongTerm){
+      odemin[,i]<-pmax(0,df[,((i)*2)]-1.96*sqrt(pmax(0,ode$LongTerm[,i+1])))
+      odemax[,i]<-pmax(0,df[,i*2+1]+1.96*sqrt(pmax(0,ode$LongTerm[,i+1])))
+    }else{
+      odemin[,i]<-pmax(0,df[,((i)*2)]-1.96*sqrt(pmax(0,ode$solution[,i+1])))
+      odemax[,i]<-pmax(0,df[,i*2+1]+1.96*sqrt(pmax(0,ode$solution[,i+1])))
+    }
+    
   }
   # Store  the result in the class
   if (IsLongTerm){ #only store compartiment min max

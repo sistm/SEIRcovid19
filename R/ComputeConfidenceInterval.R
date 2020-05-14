@@ -8,13 +8,13 @@
 #' @param id Index of actual id
 #'
 #' @export
-ComputeConfidenceInterval <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c(),IsLongTerm=FALSE)
+ComputeConfidenceInterval <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c(),IsLongTerm=FALSE,LongTermReg=list())
 {
   UseMethod("ComputeConfidenceInterval",obj)
 }
 
 #' @export
-ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c(),IsLongTerm=FALSE)
+ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c(),IsLongTerm=FALSE,LongTermReg=list())
 {
   print("No method implemented for this class")
   return(obj)
@@ -22,7 +22,7 @@ ComputeConfidenceInterval.default <- function(obj,indiv,pop,id,nb_mc,is_global=1
 
 #' @describeIn ComputeConfidenceInterval Compute monte Carlo estimation for an object of class \code{OdeSystem}
 #' @export
-ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c(),IsLongTerm=FALSE){
+ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_global=1,timename,TimeDependantParameter=c(),IsLongTerm=FALSE,LongTermReg=list()){
   optimize_param_name<-c(names(systemode$parameter[systemode$Variability$param>0]),names(systemode$InitState[systemode$Variability$init>0]))
   SdOptimizeParam<-as.list(rep(NA,length(optimize_param_name)))
   names(SdOptimizeParam)<-optimize_param_name
@@ -40,7 +40,8 @@ ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_g
   }
   # Prepare Regressor for estimation
   if (IsLongTerm){
-    
+    regressor_info<-LongTermReg
+    time<-regressor_info[[1]]$time
   }else{
     EstimationReg<-c(names(systemode$param[systemode$IsRegressor$param>0]),names(systemode$InitState[systemode$IsRegressor$init>0]))
     
@@ -79,7 +80,7 @@ ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_g
     for (j in 1:length(InitSpecific)){
       param_and_init[names(param_and_init)==names(InitSpecific[j])]<-InitSpecific[[j]]
     }
-    result<-SolveThroughSimulx(systemode,is_global,time,param_and_init,regressor_info,TimeDependantParameter)
+    result<-SolveThroughSimulx(systemode,is_global,time,param_and_init,regressor_info,TimeDependantParameter,IsLongTerm)
     return(result)
   }
   )
