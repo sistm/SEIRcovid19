@@ -62,11 +62,14 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
   init_line<-""
   # Regressor
   init_regressor_optim<-names(ode$InitState[(ode$IsRegressor$init==1 ) ])
-  for (i in 1:length(init_regressor_optim)){
-    variable_name<-substr(init_regressor_optim[i], nchar(init_regressor_optim[i]), nchar(init_regressor_optim[i]))
-    init_line<-paste(init_line,variable_name,'_0=',names(ode$InitState[names(ode$InitState)==init_regressor_optim[i]]),'\n',sep='')
+  if (length(init_regressor_optim)>0){
+    for (i in 1:length(init_regressor_optim)){
+      variable_name<-substr(init_regressor_optim[i], nchar(init_regressor_optim[i]), nchar(init_regressor_optim[i]))
+      init_line<-paste(init_line,variable_name,'_0=',names(ode$InitState[names(ode$InitState)==init_regressor_optim[i]]),'\n',sep='')
+    }
+    write(init_line,file=ModelFile,append=TRUE)
   }
-  write(init_line,file=ModelFile,append=TRUE)
+
 
   # Init monolix parameter
   init_parameter<-names(ode$InitState[ode$Variability$init>0])

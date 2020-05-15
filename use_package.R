@@ -190,8 +190,30 @@ ode_id<-EstimateLongTerm(ode_id,time_date,time,reg_info)
 
 plot_info<-PlotSolutionLongTerm(ode_id)
 
-## TABLE
+## TABLE PARAM Optimize
 popsize_name<-"popsize"
 devtools::load_all('.')
 
 ParameterTable<-GetTableOptimizeParam(ode_id,popsize_name,"France")
+
+## Table observation cumul
+
+ModelObservationBloc<-c("Isim=r*E/De",
+                        "Hsim=I/Dq")
+map<-list("1" = "cas_confirmes_incident", "2" = "hospitalisation_incident")
+observation_name<-c("Ascertained cases","Hospitalized cases")
+
+observation_name<- paste("Observed Cumulative",observation_name,sep=" ")
+TableObs<-matrix(NA,length(ode_id),length(ModelObservationBloc)*2+3)
+colnames(TableObs)<-c("Reg","Epidemics Start Date","Population Size",)
+for (id in 1:length(ode_id)){
+  popsize_per_id[id]<-ode_id[[id]]$parameter[names(ode_id[[id]]$parameter)==popsize_name]
+  start_date<-min(as.Date(ode_id[[id]]$ObsData$date))
+  for (j in 1:length(ModelObservationBloc)){
+    Obscumul<-sum(ode_id[[id]]$ObsData$obs[which(ode_id[[id]]$ObsData$obs_id==j)])
+    end_date<-max(as.Date(ode_id[[id]]$ObsData$date[which(ode_id[[id]]$ObsData$obs_id==j)]))
+    OptimizeParamMin<-format(round(OptimizeParam[id,j]-1.96*SdOptimizeParam[id,j], 2), nsmall = 2)
+    OptimizeParamMax<-format(round(OptimizeParam[id,j]+1.96*SdOptimizeParam[id,j], 2), nsmall = 2)
+    TableParam[id,j]<-paste(format(round(OptimizeParam[id,j],2), nsmall = 2)," [",OptimizeParamMin,";",OptimizeParamMax,"]",sep="")
+  }
+}
