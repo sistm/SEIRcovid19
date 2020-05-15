@@ -141,15 +141,6 @@ end_time<-Sys.time()
 start_time-end_time
 myOde$nameproject<-nameproject
 
-
-# Not used any more
-#EstiomationRegressor<-list(isolation=1,timesinceconf=1)
-#myOde<-SetParamEstimationRegressor(myOde, EstiomationRegressor)
-#myOde$EstimationRegressor$param
-
-
-# @Melanie : ATTENTION Cela ne fonctionne que pour pour resolution globale
-is_global<-0
 ModeFilename<-"model_estimation.txt"
 
 # On rajoute ici l'équation du R0
@@ -201,48 +192,6 @@ plot_info<-PlotSolutionLongTerm(ode_id)
 
 ## TABLE
 popsize_name<-"popsize"
-systemode<-ode_id[[1]]
-indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",systemode$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
-popParams<-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",systemode$nameproject,"/populationParameters.txt",sep=""),header=TRUE,sep=",")
-optimize_param_name<-c(names(systemode$parameter[systemode$Variability$param>0]),names(systemode$InitState[systemode$Variability$init>0]))
-SdOptimizeParam<-as.data.frame(matrix(NA,length(ode_id),length(optimize_param_name)))
-colnames(SdOptimizeParam)<-optimize_param_name
-rownames(SdOptimizeParam)<-indivParams$id
-OptimizeParam<-as.data.frame(matrix(NA,length(ode_id),length(optimize_param_name)))
-colnames(OptimizeParam)<-optimize_param_name
-rownames(OptimizeParam)<-indivParams$id
-TableParam<-OptimizeParam
-popsize_per_id<-rep(0,length(ode_id))
-for (id in 1:length(ode_id)){
-  popsize_per_id[id]<-ode_id[[id]]$parameter[names(ode_id[[id]]$parameter)==popsize_name]
-  for (j in 1:length(optimize_param_name)){
-    optimize_monolix_name<-paste(optimize_param_name[j],"_sd",sep="")
-    SdOptimizeParam[id,j]<-indivParams[id,optimize_monolix_name]
-    optimize_monolix_name<-paste(optimize_param_name[j],"_mode",sep="")
-    OptimizeParam[id,j]<-indivParams[id,optimize_monolix_name]
-    if (SdOptimizeParam[id,j]==0){
-      optimize_pop_name<-paste(optimize_param_name[j],"_pop",sep="")
-      SdOptimizeParam[id,j]<-popParams[optimize_pop_name,"stochasticApproximation"]
-    }
-    OptimizeParamMin<-format(round(OptimizeParam[id,j]-1.96*SdOptimizeParam[id,j], 2), nsmall = 2)
-    OptimizeParamMax<-format(round(OptimizeParam[id,j]+1.96*SdOptimizeParam[id,j], 2), nsmall = 2)
-    TableParam[id,j]<-paste(format(round(OptimizeParam[id,j],2), nsmall = 2)," [",OptimizeParamMin,";",OptimizeParamMax,"]",sep="")
-  }
-}
-for (j in 1:length(optimize_param_name)){
-  TableParam[dim(OptimizeParam)[1]+1,j]<-paste(format(round(sum(OptimizeParam[,j]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=0)," [",
-                                               format(round(sum((OptimizeParam[,j]-1.96*SdOptimizeParam[,j])*(popsize_per_id))/sum(popsize_per_id),2),nsmall=0),";",
-                                               format(round(sum((OptimizeParam[,j]+1.96*SdOptimizeParam[,j])*(popsize_per_id))/sum(popsize_per_id),2),nsmall=0),"]",sep="")
-}
-rownames(TableParam)<-c(rownames(OptimizeParam),"France")
+devtools::load_all('.')
 
-TableParam$Reg<-row.names(TableParam)
-
-print(xtable::xtable(TableParam[,c("Reg",optimize_param_name)]),include.rownames = FALSE,
-      file = paste(here::here(),'/MonolixFile/',"/outputMonolix/",systemode$nameproject,"/TableOptimizeParameter.txt",sep=""))
-
-
-fileConn<-file("table.txt")
-writeLines(print(xtable::xtable(TableParam[,c("Reg",optimize_param_name)]),include.rownames = FALSE), fileConn)
-close(fileConn)
-
+ParameterTable<-GetTableOptimizeParam(ode_id,popsize_name,"France")
