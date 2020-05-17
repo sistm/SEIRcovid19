@@ -74,20 +74,23 @@ WriteMonolixModel.OdeSystem <- function(ode, ModelFile, SpecificInitChunck, Mode
   # Init monolix parameter
   init_parameter<-names(ode$InitState[ode$Variability$init>0])
   init_line<-""
+  if (length(init_parameter)>0){
   for (i in 1:length(init_parameter)){
     variable_name<-substr(init_parameter[i], nchar(init_parameter[i]), nchar(init_parameter[i]))
     init_line<-paste(init_line,variable_name,'_0=',names(ode$InitState[names(ode$InitState)==init_parameter[i]]),'\n',sep='')
   }
   write(init_line,file=ModelFile,append=TRUE)
+  }
   # Non Specific
   init_scalar<-names(ode$InitState[(ode$IsRegressor$init==0 ) & (ode$IsSpecificInit==0 ) & (ode$Variability$init==0 )])
   init_line<-""
+  if (length(init_scalar)>0){
   for (i in 1:length(init_scalar)){
     variable_name<-substr(init_scalar[i], nchar(init_scalar[i]), nchar(init_scalar[i]))
     init_line<-paste(init_line,variable_name,'_0=',ode$InitState[names(ode$InitState)==init_scalar[i]],'\n',sep='')
   }
   write(init_line,file=ModelFile,append=TRUE)
-
+  }
   # Init specific Chunk
 
   write(paste(SpecificInitChunck,collapse = "\n"),file=ModelFile,append=TRUE)
