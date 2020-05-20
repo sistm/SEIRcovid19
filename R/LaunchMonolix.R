@@ -37,6 +37,10 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
     eval.parent(parse(text =paste0('r <- lixoftConnectors::setPopulationParameterInformation(',name,'_pop= list( method = "MAP" , priorValue =',value_mean,
                                    ', priorSD = ',value_sd,') )' )))
   }
+  
+  mlxProject.setPopulationParameterFixed <- function(name,value_mean,value_sd) {
+    eval.parent(parse(text =paste0('r <- lixoftConnectors::setPopulationParameterInformation(',name,'_pop = list(initialValue = ',value_mean,', method = "FIXED" ) )')))
+  }
   # Create the project
   lixoftConnectors::newProject(modelFile = ode$ModelFile,
                                data = list(dataFile = ode$DataInfo$File,
@@ -84,8 +88,15 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
   parameter_with_no_random_effect<-(c(names(ode$parameter[ode$Variability$param==1]),names(ode$InitState[ode$Variability$init==1])))
   if (length(parameter_with_no_random_effect)>0){
     for (i in 1:length(parameter_with_no_random_effect)){
-      #mlxProject.setIndividualParameterDistribution(var_name)
       mlxProject.setIndividualParameterVariability(parameter_with_no_random_effect[i])
+    }
+  }
+  
+  parameter_fixed_with_random_effect<-(c(names(ode$parameter[ode$Variability$param==3]),names(ode$InitState[ode$Variability$init==3])))
+  if (length(parameter_fixed_with_random_effect)>0){
+    for (i in 1:length(parameter_fixed_with_random_effect)){
+      init_value<-c(ode$InitState[names(ode$InitState)==parameter_fixed_with_random_effect[i]],ode$parameter[names(ode$parameter)==parameter_fixed_with_random_effect[i]])
+      mlxProject.setPopulationParameterFixed(parameter_fixed_with_random_effect[[i]],init_value[[1]])
     }
   }
   # Set all task to True (default for us)
