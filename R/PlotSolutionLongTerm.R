@@ -14,6 +14,7 @@ PlotSolutionLongTerm<-function(ode_list){
     
     solutions_list[[id]] <- solution
     solutions_list[[id]]$reg<-as.character(indivParams$id[id])
+    solutions_list[[id]]$date <- solution$date
     
     solutionmin[[id]]<-ode_list[[id]]$LongTermMin
     solutionmin[[id]]$date <- solution$date
@@ -60,6 +61,7 @@ PlotSolutionLongTerm<-function(ode_list){
   }
   ggsave(plot=p, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/","LongTermSolution.jpg"), width=10, height=8)
   
-  return(solutions_2plot)
+  #return(solutions_2plot)
+  return(list(solution=solutions_list,solution_min=solutionmin,solution_max=solutionmax))
   
 }

@@ -176,7 +176,7 @@ ode_id<-PlotR0(ode_id,R0_formula,R0min_formula,R0max_formula)
 
 ## LONG TERM ANALYSIS
 
-time_date<-seq(as.Date("2020-03-02"), as.Date("2020-06-30"), "days")
+time_date<-seq(as.Date("2020-03-02"), as.Date("2020-06-03"), "days")
 time<-seq(0,length(time_date)-1,1)
 x<-list()
 x[[1]] <- list(name='timesinceconf',
@@ -189,6 +189,7 @@ reg_info<-x
 ode_id<-EstimateLongTerm(ode_id,time_date,time,reg_info)
 
 plot_info<-PlotSolutionLongTerm(ode_id)
+
 
 ## TABLE PARAM Optimize
 popsize_name<-"popsize"
@@ -205,7 +206,7 @@ observation_name<-c("Ascertained cases","Hospitalized cases")
 
 observation_name<- paste("Observed Cumulative",observation_name,sep=" ")
 TableObs<-matrix(NA,length(ode_id),length(ModelObservationBloc)*2+3)
-colnames(TableObs)<-c("Reg","Epidemics Start Date","Population Size",)
+colnames(TableObs)<-c("Reg","Epidemics Start Date","Population Size")
 for (id in 1:length(ode_id)){
   popsize_per_id[id]<-ode_id[[id]]$parameter[names(ode_id[[id]]$parameter)==popsize_name]
   start_date<-min(as.Date(ode_id[[id]]$ObsData$date))
