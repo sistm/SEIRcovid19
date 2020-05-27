@@ -29,7 +29,7 @@ PlotSolutionLongTerm<-function(ode_list){
   }
   
   
-  solutions_allsim <- do.call(rbind.data.frame,solutions_list) %>% select(!c("time")) %>% reshape2::melt(id.vars=c("date", "reg", "popsize"))
+  solutions_allsim <- do.call(rbind.data.frame,solutions_list) %>% select(-c("time")) %>% reshape2::melt(id.vars=c("date", "reg", "popsize"))
   solutions_allmin <- do.call(rbind.data.frame,solutionmin)  %>% reshape2::melt(id.vars=c("date", "reg","popsize"), value.name  = "value.min")
   solutions_allmax <- do.call(rbind.data.frame,solutionmax) %>% reshape2::melt(id.vars=c("date", "reg","popsize"), value.name  = "value.max")
   solutions_2plot <- cbind.data.frame(solutions_allsim,

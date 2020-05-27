@@ -40,8 +40,7 @@ Estimate.OdeSystem <- function(ode, time,is_global=0,regressor_value,TimeDependa
   }
   
   result<-SolveThroughSimulx(ode,is_global,time,param_and_init,regressor_info,TimeDependantParameter)
-  
-  ode$solution<-select(result,!TimeDependantParameter)
+  ode$solution<-select(result,-TimeDependantParameter)
   ode$TimeDependantParameter<-select(result,TimeDependantParameter)
   return(ode)
 
