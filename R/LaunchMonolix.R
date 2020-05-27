@@ -57,12 +57,14 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
       mlxProject.setIndividualParameterDistribution(parameter_with_normal_dist[i],dist[i])
     }
   }
+  
   optimizable_param<-c(names(ode$InitState[ode$Variability$init>0]),names(ode$parameter[ode$Variability$param>0]))
   for (i in 1:length(optimizable_param)){
     init_value<-c(ode$InitState[names(ode$InitState)==optimizable_param[i]],ode$parameter[names(ode$parameter)==optimizable_param[i]])
     mlxProject.setPopulationParameterInitValue(optimizable_param[[i]],init_value[[1]])
   }
   # Now set with the value specified by the user
+
   if (length(PopInitValue)>0){
     PopName<-names(PopInitValue)
     for (i in 1:length(PopInitValue)){
@@ -78,6 +80,7 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
     }
   }
   # Set the prior, mean, std, and method
+  
   if (length(prior_mean)>0){
     prior_param_name<-names(prior_mean)
     for (i in 1:length(prior_mean)){
@@ -85,6 +88,7 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
     }
   }
   # Set the distrution and variability
+  
   parameter_with_no_random_effect<-(c(names(ode$parameter[ode$Variability$param==1]),names(ode$InitState[ode$Variability$init==1])))
   if (length(parameter_with_no_random_effect)>0){
     for (i in 1:length(parameter_with_no_random_effect)){
@@ -99,6 +103,7 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
       mlxProject.setPopulationParameterFixed(parameter_fixed_with_random_effect[[i]],init_value[[1]])
     }
   }
+  
   # Set all task to True (default for us)
   scenario <- lixoftConnectors::getScenario()
   for (itask in 1:length(scenario$tasks)){

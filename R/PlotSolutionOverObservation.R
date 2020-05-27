@@ -32,10 +32,11 @@ PlotSolutionOverObservation<-function(ode_list,ModelObservationBloc,is_normalize
   # Loop over the observation
   # One plot per obs
   for (iobs in 1:length(ModelObservationBloc)){
+    iobs
     # Look over id
     for (id in 1:length(ode_list)){
       name_variable[iobs]<-CutObservation[[iobs]][1]
-      
+      id
       # Get the simulated value
       Obssim<-GetStatWithExp(ode_list[[id]]$solution,ode_list[[id]]$parameter,ModelObservationBloc[iobs],name_variable[iobs])
       # Get the ICmin
