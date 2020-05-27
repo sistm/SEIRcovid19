@@ -1,6 +1,6 @@
 #' @export
 
-PlotSolutionOverObservation<-function(ode_list,ModelObservationBloc,is_normalize=0){
+PlotSolutionOverObservation<-function(ode_list,ModelObservationBloc,is_normalize=0,ci=TRUE){
   
   # Init result list
   ObservationResult <- vector(mode = "list", length = length(ModelObservationBloc))
@@ -78,6 +78,7 @@ PlotSolutionOverObservation<-function(ode_list,ModelObservationBloc,is_normalize
       ObservationDataFrame[,paste(name_variable[[iobs]],"_min",sep="")]<-ObservationDataFrame[,paste(name_variable[[iobs]],"_min",sep="")]/ObservationDataFrame$popsize*100
       ObservationDataFrame[,paste(name_variable[[iobs]],"_max",sep="")]<-ObservationDataFrame[,paste(name_variable[[iobs]],"_max",sep="")]/ObservationDataFrame$popsize*100
       
+      if(ci){
       p1 <- ggplot(ObservationDataFrame, aes_(x=as.name("date"), y=as.name(ObservationName), group=as.name("id"))) +
         geom_point(aes(color = "Observed"))+
         scale_shape_manual(values=c(NA, 16)) +
@@ -94,10 +95,28 @@ PlotSolutionOverObservation<-function(ode_list,ModelObservationBloc,is_normalize
         theme(axis.text.x = element_text(angle=45, hjust=1))+
         theme(strip.background = element_rect(fill="white"),
               strip.text = element_text(size=8))
+      }else{
+        p1 <- ggplot(ObservationDataFrame, aes_(x=as.name("date"), y=as.name(ObservationName), group=as.name("id"))) +
+          geom_point(aes(color = "Observed"))+
+          scale_shape_manual(values=c(NA, 16)) +
+          scale_color_manual(values="black") +
+          geom_line(aes_(x=as.name("date"), y=as.name(name_variable[[iobs]]),linetype="Estimate"), color="red3") +
+          scale_alpha_manual(values=c(0.3)) +
+          facet_grid(vars(id), scales = "free_y") + facet_wrap(~ id, nrow=2)+
+          guides(color=guide_legend(title=""), linetype=guide_legend(title=""),
+                 alpha=guide_legend(title=""))+
+          theme(legend.position = "bottom") +
+          ylab(paste(map[[iobs]]," in %",sep="")) +
+          xlab("Day") +
+          theme(axis.text.x = element_text(angle=45, hjust=1))+
+          theme(strip.background = element_rect(fill="white"),
+                strip.text = element_text(size=8))
+      }  
       ggsave(plot=p1, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/", map[[iobs]], "_norm.jpg"), width=10, height=8)
       
       
     }else{
+      if(ci){
       p1 <- ggplot(ObservationDataFrame, aes_(x=as.name("date"), y=as.name(ObservationName), group=as.name("id"))) +
         geom_point(aes(color = "Observed"))+
         scale_shape_manual(values=c(NA, 16)) +
@@ -115,6 +134,24 @@ PlotSolutionOverObservation<-function(ode_list,ModelObservationBloc,is_normalize
               axis.title.y = element_text(hjust=1.4)) +
         theme(strip.background = element_rect(fill="white"),
               strip.text = element_text(size=8))
+      }else{
+        p1 <- ggplot(ObservationDataFrame, aes_(x=as.name("date"), y=as.name(ObservationName), group=as.name("id"))) +
+          geom_point(aes(color = "Observed"))+
+          scale_shape_manual(values=c(NA, 16)) +
+          scale_color_manual(values="black") +
+          geom_line(aes_(x=as.name("date"), y=as.name(name_variable[[iobs]]),linetype="Estimate"), color="red3") +
+          scale_alpha_manual(values=c(0.3)) +
+          facet_grid(vars(id), scales = "free_y") + facet_wrap(~ id, nrow=2)+
+          guides(color=guide_legend(title=""), linetype=guide_legend(title=""),
+                 alpha=guide_legend(title=""))+
+          theme(legend.position = "bottom") +
+          ylab(map[[iobs]]) +
+          xlab("Day") +
+          theme(axis.text.x = element_text(angle=45, hjust=1),
+                axis.title.y = element_text(hjust=1.4)) +
+          theme(strip.background = element_rect(fill="white"),
+                strip.text = element_text(size=8))
+      }  
       #Save plot
       ggsave(plot=p1, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/", map[[iobs]], "_norm.jpg"), width=10, height=8)
       

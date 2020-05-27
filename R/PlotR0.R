@@ -1,6 +1,6 @@
 #' @export
 
-PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula){
+PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
   data<-read.table(ode_list[[1]]$DataInfo$File,sep=ode_list[[1]]$DataInfo$Sep,header=TRUE)
   InputNames<-colnames(data)
   timename<-InputNames[ode_list[[1]]$DataInfo$HeaderType=="time"]
@@ -93,6 +93,7 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula){
   }
   
   # Do plot
+  if(ci){
   p<-ggplot(R0DataFrame, aes_(x=as.name("date"),y=as.name("R0"),group=as.name("id"))) +
     geom_line(aes(linetype="Region-wise value\n(95% CI)"),color="red3") +
     geom_line(aes_(y=as.name("R0_national"),linetype="France\nnational average"),color="black")+
@@ -111,6 +112,25 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula){
     theme(axis.text.y = element_text(size=8)) +
     theme(strip.background = element_rect(fill="white"),
           strip.text = element_text(size=8))
+  }else{
+    p<-ggplot(R0DataFrame, aes_(x=as.name("date"),y=as.name("R0"),group=as.name("id"))) +
+      geom_line(aes(linetype="Region-wise value\n(95% CI)"),color="red3") +
+      geom_line(aes_(y=as.name("R0_national"),linetype="France\nnational average"),color="black")+
+      scale_linetype_manual("", values = c(2, 1)) +
+      facet_grid(vars(id), scales = "free_y") + facet_wrap(~ id, ncol=3)+
+      geom_hline(yintercept = 1)+
+      scale_alpha_manual(values=c(0.3)) +
+      theme_bw() +
+      theme(strip.background = element_rect(fill="white")) +
+      ylab(expression(paste("Effective Reproductive Number ", R[e](t, xi[i])))) +
+      ylim(c(0,5)) +
+      guides(linetype=guide_legend(title=""),alpha=guide_legend(title=""))+
+      theme(legend.position = "bottom") +
+      theme(axis.text.x = element_text(angle=45, hjust=1)) +
+      theme(axis.text.y = element_text(size=8)) +
+      theme(strip.background = element_rect(fill="white"),
+            strip.text = element_text(size=8))
+  }
   ggsave(plot=p, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/","R0Plot.jpg"), width=10, height=8)
   
   
