@@ -133,7 +133,6 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
   }
   ggsave(plot=p, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/","R0Plot.jpg"), width=10, height=8)
   
-  
   return(ode_list)
   
 }

@@ -29,9 +29,9 @@ GetTableOptimizeParam<-function(ode_list,popsize_name,NationalName){
     }
   }
   for (j in 1:length(optimize_param_name)){
-    TableParam[dim(OptimizeParam)[1]+1,j]<-paste(format(round(sum(OptimizeParam[,j]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=0)," [",
-                                                 format(round(sum((OptimizeParam[,j]-1.96*SdOptimizeParam[,j])*(popsize_per_id))/sum(popsize_per_id),2),nsmall=0),";",
-                                                 format(round(sum((OptimizeParam[,j]+1.96*SdOptimizeParam[,j])*(popsize_per_id))/sum(popsize_per_id),2),nsmall=0),"]",sep="")
+    TableParam[dim(OptimizeParam)[1]+1,j]<-paste(format(round(sum(OptimizeParam[,j]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2)," [",
+                                                 format(round(sum((OptimizeParam[,j]-1.96*SdOptimizeParam[,j])*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2),";",
+                                                 format(round(sum((OptimizeParam[,j]+1.96*SdOptimizeParam[,j])*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2),"]",sep="")
   }
   rownames(TableParam)<-c(rownames(OptimizeParam),NationalName)
   
@@ -42,5 +42,5 @@ GetTableOptimizeParam<-function(ode_list,popsize_name,NationalName){
         file = paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_list[[1]]$nameproject,"/TableOptimizeParameter.txt",sep=""))
   
   
-  return(LatexTable)
+  return(TableParam)
 }
