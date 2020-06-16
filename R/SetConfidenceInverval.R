@@ -52,6 +52,31 @@ SetConfidenceInverval.OdeSystem <- function(ode,MonteCarloSolution,time,TimeDepe
   if (IsLongTerm){ #only store compartiment min max
     ode$LongTermMin<-odemin
     ode$LongTermMax<-odemax
+    #Prepare dataframe for TimeDependantParameter
+    if (length(TimeDependantParameter)>0){
+      df <- data.frame(matrix(ncol = length(TimeDependantParameter)*2, nrow = length(time)))
+      dfnames<-c()
+      for (i in 1:length(TimeDependantParameter)){
+        dfnames<-c(dfnames,paste(TimeDependantParameter[[i]],"_min",sep=""),paste(TimeDependantParameter[[i]],"_max",sep=""))
+      }
+      colnames(df) <- dfnames
+      for (i in 1:length(TimeDependantParameter)){
+        df[,((i-1)*2+1):(i*2)] <- t(rbind(apply(sapply(MonteCarloSolution, "[[", TimeDependantParameter[i]), 1, FUN=quantile, probs = c(0.025, 0.975),na.rm = TRUE)))
+      }
+      # Init dataframe ICmin and ICmax
+      ParamICmin <- data.frame(matrix(ncol = length(TimeDependantParameter), nrow = length(time)))
+      ParamICmax <- data.frame(matrix(ncol = length(TimeDependantParameter), nrow = length(time)))
+      names(ParamICmin)<-TimeDependantParameter
+      names(ParamICmax)<-TimeDependantParameter
+      # Compute ICmin and ICmax
+      for (i in 1:length(TimeDependantParameter)){
+        ParamICmin[,i]<-pmax(0,df[,(i-1)*2+1])
+        ParamICmax[,i]<-pmax(0,df[,i*2])
+      }
+
+      ode$LongParamICmin<-ParamICmin
+      ode$LongParamICmax<-ParamICmax
+    }
   }else{
     ode$ICmin<-odemin
     ode$ICmax<-odemax
