@@ -18,8 +18,8 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
     })
   }
   
-  GetR0ICWithExp<-function(ICmin,ICmax,parameter,timeparamMin,timeparamMax,exp,name){
-    with(as.list(c(ICmin,ICmax,parameter,timeparamMin,timeparamMax)),{
+  GetR0ICWithExp<-function(ICmin,ICmax,parameter,timeparamMin,timeparamMax,exp,name,solution){
+    with(as.list(c(ICmin,ICmax,parameter,timeparamMin,timeparamMax,solution)),{
       R0<-data.frame((eval(parse(text=exp))))
       names(R0)<-name
       return(R0)
@@ -50,20 +50,19 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
     R0_sim<-cbind(R0_sim,rep(indivParams$id[id],dim(R0_sim)[[1]]))
     colnames(R0_sim)[dim(R0_sim)[2]]<-"id"
     # Add suffixe for evaluation of the R0_min/max exp
-    ICmin<-ode_id[[id]]$ICmin
-    ICmin<-AddSuffixName(ICmin,1,"_min")
-    ICmax<-ode_id[[id]]$ICmax
-    ICmax<-AddSuffixName(ICmax,1,"_max")
+    ICmin<-ode_id[[id]]$solution
+    ICmin<-AddSuffixName(ICmin,0,"_min")
+    ICmax<-ode_id[[id]]$solution
+    ICmax<-AddSuffixName(ICmax,0,"_max")
     Pmin<-ode_id[[id]]$ParamICmin
     Pmin<-AddSuffixName(Pmin,0,"_min")
     Pmax<-ode_id[[id]]$ParamICmax
     Pmax<-AddSuffixName(Pmax,0,"_max")
-    
     #Compute R0_min
-    R0_min<-GetR0ICWithExp(ICmin,ICmax,ode_id[[id]]$parameter,Pmin,Pmax,R0min_formula,"R0_min")
+    R0_min<-GetR0ICWithExp(ICmin,ICmax,ode_id[[id]]$parameter,Pmin,Pmax,R0min_formula,"R0_min",ode_id[[id]]$solution)
     R0_sim<-cbind(R0_sim,R0_min)
     # Compute R0_max
-    R0_max<-GetR0ICWithExp(ICmin,ICmax,ode_id[[id]]$parameter,Pmin,Pmax,R0max_formula,"R0_max")
+    R0_max<-GetR0ICWithExp(ICmin,ICmax,ode_id[[id]]$parameter,Pmin,Pmax,R0max_formula,"R0_max",ode_id[[id]]$solution)
     R0_sim<-cbind(R0_sim,R0_max)
     
     # Add observation in order to have date
