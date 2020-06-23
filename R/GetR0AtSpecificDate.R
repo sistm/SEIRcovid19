@@ -22,5 +22,8 @@ GetR0AtSpecificDate<-function(ode_list,dateR0,popsize_name,NationalName){
   R0$R0[length(ode_list)+1]<-paste(format(round(sum(Rt[,1]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2)," [",
                                    format(round(sum(Rtmin[,1]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2),";",
                                    format(round(sum(Rtmax[,1]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2),"]",sep="")
+  
+  print(xtable(R0),include.rownames = FALSE,
+        file = paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_list[[1]]$nameproject,"/R0_",as.character(dateR0),".txt",sep=""))
   return(R0)
 }

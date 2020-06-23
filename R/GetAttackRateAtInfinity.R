@@ -28,7 +28,6 @@ GetAttackRateAtInfinity<-function(ode_list,AttackRateInfintyFormula,popsize_name
   TableARInfinity$ARInf[length(ode_list)+1]<-paste(format(round(sum(AR[,1]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2)," [",
                                                 format(round(sum(ARmin[,1]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2),";",
                                                 format(round(sum(ARmax[,1]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2),"]",sep="")
-  browser()
   LatexTable<-xtable::xtable(TableARInfinity[,c("Reg","ARInf")])
   print(LatexTable,include.rownames = FALSE,
         file = paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_list[[1]]$nameproject,"/TableARInf.txt",sep=""))
