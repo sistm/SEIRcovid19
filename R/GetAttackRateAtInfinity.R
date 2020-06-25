@@ -31,5 +31,5 @@ GetAttackRateAtInfinity<-function(ode_list,AttackRateInfintyFormula,popsize_name
   LatexTable<-xtable::xtable(TableARInfinity[,c("Reg","ARInf")])
   print(LatexTable,include.rownames = FALSE,
         file = paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_list[[1]]$nameproject,"/TableARInf.txt",sep=""))
-  return(ode_list)
+  return(LatexTable)
 }

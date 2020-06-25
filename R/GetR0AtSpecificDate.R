@@ -12,9 +12,9 @@ GetR0AtSpecificDate<-function(ode_list,dateR0,popsize_name,NationalName){
   Rtmax<-as.data.frame(matrix(NA,length(ode_list),1))
   for (id in 1:length(ode_list)){
     popsize_per_id[id]<-ode_list[[id]]$parameter[names(ode_list[[id]]$parameter)==popsize_name]
-    Rt[id,1]<-ode_list[[id]]$R0[which(as.Date(ode_list[[id]]$R0[,"date"])==dateR0),"R0"]
-    Rtmin[id,1]<-ode_list[[id]]$R0[which(as.Date(ode_list[[id]]$R0[,"date"])==dateR0),"R0_min"]
-    Rtmax[id,1]<-ode_list[[id]]$R0[which(as.Date(ode_list[[id]]$R0[,"date"])==dateR0),"R0_max"]
+    Rt[id,1]<-ode_list[[id]]$R0[which((as.Date(ode_list[[id]]$R0[,"date"])==dateR0)&(ode_list[[id]]$R0[,"obs_id"]==2)),"R0"]
+    Rtmin[id,1]<-ode_list[[id]]$R0[which((as.Date(ode_list[[id]]$R0[,"date"])==dateR0)&(ode_list[[id]]$R0[,"obs_id"]==2)),"R0_min"]
+    Rtmax[id,1]<-ode_list[[id]]$R0[which((as.Date(ode_list[[id]]$R0[,"date"])==dateR0)&(ode_list[[id]]$R0[,"obs_id"]==2)),"R0_max"]
     R0$R0[id]<-paste(format(round(Rt[id,1],2),nsmall=0)," [",
                      format(round(Rtmin[id,1],2),nsmall=0),";",
                      format(round(Rtmax[id,1],2),nsmall=0),"]",sep="")
