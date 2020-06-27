@@ -93,6 +93,7 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
   
   # Do plot
   if(ci){
+    R0DataFrame$id<-full_region_names(R0DataFrame$id)
   p<-ggplot(R0DataFrame, aes_(x=as.name("date"),y=as.name("R0"),group=as.name("id"))) +
     geom_line(aes(linetype="Region-wise value\n(95% CI)"),color="red3") +
     geom_line(aes_(y=as.name("R0_national"),linetype="France\nnational average"),color="black")+
