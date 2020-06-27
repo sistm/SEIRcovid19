@@ -29,9 +29,10 @@ GetAttackRateAtSpecificDate<-function(ode_list,SpecificDateAttackRateEquation,da
   TableARInfinity$AR[length(ode_list)+1]<-paste(format(round(sum(AR[,1]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2)," [",
                                 format(round(sum(ARmin[,1]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2),";",
                                 format(round(sum(ARmax[,1]*(popsize_per_id))/sum(popsize_per_id),2),nsmall=2),"]",sep="")
-
+ 
+  TableARInfinity$ARmean<-c(AR[,1],round(sum(AR[,1]*(popsize_per_id))/sum(popsize_per_id),2))
   LatexTable<-xtable::xtable(TableARInfinity[,c("Reg","AR")])
   print(LatexTable,include.rownames = FALSE,
         file = paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_list[[1]]$nameproject,"/TableAR_",as.character(dateAR),".txt",sep=""))
-  return(ode_list)
+  return(TableARInfinity)
 }

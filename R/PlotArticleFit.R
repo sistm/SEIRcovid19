@@ -60,7 +60,8 @@ PlotArticleFit<-function(ode_list,ModelObservationBloc,is_normalize){
   colnames(dataObs2plot_2)<-c("obs","obs_id","date","Sim","Sim_min","Sim_max","id")
   
   all_data<-rbind(dataObs2plot_1,dataObs2plot_2)
-  
+  dataObs2plot_1$id<-full_region_names(dataObs2plot_1$id)
+  dataObs2plot_2$id<-full_region_names(dataObs2plot_2$id)
   
   dataObs2plot_1 <- all_data %>% filter(id %in% levels(all_data$id)[1:6])
   dataObs2plot_2 <- all_data %>% filter(id %in% levels(all_data$id)[7:12])

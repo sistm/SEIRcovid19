@@ -31,8 +31,8 @@ ComputeConfidenceInterval.OdeSystem <-function(systemode,indiv,pop,id,nb_mc,is_g
   for (j in 1:length(optimize_param_name)){
     optimize_monolix_name<-paste(optimize_param_name[j],"_sd",sep="")
     optimize_pop_name<-paste(optimize_param_name[j],"_pop",sep="")
-    #SdOptimizeParam[j]<-sqrt(indiv[id,optimize_monolix_name]**2+pop[optimize_pop_name,"stochasticApproximation"]**2)
-    SdOptimizeParam[j]<-sqrt(indiv[id,optimize_monolix_name]**2)
+    SdOptimizeParam[j]<-sqrt(indiv[id,optimize_monolix_name]**2+pop[optimize_pop_name,"stochasticApproximation"]**2)
+    #SdOptimizeParam[j]<-sqrt(indiv[id,optimize_monolix_name]**2)
     optimize_monolix_name<-paste(optimize_param_name[j],"_mode",sep="")
     OptimizeParam[j]<-indiv[id,optimize_monolix_name]
     if (SdOptimizeParam[j]==0){

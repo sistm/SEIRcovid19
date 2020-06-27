@@ -50,9 +50,9 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
     R0_sim<-cbind(R0_sim,rep(indivParams$id[id],dim(R0_sim)[[1]]))
     colnames(R0_sim)[dim(R0_sim)[2]]<-"id"
     # Add suffixe for evaluation of the R0_min/max exp
-    ICmin<-ode_id[[id]]$solution-1.96*sqrt(ode_id[[id]]$solution)
+    ICmin<-ode_id[[id]]$solution-1.96*sqrt(ode_id[[id]]$solution) # or ICmin
     ICmin<-AddSuffixName(ICmin,0,"_min")
-    ICmax<-ode_id[[id]]$solution+1.96*sqrt(ode_id[[id]]$solution)
+    ICmax<-ode_id[[id]]$solution+1.96*sqrt(ode_id[[id]]$solution) # or ICmax
     ICmax<-AddSuffixName(ICmax,0,"_max")
     Pmin<-ode_id[[id]]$ParamICmin
     Pmin<-AddSuffixName(Pmin,0,"_min")
