@@ -125,5 +125,7 @@ get_data_covid19 <- function(maille_cd = "FRA",
    rename(hospitalisation_incident = nbre_hospit_corona)
  out_data4$day <- as.numeric(difftime(out_data4$date, out_data4$date[1], units = "day"))
 
+ out_data4$day <- as.numeric(difftime(out_data4$date, out_data4$date[1], units = "day"))
+
   return(out_data4)
 }

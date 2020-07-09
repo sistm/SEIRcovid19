@@ -4,16 +4,6 @@
 .Ruserdata
 *.DS_Store
 *.Rproj
-./man/*
-TRASH
-./R/sensitivity/*
-<<<<<<< HEAD
-FINAL
-Rplots.pdf
-SEIRAHmodel.key
-SEIRAHmodel.pdf
-=======
-*.jpg
-*.pdf
-*.jpeg
->>>>>>> dac6cf7acd9786f3e8e331ec4058bdfe628d0f8b
+*.key
+*.Rd
+R/SIVICDRESS_CIRE.R

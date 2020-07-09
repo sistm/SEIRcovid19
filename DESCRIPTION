@@ -1,9 +1,9 @@
 Package: SEIRcovid19FR
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Melanie Prague, Boris Hejblum
-Maintainer: The package maintainer <yourself@somewhere.net>
+Title: Interface Monolix for multilevel modeling of epidemic dynamics
+Version: 0.2.0
+Author: Melanie Prague, Dan Dutartre, Boris P Hejblum
+Maintainer: Boris P Hejblum <boris.hejblum@u-bordeaux.fr>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 Depends: R (>= 3.5.0)
@@ -16,7 +16,10 @@ Imports: deSolve,
          parallel,
          tidyr,
          utils,
-         stats
+         stats,
+         mlxR,
+         pracma
+Suggest: lixoftConnectors
 License: MIT license
 Encoding: UTF-8
 LazyData: true

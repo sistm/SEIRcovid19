@@ -1,4 +1,4 @@
-#' Map of French region 
+#' Map of French region
 #'
 #' @export
 french_regions_map <- function(fill_info_df,
@@ -51,14 +51,14 @@ french_regions_map <- function(fill_info_df,
 
   p <- ggplot(reg_map_df2plot[sel,], aes(x = long, y = lat, group=group)) +
     geom_polygon(aes(fill=fill_value, color=fill_value), alpha=0.93, size=0.08) +
-    scale_fill_gradientn(name = "", colours = c("aliceblue", "lightcyan", "lightskyblue", "red4"), #c("#F9FCFF", "#EEF8FF", "#E2FDFF", "#CCF5FF", "#ADE4FD", "#98D8FB", "#8DC3EC", "#B97790", "#BB0000", "#8B0000"),
-                         breaks=c(0,2,4,6), minor_breaks=c(1,3,5),
-                         labels = paste0(c(0,2,4,6), "%"),
-                         limits = c(0,6)) +
-    scale_color_gradientn(name = "", colours = c("aliceblue", "lightcyan", "lightskyblue", "red4"), #c("#F9FCFF", "#EEF8FF", "#E2FDFF", "#CCF5FF", "#ADE4FD", "#98D8FB", "#8DC3EC", "#B97790", "#BB0000", "#8B0000"),
-                          breaks=c(0,2,4,6), minor_breaks=c(1,3,5),
-                          labels = paste0(c(0,2,4,6), "%"),
-                          limits = c(0,6)) +
+    scale_fill_gradientn(name = "", colours = c("#F9FCFF", "#EEF8FF", "#E2FDFF", "#CCF5FF", "#ADE4FD", "#98D8FB", "#8DC3EC", "#B97790", "#BB0000", "#8B0000"),
+                         breaks=c(0,5,10),
+                         labels = paste0(c(0,5,10), "%"),
+                         limits = c(0,10)) +
+    scale_color_gradientn(name = "", colours = c("#F9FCFF", "#EEF8FF", "#E2FDFF", "#CCF5FF", "#ADE4FD", "#98D8FB", "#8DC3EC", "#B97790", "#BB0000", "#8B0000"),
+                          breaks=c(0,5,10),
+                          labels = paste0(c(0,5,10), "%"),
+                          limits = c(0,10)) +
     coord_map() +
     ggtitle(mytitle) +
     theme_void() +
@@ -68,11 +68,8 @@ french_regions_map <- function(fill_info_df,
 
   if(show_labels){
     p <- p +
-      new_scale("color") +
-      geom_text(data = reg_map_centroids_df2plot, aes(label=format(fill_value),
-                                                             color=fill_value>5),
-                       size=size_labels, vjust=0.7) +
-      scale_color_manual(guide = FALSE, values = c("black", "white"))
+      geom_text(data = reg_map_centroids_df2plot, aes(label=paste(format(round(fill_value,1),nsmall=1),"%",sep="")),
+                       size=size_labels, vjust=0.7)
   }
   return(p)
 }

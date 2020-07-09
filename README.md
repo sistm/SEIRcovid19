@@ -1,7 +1,8 @@
-  
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# SEIRcovid19FR
+`SEIRcovid19FR` is an R package for multi-level inference of epidemic
+dynamics applied to COVID-19 in France.
 
 <!-- badges: start -->
 
@@ -9,14 +10,15 @@
 
 ## Installation
 
-You can install `SEIRcovid19FR` from [GitHub](https://github.com/) with:
+You can install the development version of SEIRcovid19FR from
+[GitHub](https://github.com/) with: \>\>\>\>\>\>\> rebirth
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("sistm/SEIRcovid19")
 ```
 
-## Updating the Hospitalization data for Monolix :
+\<\<\<\<\<\<\< HEAD \#\# Updating the Hospitalization data for Monolix :
 
 1.  download the new SurSaUD file in `data/raw` from
     [data.gouv](https://www.data.gouv.fr/fr/datasets/r/941ff2b4-ea24-4cdf-b0a7-655f2a332fb2)
@@ -25,4 +27,7 @@ devtools::install_github("sistm/SEIRcovid19")
 3.  reload the package
 4.  run the example script of `R/prepare_data_4monolix.R`
 
-Mélanie Prague, Dan Dutartre & Boris Hejblum
+# Mélanie Prague, Dan Dutartre & Boris Hejblum
+
+In that case, don’t forget to commit and push the resulting figure
+files, so they display on GitHub\! \>\>\>\>\>\>\> rebirth

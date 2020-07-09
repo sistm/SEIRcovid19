@@ -1,0 +1,6 @@
+"importanceSampling"
+"-2LL",17726.011
+"AIC",17750.011
+"BICc",17787.444
+"BIC",17755.83
+"stdError",0.148

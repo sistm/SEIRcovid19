@@ -1,0 +1,6 @@
+eta,statistics,p-value
+eta_initE,0.969145,0.987935
+eta_betaw1,0.859776,0.0220824
+eta_betaw2,0.939679,0.771951
+eta_betaw3,0.934408,0.714173
+eta_betaw4,0.955518,0.968114
