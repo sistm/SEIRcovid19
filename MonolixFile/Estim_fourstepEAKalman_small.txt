@@ -1,0 +1,72 @@
+ DESCRIPTION: FIT SEIRAH MODEL
+
+
+[LONGITUDINAL]
+INPUT:
+parameter = {initE,b1,betaw1,betaw2,betaw3,betaw4,Dq}
+regressor = {popsize,timeSinceConf,initH,initIref}
+
+EQUATION:
+odeType = stiff
+t0 = 0  ; t0 is a reserved keyword (initiation of therapy) 
+
+rsent=0.0337
+alpha=0.55
+De=5.1
+Di=2.3
+Dh=30
+pct=1
+
+H_0=initH
+
+E_0=initE
+
+R_0=0
+
+I_0=initIref/pct
+A_0=I_0*(1-rsent)/rsent
+S_0=popsize-E_0-I_0-R_0-A_0-H_0
+
+
+if (timeSinceConf==0)
+current = 0
+else
+if (timeSinceConf<7)
+current = betaw1
+ end
+if (timeSinceConf>=7) & (timeSinceConf<14)
+current = betaw2
+end
+if (timeSinceConf>=14) & (timeSinceConf<21)
+current = betaw3
+end
+if (timeSinceConf>=21) 
+current = betaw4
+end
+end
+transmission=b1*exp(current)
+dailyMove=0
+
+
+ddt_S = -transmission*S*(I+alpha*A)/popsize+dailyMove-dailyMove*S/(popsize-I-H)
+ddt_E = transmission*S*(I+alpha*A)/popsize-E/De-dailyMove*E/(popsize-I-H)
+ddt_I = rsent*E/De-I/Dq-I/Di
+ddt_R = (I+A)/Di+H/Dh-dailyMove*R/(popsize-I-H)
+ddt_A = (1-rsent)*E/De-A/Di-dailyMove*A/(popsize-I-H)
+ddt_H = I/Dq-H/Dh
+
+
+Isim=pct*rsent*E/De
+Hsim=I/Dq
+
+
+
+DEFINITION:
+
+Y1= {type = count, log(P(Y1=k)) = -Isim+ k*log(Isim) - factln(k) }
+Y2= {type = count, log(P(Y2=k)) = -Hsim+ k*log(Hsim) - factln(k) }
+
+
+OUTPUT:
+
+output = {Y1, Y2}

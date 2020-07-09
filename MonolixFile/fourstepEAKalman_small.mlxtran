@@ -1,0 +1,65 @@
+<DATAFILE>
+
+[FILEINFO]
+file = 'DATABIOMKALMAN.txt'
+delimiter = tab
+header = {id, nameid, date, obs, popsize, epidemicsStart, day, lockdown, timeSinceConf, timeSinceDeConf, rsent, initH, initIref, timelock, obs_id}
+
+[CONTENT]
+nameid = {use=identifier}
+obs = {use=observation, name={cas_confirmes_incident, hospitalisation_incident}, yname={'1', '2'}, type={discrete, discrete}}
+popsize = {use=regressor}
+day = {use=time}
+timeSinceConf = {use=regressor}
+initH = {use=regressor}
+initIref = {use=regressor}
+obs_id = {use=observationtype}
+
+<MODEL>
+
+[INDIVIDUAL]
+input = {Dq_pop, b1_pop, betaw1_pop, omega_betaw1, betaw2_pop, omega_betaw2, betaw3_pop, omega_betaw3, betaw4_pop, omega_betaw4, initE_pop, omega_initE}
+
+DEFINITION:
+Dq = {distribution=logNormal, typical=Dq_pop, no-variability}
+b1 = {distribution=logNormal, typical=b1_pop, no-variability}
+betaw1 = {distribution=normal, typical=betaw1_pop, sd=omega_betaw1}
+betaw2 = {distribution=normal, typical=betaw2_pop, sd=omega_betaw2}
+betaw3 = {distribution=normal, typical=betaw3_pop, sd=omega_betaw3}
+betaw4 = {distribution=normal, typical=betaw4_pop, sd=omega_betaw4}
+initE = {distribution=logNormal, typical=initE_pop, sd=omega_initE}
+
+[LONGITUDINAL]
+file = 'Estim_fourstepEAKalman_small.txt'
+
+<FIT>
+data = {cas_confirmes_incident, hospitalisation_incident}
+model = {Y1, Y2}
+
+<PARAMETER>
+Dq_pop = {value=0.8, method=MLE}
+b1_pop = {value=1.95, method=MLE}
+betaw1_pop = {value=-0.1, method=MLE}
+betaw2_pop = {value=-0.7, method=MLE}
+betaw3_pop = {value=-1.2, method=MLE}
+betaw4_pop = {value=-1.2, method=MLE}
+initE_pop = {value=1000, method=MLE}
+omega_betaw1 = {value=1, method=MLE}
+omega_betaw2 = {value=1, method=MLE}
+omega_betaw3 = {value=1, method=MLE}
+omega_betaw4 = {value=1, method=MLE}
+omega_initE = {value=1, method=MLE}
+
+<MONOLIX>
+
+[TASKS]
+populationParameters()
+individualParameters(method = {conditionalMean, conditionalMode })
+fim(method = StochasticApproximation)
+logLikelihood(method = ImportanceSampling)
+plotResult(method = {outputplot, indfits, obspred, residualsscatter, residualsdistribution, parameterdistribution, covariatemodeldiagnosis, randomeffects, covariancemodeldiagnosis, saemresults })
+
+[SETTINGS]
+GLOBAL:
+exportpath = 'fourstepEAKalman_small'
+

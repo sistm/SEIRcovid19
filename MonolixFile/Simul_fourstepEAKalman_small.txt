@@ -1,0 +1,47 @@
+[LONGITUDINAL]
+
+input = {b1,betaw1,betaw2,betaw3,betaw4,rsent,alpha,De,Di,Dq,Dh,pct,popsize,timeSinceConf,initIref,initS,initE,initI,initR,initA,initH}
+initH = {use = regressor}
+popsize = {use = regressor}
+timeSinceConf = {use = regressor}
+initIref = {use = regressor}
+
+EQUATION:
+odeType = stiff
+
+E_0=initE
+R_0=initR
+H_0=initH
+
+I_0=initIref/pct
+A_0=I_0*(1-rsent)/rsent
+S_0=popsize-E_0-I_0-R_0-A_0-H_0
+
+
+if (timeSinceConf==0)
+current = 0
+else
+if (timeSinceConf<7)
+current = betaw1
+ end
+if (timeSinceConf>=7) & (timeSinceConf<14)
+current = betaw2
+end
+if (timeSinceConf>=14) & (timeSinceConf<21)
+current = betaw3
+end
+if (timeSinceConf>=21) 
+current = betaw4
+end
+end
+transmission=b1*exp(current)
+dailyMove=0
+R0=Di*transmission/(A+I)*(alpha*A+Dq*I/(Di+Dq))
+
+
+ddt_S = -transmission*S*(I+alpha*A)/popsize+dailyMove-dailyMove*S/(popsize-I-H)
+ddt_E = transmission*S*(I+alpha*A)/popsize-E/De-dailyMove*E/(popsize-I-H)
+ddt_I = rsent*E/De-I/Dq-I/Di
+ddt_R = (I+A)/Di+H/Dh-dailyMove*R/(popsize-I-H)
+ddt_A = (1-rsent)*E/De-A/Di-dailyMove*A/(popsize-I-H)
+ddt_H = I/Dq-H/Dh

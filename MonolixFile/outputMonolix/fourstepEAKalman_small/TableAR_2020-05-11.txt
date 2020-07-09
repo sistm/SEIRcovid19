@@ -1,0 +1,24 @@
+% latex table generated in R 4.0.0 by xtable 1.8-4 package
+% Sat Jun 27 16:09:11 2020
+\begin{table}[ht]
+\centering
+\begin{tabular}{ll}
+  \hline
+Reg & AR \\ 
+  \hline
+IDF & 9.86 [8.59;12.06] \\ 
+  Centre & 3.80 [1.10;6.94] \\ 
+  BFC & 5.73 [3.80;7.68] \\ 
+  Normandie & 2.23 [1.55;3.10] \\ 
+  HDF & 4.43 [3.05;6.12] \\ 
+  GrandEst & 9.46 [8.13;11.00] \\ 
+  PaysLoire & 2.08 [0.53;3.97] \\ 
+  Bretagne & 1.69 [0.42;2.97] \\ 
+  NAquitaine & 1.48 [0.50;2.89] \\ 
+  Occitanie & 1.85 [0.80;2.99] \\ 
+  AURA & 3.80 [2.81;4.70] \\ 
+  PACA & 4.29 [3.08;6.10] \\ 
+  France & 4.93 [3.66;6.56] \\ 
+   \hline
+\end{tabular}
+\end{table}
