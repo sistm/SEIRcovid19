@@ -1,10 +1,10 @@
- DESCRIPTION: FIT SEIRAH MODEL
+DESCRIPTION: FIT SEIRAH MODEL
 
 
 [LONGITUDINAL]
 INPUT:
-parameter = {initE,b1,betaw1,betaw2,betaw3,betaw4,Dq}
-regressor = {popsize,timeSinceConf,initH,initIref}
+parameter = {initE,b1,betaw1,betaw2,betaw3,betaw4,betawp1,betawp2,betawp3,betawp4,Dq}
+regressor = {popsize,timeSinceConf,timeSinceDeConf}
 
 EQUATION:
 odeType = stiff
@@ -17,13 +17,12 @@ Di=2.3
 Dh=30
 pct=1
 
-H_0=initH
-
 E_0=initE
 
 R_0=0
 
-I_0=initIref/pct
+I_0=E_0/10
+H_0=E_0/10/5
 A_0=I_0*(1-rsent)/rsent
 S_0=popsize-E_0-I_0-R_0-A_0-H_0
 
@@ -31,6 +30,7 @@ S_0=popsize-E_0-I_0-R_0-A_0-H_0
 if (timeSinceConf==0)
 current = 0
 else
+if (timeSinceDeConf==0)
 if (timeSinceConf<7)
 current = betaw1
  end
@@ -42,6 +42,20 @@ current = betaw3
 end
 if (timeSinceConf>=21) 
 current = betaw4
+end
+else
+if (timeSinceDeConf<15)
+current = betawp1
+ end
+if (timeSinceDeConf>=15) & (timeSinceDeConf<30)
+current = betawp2
+end
+if (timeSinceDeConf>=30) & (timeSinceDeConf<45)
+current = betawp3
+end
+if (timeSinceDeConf>=45) 
+current = betawp4
+end
 end
 end
 transmission=b1*exp(current)

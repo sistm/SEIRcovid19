@@ -1,9 +1,9 @@
 <DATAFILE>
 
 [FILEINFO]
-file = 'DATABIOMKALMAN.txt'
+file = 'SEIRAH_20200709.txt'
 delimiter = tab
-header = {id, nameid, date, obs, popsize, epidemicsStart, day, lockdown, timeSinceConf, timeSinceDeConf, rsent, initH, initIref, timelock, obs_id}
+header = {id, nameid, date, obs, popsize, epidemicsStart, day, lockdown, timeSinceConf, timeSinceDeConf, rsent, obs_id, obs_standardised}
 
 [CONTENT]
 nameid = {use=identifier}
@@ -11,14 +11,13 @@ obs = {use=observation, name={cas_confirmes_incident, hospitalisation_incident},
 popsize = {use=regressor}
 day = {use=time}
 timeSinceConf = {use=regressor}
-initH = {use=regressor}
-initIref = {use=regressor}
+timeSinceDeConf = {use=regressor}
 obs_id = {use=observationtype}
 
 <MODEL>
 
 [INDIVIDUAL]
-input = {Dq_pop, b1_pop, betaw1_pop, omega_betaw1, betaw2_pop, omega_betaw2, betaw3_pop, omega_betaw3, betaw4_pop, omega_betaw4, initE_pop, omega_initE}
+input = {Dq_pop, b1_pop, betaw1_pop, omega_betaw1, betaw2_pop, omega_betaw2, betaw3_pop, omega_betaw3, betaw4_pop, omega_betaw4, betawp1_pop, omega_betawp1, betawp2_pop, omega_betawp2, betawp3_pop, omega_betawp3, betawp4_pop, omega_betawp4, initE_pop, omega_initE}
 
 DEFINITION:
 Dq = {distribution=logNormal, typical=Dq_pop, no-variability}
@@ -27,10 +26,14 @@ betaw1 = {distribution=normal, typical=betaw1_pop, sd=omega_betaw1}
 betaw2 = {distribution=normal, typical=betaw2_pop, sd=omega_betaw2}
 betaw3 = {distribution=normal, typical=betaw3_pop, sd=omega_betaw3}
 betaw4 = {distribution=normal, typical=betaw4_pop, sd=omega_betaw4}
+betawp1 = {distribution=normal, typical=betawp1_pop, sd=omega_betawp1}
+betawp2 = {distribution=normal, typical=betawp2_pop, sd=omega_betawp2}
+betawp3 = {distribution=normal, typical=betawp3_pop, sd=omega_betawp3}
+betawp4 = {distribution=normal, typical=betawp4_pop, sd=omega_betawp4}
 initE = {distribution=logNormal, typical=initE_pop, sd=omega_initE}
 
 [LONGITUDINAL]
-file = 'Estim_fourstepEAKalman_small.txt'
+file = 'Estim_SEIRAH.txt'
 
 <FIT>
 data = {cas_confirmes_incident, hospitalisation_incident}
@@ -43,11 +46,19 @@ betaw1_pop = {value=-0.1, method=MLE}
 betaw2_pop = {value=-0.7, method=MLE}
 betaw3_pop = {value=-1.2, method=MLE}
 betaw4_pop = {value=-1.2, method=MLE}
+betawp1_pop = {value=-1, method=MLE}
+betawp2_pop = {value=-1, method=MLE}
+betawp3_pop = {value=-1, method=MLE}
+betawp4_pop = {value=-1, method=MLE}
 initE_pop = {value=1000, method=MLE}
 omega_betaw1 = {value=1, method=MLE}
 omega_betaw2 = {value=1, method=MLE}
 omega_betaw3 = {value=1, method=MLE}
 omega_betaw4 = {value=1, method=MLE}
+omega_betawp1 = {value=1, method=MLE}
+omega_betawp2 = {value=1, method=MLE}
+omega_betawp3 = {value=1, method=MLE}
+omega_betawp4 = {value=1, method=MLE}
 omega_initE = {value=1, method=MLE}
 
 <MONOLIX>
@@ -61,5 +72,5 @@ plotResult(method = {outputplot, indfits, obspred, residualsscatter, residualsdi
 
 [SETTINGS]
 GLOBAL:
-exportpath = 'fourstepEAKalman_small'
+exportpath = 'SEIRAH'
 
