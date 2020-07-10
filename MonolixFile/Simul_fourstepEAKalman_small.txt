@@ -1,22 +1,17 @@
 [LONGITUDINAL]
 
 input = {b1,betaw1,betaw2,betaw3,betaw4,rsent,alpha,De,Di,Dq,Dh,pct,popsize,timeSinceConf,initIref,initS,initE,initI,initR,initA,initH}
-initH = {use = regressor}
-popsize = {use = regressor}
 timeSinceConf = {use = regressor}
-initIref = {use = regressor}
 
 EQUATION:
 odeType = stiff
 
+S_0=initS
 E_0=initE
+I_0=initI
 R_0=initR
+A_0=initA
 H_0=initH
-
-I_0=initIref/pct
-A_0=I_0*(1-rsent)/rsent
-S_0=popsize-E_0-I_0-R_0-A_0-H_0
-
 
 if (timeSinceConf==0)
 current = 0

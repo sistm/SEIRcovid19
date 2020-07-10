@@ -1,9 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-MonolixFile/*
+^MonolixFile/*
 ^README\.Rmd$
-R/SIVICDRESS_CIRE.R
+^R/SIVICDRESS_CIRE\.R$
 ^.*\.pdf$
 ^.*\.jpeg$
 ^.*\.jpg$
-

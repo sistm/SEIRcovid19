@@ -8,8 +8,8 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
   ObsIdName<-InputNames[ode_list[[1]]$DataInfo$HeaderType=="obsid"]
   ObservationName<-InputNames[ode_list[[1]]$DataInfo$HeaderType=="observation"]
   indivParams <-read.table(paste(here::here(),'/MonolixFile/',"/outputMonolix/",ode_list[[1]]$nameproject,"/IndividualParameters/estimatedIndividualParameters.txt",sep=""),header=TRUE,sep=",")
-  
-  
+
+
   GetR0WithExp<-function(solution,parameter,timeparam,exp,name){
     with(as.list(c(solution,parameter,timeparam)),{
       R0<-data.frame((eval(parse(text=exp))))
@@ -17,7 +17,7 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
       return(R0)
     })
   }
-  
+
   GetR0ICWithExp<-function(ICmin,ICmax,parameter,timeparamMin,timeparamMax,exp,name,solution){
     with(as.list(c(ICmin,ICmax,parameter,timeparamMin,timeparamMax,solution)),{
       R0<-data.frame((eval(parse(text=exp))))
@@ -25,7 +25,7 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
       return(R0)
     })
   }
-  
+
   AddSuffixName<-function(mylist,offset,suffix){
     actual_names<-colnames(mylist)
     for (i in (1+offset):length(actual_names)){
@@ -34,8 +34,8 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
     colnames(mylist)<-actual_names
     return(mylist)
   }
-  
-  
+
+
   #Init
   R0_id<-list()
   # Loop over ID
@@ -45,7 +45,7 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
     # Add time
     R0_sim<-cbind(R0_sim,ode_id[[id]]$solution$time)
     colnames(R0_sim)[dim(R0_sim)[2]]<-timename
-    
+
     # Add ID
     R0_sim<-cbind(R0_sim,rep(indivParams$id[id],dim(R0_sim)[[1]]))
     colnames(R0_sim)[dim(R0_sim)[2]]<-"id"
@@ -64,13 +64,13 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
     # Compute R0_max
     R0_max<-GetR0ICWithExp(ICmin,ICmax,ode_id[[id]]$parameter,Pmin,Pmax,R0max_formula,"R0_max",ode_id[[id]]$solution)
     R0_sim<-cbind(R0_sim,R0_max)
-    
+
     # Add observation in order to have date
     Observation<-unique(ode_id[[id]]$ObsData)
     R0_id[[id]] <-merge(Observation, R0_sim, by = timename)
     R0_id[[id]]$popsize <- ode_id[[id]]$parameter[names(ode_id[[id]]$parameter)=='popsize']
     ode_list[[id]]$R0<-R0_id[[id]]
-    
+
   }
 
   R0DataFrame <- do.call(rbind.data.frame, R0_id)
@@ -81,16 +81,20 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
     data_per_date<-R0DataFrame[which(R0DataFrame$date==all_date[idate]),]
     R0DataFrame[which(R0DataFrame$date==all_date[idate]),"R0_national"]<-sum(data_per_date$R0*data_per_date$popsize)/sum(data_per_date$popsize)
   }
-  
-  
+
+
   # Create Plot Dir
   if (dir.exists(paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/"))){
-    
+
   }
   else{
     dir.create(paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/"))
   }
-  
+
+
+  old.loc   <-   Sys.getlocale("LC_TIME")
+  Sys.setlocale("LC_TIME", "en_GB.UTF-8")
+
   # Do plot
   if(ci){
     R0DataFrame$id<-full_region_names(R0DataFrame$id)
@@ -131,8 +135,14 @@ PlotR0<-function(ode_list,R0_formula,R0min_formula,R0max_formula,ci=TRUE){
       theme(strip.background = element_rect(fill="white"),
             strip.text = element_text(size=8))
   }
-  ggsave(plot=p, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/","R0Plot.jpg"), width=10, height=8)
-  
+
+  ggsave(plot=p, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/","R0Plot.pdf"),
+         width=10, height=8, device = "pdf")
+  ggsave(plot=p, filename = paste0(here::here(),'/MonolixFile/outputMonolix/',ode_list[[1]]$nameproject,"/graphics/","R0Plot.jpg"),
+         width=10, height=8, device = "jpg", dpi=300)
+
+  Sys.setlocale("LC_TIME", old.loc)
+
   return(ode_list)
-  
+
 }
