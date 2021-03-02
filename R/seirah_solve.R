@@ -37,15 +37,15 @@
 #   return(solution)
 # }
 
- seirah_solve <- function(init, t, par,pred=TRUE,ns1all=NULL,ns2all=NULL){
+ seirah_solve <- function(init, t, par,pred=TRUE,ns1all=NULL,ns2all=NULL, typecov="scale"){
    pargiven<-par
    if(typecov=="splines"){
       par<-c(pargiven,ns1all[1],ns2all[1])
    }
    # solution <- deSolve::ode(init, t, seirah_ode, par)
    # result<-as.data.frame(solution)
-   # 
-   
+   #
+
    solution <- deSolve::ode(init, c(0,t[2]), seirah_ode, par)
     result<-as.data.frame(solution)
    #print(result)

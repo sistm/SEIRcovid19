@@ -4,7 +4,15 @@
 \alias{seirah_solve}
 \title{SEIRAH solve function}
 \usage{
-seirah_solve(init, t, par, pred = TRUE, ns1all = NULL, ns2all = NULL)
+seirah_solve(
+  init,
+  t,
+  par,
+  pred = TRUE,
+  ns1all = NULL,
+  ns2all = NULL,
+  typecov = "scale"
+)
 }
 \description{
 SEIRAH solve function
