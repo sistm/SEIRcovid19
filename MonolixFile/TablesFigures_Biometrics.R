@@ -141,7 +141,8 @@ plot_article
 Sys.setlocale("LC_TIME", old.loc)
 
 ### FIGURE3 ----
-datagouv <- read.table("./data/geodesSPF.csv", header=TRUE, sep=";")
+data(geodesSPF)
+datagouv <- geodesSPF
 datagouv$time <- as.Date(datagouv$time)
 datagouv$Iobs <- as.numeric(datagouv$Iobs)
 datagouv$Dobs <- as.numeric(datagouv$Dobs)
@@ -625,6 +626,11 @@ ggsave(plot = pmap,  file=paste("./MonolixFile/outputMonolix/", nameproject, "/g
        width=8,  height=6.4,  dpi = 600, device = "jpeg")
 #ggsave(plot = pmap,  file=paste("./MonolixFile/outputMonolix/", nameproject, "/graphics/map300.jpg", sep=""),
 #       width=8,  height=6.4,  dpi = 300, device = "jpeg")
+
+pmap_poster <- french_regions_map(fill_info,  mytitle = "", one_out_of = 1,
+                                  show_labels = TRUE, contour = "grey35")
+ggsave(plot = pmap_poster,  file=paste("./MonolixFile/outputMonolix/", nameproject, "/graphics/map600_poster.jpg", sep=""),
+       width=8,  height=6.4,  dpi = 600, device = "jpeg")
 
 ######  APPENDIX KALMAN ----
 
