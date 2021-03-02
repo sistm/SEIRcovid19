@@ -11,6 +11,8 @@ dynamics applied to COVID-19 in France.
 [![AppVeyor build
 status](https://ci.appveyor.com/api/projects/status/github/sistm/SEIRcovid19?branch=master&svg=true)](https://ci.appveyor.com/project/sistm/SEIRcovid19)
 [![R-CMD-check](https://github.com/sistm/SEIRcovid19/workflows/R-CMD-check/badge.svg)](https://github.com/sistm/SEIRcovid19/actions)
+[![Travis build
+status](https://travis-ci.com/sistm/SEIRcovid19.svg?branch=master)](https://travis-ci.com/sistm/SEIRcovid19)
 <!-- badges: end -->
 
 ## Installation

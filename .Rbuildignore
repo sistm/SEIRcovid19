@@ -8,3 +8,4 @@
 ^.*\.jpg$
 ^appveyor\.yml$
 ^\.github$
+^\.travis\.yml$
