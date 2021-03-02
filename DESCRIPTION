@@ -27,7 +27,7 @@ Imports: colorspace,
          tidyr,
          utils,
          xtable
-Suggest: lixoftConnectors
+Suggests: lixoftConnectors
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
