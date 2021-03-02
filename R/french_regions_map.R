@@ -1,5 +1,9 @@
 #' Map of French region
 #'
+#' @import ggplot2
+#' @import dplyr
+#' @import maptools
+#'
 #' @export
 french_regions_map <- function(fill_info_df,
                                mytitle,
@@ -8,10 +12,6 @@ french_regions_map <- function(fill_info_df,
                                col_labels = "white",
                                size_labels = 5,
                                contour = NULL){
-
-  library(ggplot2)
-  library(maptools)
-  library(dplyr)
 
   # library(rgdal)
   # region_shp <- rgdal::readOGR(
