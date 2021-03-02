@@ -141,7 +141,8 @@ plot_article
 Sys.setlocale("LC_TIME", old.loc)
 
 ### FIGURE3 ----
-datagouv <- read.table("./data/geodesSPF.csv", header=TRUE, sep=";")
+data(geodesSPF)
+datagouv <- geodesSPF
 datagouv$time <- as.Date(datagouv$time)
 datagouv$Iobs <- as.numeric(datagouv$Iobs)
 datagouv$Dobs <- as.numeric(datagouv$Dobs)
