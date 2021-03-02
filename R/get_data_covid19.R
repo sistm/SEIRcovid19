@@ -12,6 +12,7 @@
 #'
 #'
 #' @import dplyr
+#' @importFrom tibble add_column
 #' @importFrom lubridate as_date
 #' @importFrom tidyr replace_na
 #'

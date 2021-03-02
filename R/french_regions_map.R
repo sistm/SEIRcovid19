@@ -2,7 +2,6 @@
 #'
 #' @import ggplot2
 #' @import dplyr
-#' @import maptools
 #'
 #' @export
 french_regions_map <- function(fill_info_df,
@@ -14,6 +13,7 @@ french_regions_map <- function(fill_info_df,
                                contour = NULL){
 
   # library(rgdal)
+  # library(maptools)
   # region_shp <- rgdal::readOGR(
   #   dsn= "~/Downloads/regions-20180101-shp/" ,
   #   layer="regions-20180101",

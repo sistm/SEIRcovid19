@@ -1,7 +1,7 @@
 Package: SEIRcovid19FR
 Type: Package
 Title: Interface Monolix for multilevel modeling of epidemic dynamics
-Version: 0.2.0
+Version: 0.3.0
 Author: Melanie Prague, Dan Dutartre, Boris P Hejblum
 Maintainer: Boris P Hejblum <boris.hejblum@u-bordeaux.fr>
 Description: More about what it does (maybe more than one line)
@@ -14,15 +14,19 @@ Imports: colorspace,
          glue,
          ggplot2,
          here,
-         reshape2,
          lubridate,
+         mlxR,
          parallel,
+         patchwork,
+         pracma,
+         readxl,
+         reshape2,
+         scales,
+         stats,
+         tibble,
          tidyr,
          utils,
-         stats,
-         mlxR,
-         pracma,
-         patchwork
+         xtable
 Suggest: lixoftConnectors
 License: MIT + file LICENSE
 Encoding: UTF-8

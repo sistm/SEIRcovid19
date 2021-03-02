@@ -1,3 +1,5 @@
+#'@export
+#'
 mlxtran_solve_simulx<-function(pk.model,time,param,init,model_name){
   lixoftConnectors::initializeLixoftConnectors(software="simulx",force=TRUE)
   #Initialisation of the solution
@@ -20,6 +22,4 @@ mlxtran_solve_simulx<-function(pk.model,time,param,init,model_name){
     result<-rbind(result,as.numeric(temp[2,c(1,seq(2,length(model_name)*2,by=2))]))
   }
   return(result)
-  
-  
 }

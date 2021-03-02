@@ -1,3 +1,4 @@
+#' @import xtable
 #' @export
 
 GetR0AtSpecificDate <- function(ode_list, dateR0, popsize_name, NationalName){
