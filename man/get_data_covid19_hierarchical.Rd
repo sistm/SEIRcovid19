@@ -31,9 +31,9 @@ Scrap and format data from opencovid19-fr
 \examples{
 
 data_FR <- get_data_covid19_hierarchical(maille_cd = "FRA")
-View(data_FR)
+#View(data_FR)
 
 data_NA <- get_data_covid19_hierarchical(maille_cd = "REG-75")
-View(data_NA)
+#View(data_NA)
 
 }

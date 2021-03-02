@@ -21,10 +21,10 @@
 #'@examples
 #'
 #'data_FR <- get_data_covid19_hierarchical(maille_cd = "FRA")
-#'View(data_FR)
+#'#View(data_FR)
 #'
 #'data_NA <- get_data_covid19_hierarchical(maille_cd = "REG-75")
-#'View(data_NA)
+#'#View(data_NA)
 #'
 get_data_covid19_hierarchical <- function(maille_cd = "FRA",
                                           sources_hierarchy = c("sante-publique-france", "ministere-sante", "agences-regionales-sante", "opencovid19-fr"),

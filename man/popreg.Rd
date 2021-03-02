@@ -25,8 +25,7 @@ as of 2020-01-01 (according to INED)
 }
 \examples{
 data(popreg)
-#popreg <- read.delim("data/raw/population_regionsFR_INED1erjan2020.tsv",
-                     encoding = "UTF8")
+# popreg <- read.delim(system.file("extdata", "population_regionsFR_INED1erjan2020.tsv", encoding = "UTF8"))
 
 }
 \keyword{datasets}
