@@ -18,7 +18,8 @@ Imports: deSolve,
          utils,
          stats,
          mlxR,
-         pracma
+         pracma,
+         patchwork
 Suggest: lixoftConnectors
 License: MIT license
 Encoding: UTF-8
