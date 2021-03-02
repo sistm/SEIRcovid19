@@ -626,6 +626,11 @@ ggsave(plot = pmap,  file=paste("./MonolixFile/outputMonolix/", nameproject, "/g
 #ggsave(plot = pmap,  file=paste("./MonolixFile/outputMonolix/", nameproject, "/graphics/map300.jpg", sep=""),
 #       width=8,  height=6.4,  dpi = 300, device = "jpeg")
 
+pmap_poster <- french_regions_map(fill_info,  mytitle = "", one_out_of = 1,
+                                  show_labels = TRUE, contour = "grey35")
+ggsave(plot = pmap_poster,  file=paste("./MonolixFile/outputMonolix/", nameproject, "/graphics/map600_poster.jpg", sep=""),
+       width=8,  height=6.4,  dpi = 600, device = "jpeg")
+
 ######  APPENDIX KALMAN ----
 
 KALMAN1 <- read.table("./MonolixFile/outputMonolix/fourstepEAKalman_small/graphics/estim_for_R_zero.txt", header=TRUE)

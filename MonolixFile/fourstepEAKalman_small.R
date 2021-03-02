@@ -139,9 +139,9 @@ myOde$nameproject <- nameproject
 TimeSpecificEquation <- c(ModelStatBloc, "R0=Di*transmission/(A+I)*(alpha*A+Dq*I/(Di+Dq))")
 TimeDependantParameter <- c("transmission", "R0")
 
-ode_id <- ComputeEstimationAllId(myOde, ModeFilename, TimeSpecificEquation,
-                                 SpecificInitBloc, ModelMathBloc, 1,
-                                 TimeDependantParameter)
+ode_id <- SEIRcovid19FR:::ComputeEstimationAllId(myOde, ModeFilename, TimeSpecificEquation,
+                                                 SpecificInitBloc, ModelMathBloc, 1,
+                                                 TimeDependantParameter)
 
 
 nb_mc  <-  1000
