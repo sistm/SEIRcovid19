@@ -1,6 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^MonolixFile/*
+^MonolixFile*
 ^README\.Rmd$
 ^R/SIVICDRESS_CIRE\.R$
 ^.*\.pdf$
@@ -9,3 +9,4 @@
 ^appveyor\.yml$
 ^\.github$
 ^\.travis\.yml$
+^LICENSE\.md$

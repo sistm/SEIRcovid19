@@ -7,8 +7,10 @@ Maintainer: Boris P Hejblum <boris.hejblum@u-bordeaux.fr>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 Depends: R (>= 3.5.0)
-Imports: deSolve,
+Imports: colorspace,
+         deSolve,
          dplyr,
+         forcats,
          glue,
          ggplot2,
          reshape2,

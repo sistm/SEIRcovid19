@@ -30,7 +30,7 @@ opencovid19_consolidated_reg <- get_data_covid19_hierar_bylevel()
 #save(opencovid19_consolidated_reg, file = "data/opencovid19_consolidated_reg.RData")
 
 # departements
-get_data_covid19_bylevel(level = "departement", metropole=FALSE)
+get_data_covid19_hierar_bylevel(level = "departement", metropole=FALSE)
 
 
 }

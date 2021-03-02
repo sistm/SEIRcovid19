@@ -1,3 +1,5 @@
+#' @importFrom forcats fct_recode
+#' @export
 PlotArticleR0 <- function(ode_list, write_graph_2file = TRUE){
 
   R0_id <- list()
@@ -15,7 +17,7 @@ PlotArticleR0 <- function(ode_list, write_graph_2file = TRUE){
   }
 
   full_region_names  <-  function(x){
-    forcats::fct_recode(x,
+    fct_recode(x,
                         "Île-de-France"="IDF",
                         "Nouvelle-Aquitaine" = "NAquitaine",
                         "Auvergne-Rhône-Alpes" = "AURA",

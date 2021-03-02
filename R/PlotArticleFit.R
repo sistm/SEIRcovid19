@@ -1,4 +1,5 @@
 #' @import patchwork
+#' @importFrom forcats fct_recode
 #' @export
 
 PlotArticleFit <- function(ode_list, ModelObservationBloc, is_normalize){
@@ -20,7 +21,7 @@ PlotArticleFit <- function(ode_list, ModelObservationBloc, is_normalize){
     ObservationDataFrame <- do.call(rbind.data.frame, ObservationResult[[iobs]])
     ObservationDataFrame$date <- as.Date(ObservationDataFrame$date)
     ObservationDataFrame$id <- full_region_names(ObservationDataFrame$id)
-    ObservationDataFrame$obs_id <- forcats::fct_recode(factor(ObservationDataFrame$obs_id),
+    ObservationDataFrame$obs_id <- fct_recode(factor(ObservationDataFrame$obs_id),
                                                        "Incident confirmed cases" = "1",
                                                        "Incident hospitalized cases" = "2"
     )
