@@ -126,7 +126,7 @@ get_data_covid19_hierarchical <- function(maille_cd = "FRA",
 
 
   data_consolidated$I <- pmax(data_consolidated$cas_confirmes -
-    dplyr::lag(data_consolidated$cas_confirmes, default = 0), 0)
+                                dplyr::lag(data_consolidated$cas_confirmes, default = 0), 0)
 
   data_consolidated$deces <- cummax(tidyr::replace_na(data_consolidated$deces, 0))
   data_consolidated$D <- data_consolidated$deces -
@@ -137,18 +137,26 @@ get_data_covid19_hierarchical <- function(maille_cd = "FRA",
     ungroup() %>%
     top_n(-1, date) %>%
     pull(date)
-  data_consolidated[data_consolidated$date < d_rea_first, "reanimation"] <- 0
-  data_consolidated$U <- pmax(data_consolidated$reanimation -
-    dplyr::lag(data_consolidated$reanimation, default = 0), 0)
+  if(length(d_rea_first)>0){
+    data_consolidated[data_consolidated$date < d_rea_first, "reanimation"] <- 0
+    data_consolidated$U <- pmax(data_consolidated$reanimation -
+                                  dplyr::lag(data_consolidated$reanimation, default = 0), 0)
+  }else{
+    data_consolidated$U <- NA
+  }
 
   d_hospit_first <- data_consolidated %>%
     dplyr::filter(!is.na(hospitalises)) %>%
     ungroup() %>%
     top_n(-1, date) %>%
     pull(date)
-  data_consolidated[data_consolidated$date < d_hospit_first, "hospitalises"] <- 0
-  data_consolidated$H <- pmax(data_consolidated$hospitalises -
-    dplyr::lag(data_consolidated$hospitalises, default = 0), 0)
+  if(length(d_hospit_first)>0){
+    data_consolidated[data_consolidated$date < d_hospit_first, "hospitalises"] <- 0
+    data_consolidated$H <- pmax(data_consolidated$hospitalises -
+                                  dplyr::lag(data_consolidated$hospitalises, default = 0), 0)
+  }else{
+    data_consolidated$H <- NA
+  }
 
   data_consolidated$gueris <- cummax(tidyr::replace_na(data_consolidated$gueris, 0))
   data_consolidated$R <- data_consolidated$gueris -
@@ -161,9 +169,13 @@ get_data_covid19_hierarchical <- function(maille_cd = "FRA",
       filter(I > 0 & lead(I)>0 & lead(I, n = 2)>0 & lead(I, n = 3)>0) %>%
       top_n(-1, date) %>%
       pull(date)
-    data_consolidated2 <- data_consolidated %>%
-      arrange(date) %>%
-      filter(date >= epidemic_start_date)
+    if(length(epidemic_start_date)>0){
+      data_consolidated2 <- data_consolidated %>%
+        arrange(date) %>%
+        filter(date >= epidemic_start_date)
+    }else{
+      data_consolidated2 <- data_consolidated
+    }
   }else{
     data_consolidated2 <- data_consolidated
   }
