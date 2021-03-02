@@ -6,3 +6,5 @@
 ^.*\.pdf$
 ^.*\.jpeg$
 ^.*\.jpg$
+^appveyor\.yml$
+^\.github$

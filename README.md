@@ -8,6 +8,9 @@ dynamics applied to COVID-19 in France.
 
 <!-- badges: start -->
 
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/sistm/SEIRcovid19?branch=master&svg=true)](https://ci.appveyor.com/project/sistm/SEIRcovid19)
+[![R-CMD-check](https://github.com/sistm/SEIRcovid19/workflows/R-CMD-check/badge.svg)](https://github.com/sistm/SEIRcovid19/actions)
 <!-- badges: end -->
 
 ## Installation
