@@ -8,7 +8,8 @@
 #'@examples
 #'data(opencovid19_FR)
 #'#read.csv("data/raw/chiffres-cles_25mars00h30.csv")
-#'#opencovid19_FR <- read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
+#'#link <- "https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv"
+#'#opencovid19_FR <- read.csv(link)
 # #save(opencovid19_FR, file="data/opencovid19_FR.RData")
 #'
 #'@source opencovid-19 data \url{https://github.com/opencovid19-fr/data/blob/master/dist/chiffres-cles.csv}
