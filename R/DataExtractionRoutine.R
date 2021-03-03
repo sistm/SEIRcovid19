@@ -8,15 +8,15 @@ getDataSIVIC<-function(file,workingdirectory,level){
     select(ends_with(namecol), date, statut, ends_with("_mean"))
   sivicdrees_tb$date <- as.Date(sivicdrees_tb$date)
 
-  deces <- sivicdrees_tb %>% filter(statut == "Décès") %>%
+  deces <- sivicdrees_tb %>% filter(statut == "D\u00e9c\u00e8s") %>%
     mutate("death_inflow_from_rea" = predict_from_rea_mean,
            "death_inflow_from_hospit" = predict_entrees_mean - predict_from_rea_mean) %>%
     select(-starts_with("predict_"), -statut)
-  rad <- sivicdrees_tb %>% filter(statut == "Retour à domicile") %>%
+  rad <- sivicdrees_tb %>% filter(statut == "Retour \u00e0 domicile") %>%
    mutate("recovered_inflow_from_rea" = predict_from_rea_mean,
          "recovered_inflow_from_hospit" = predict_entrees_mean - predict_from_rea_mean) %>%
     select(-starts_with("predict_"), -statut)
-  rea <- sivicdrees_tb %>% filter(statut == "Réanimation/SI") %>%
+  rea <- sivicdrees_tb %>% filter(statut == "R\u00e9animation/SI") %>%
     mutate("ICU_inflow" = predict_entrees_mean,
           "ICU_outflow" = predict_sorties_mean) %>%
    select(-starts_with("predict_"), -statut)
@@ -40,30 +40,32 @@ getDataSIVIC<-function(file,workingdirectory,level){
 getDataCIRE<-function(file,workingdirectory){
 
   cire_tb <- readxl::read_xlsx(file, sheet = "suivi_cas_conf_NA")
-  cire_tb[cire_tb$Nb == 2237, "département site preleveur"] <- 33
-  cire_tb[cire_tb$Nb == 3872, "département site preleveur"] <- 33
+  cire_tb[cire_tb$Nb == 2237, "d\u00e9partement site preleveur"] <- 33
+  cire_tb[cire_tb$Nb == 3872, "d\u00e9partement site preleveur"] <- 33
 
   cire_tb <- cire_tb %>%
-    select(-Nb, -sexe, -`date de naissance`, -age, -CP, -COMMUNE, -`labo test`,
-           -`site preleveur`, -`date début des symptomes`,
-           -`rea (0ui/n0n)`, -`hospitalisation (0ui/n0n/s0rti)`) %>%
-    rename(dep = `Département de résidence`) %>%
+    select(-c("Nb", "sexe", "date de naissance", "age", "CP", "COMMUNE", "labo test",
+           "site preleveur", "date d\u00e9but des symptomes",
+           "rea (0ui/n0n)", "hospitalisation (0ui/n0n/s0rti)")) %>%
+    rename("dep" = "D\u00e9partement de r\u00e9sidence") %>%
     mutate(date = as.Date(date_labo)) %>%
     select(-date_labo) %>%
     select(-EHPAD) %>%
     group_by(date, dep) %>%
     arrange(date, dep)
 
-
   departements_NA <- c("16", "17", "19", "23", "24", "33", "40", "47", "64", "79", "86", "87")
-  cire_tb[!(cire_tb$dep %in% departements_NA) & (cire_tb$`département site preleveur` %in% departements_NA), "dep"] <-
-    cire_tb[!(cire_tb$dep %in% departements_NA) & (cire_tb$`département site preleveur` %in% departements_NA), "département site preleveur"]
-  cire_tb[is.na(cire_tb$dep), "dep"] <- cire_tb[is.na(cire_tb$dep), "département site preleveur"]
+  
+  bool_rep_dep_cire <- !(cire_tb %>% pull("dep") %in% departements_NA) & (cire_tb %>% pull("d\u00e9partement site preleveur") %in% departements_NA)
+  
+  cire_tb[bool_rep_dep_cire, "dep"] <- cire_tb[bool_rep_dep_cire, "d\u00e9partement site preleveur"]
+  
+  cire_tb[is.na(cire_tb$dep), "dep"] <- cire_tb[is.na(cire_tb$dep), "d\u00e9partement site preleveur"]
 
   cire_tb <- cire_tb[!is.na(cire_tb$dep), ]
 
   cire_tb <- cire_tb %>%
-    select(-`département site preleveur`) %>%
+    select(-"d\u00e9partement site preleveur") %>%
     summarise(PCRpositive_inflow = n())
   cire_tb$dep <- as.character(cire_tb$dep)
 

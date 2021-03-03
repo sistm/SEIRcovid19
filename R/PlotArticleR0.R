@@ -16,23 +16,6 @@ PlotArticleR0 <- function(ode_list, write_graph_2file = TRUE){
     R0DataFrame[which(R0DataFrame$date==all_date[idate]), "R0_national"] <- sum(data_per_date$R0*data_per_date$popsize)/sum(data_per_date$popsize)
   }
 
-  full_region_names  <-  function(x){
-    fct_recode(x,
-                        "Île-de-France"="IDF",
-                        "Nouvelle-Aquitaine" = "NAquitaine",
-                        "Auvergne-Rhône-Alpes" = "AURA",
-                        "Centre-Val de Loire" = "Centre",
-                        "Bourgogne-Franche-Comté" = "BFC",
-                        "Normandie" = "Normandie",
-                        "Hauts-de-France" = "HDF",
-                        "Grand Est" = "GrandEst",
-                        "Pays de la Loire" = "PaysLoire",
-                        "Bretagne" = "Bretagne",
-                        "Occitanie" = "Occitanie",
-                        "Provence-Alpes-Côte d'Azur" = "PACA"
-    )
-  }
-
   R0DataFrame$id <- full_region_names(R0DataFrame$id)
   R0DataFrame$color <- "Before lockdown"
   R0DataFrame$date <- as.Date(R0DataFrame$date)
