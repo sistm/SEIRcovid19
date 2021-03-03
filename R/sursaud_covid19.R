@@ -5,7 +5,7 @@
 #'
 #' @format A data frame with 6,897 rows and 7 variables:
 #' \describe{
-#'   \item{maille_cd}{administrative code}
+#'   \item{maille_code}{administrative code}
 #'   \item{date_de_passage}{Date of ER visits}
 #'   \item{nbre_pass_tot}{Total number of ER visits}
 #'   \item{nbre_pass_corona}{Number of ER visits for Covid-19 suspicion}
