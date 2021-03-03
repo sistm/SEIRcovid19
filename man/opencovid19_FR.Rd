@@ -21,7 +21,8 @@ as of 2020-03-25 at 00:30 am
 \examples{
 data(opencovid19_FR)
 #read.csv("data/raw/chiffres-cles_25mars00h30.csv")
-#opencovid19_FR <- read.csv("https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv")
+#link <- "https://github.com/opencovid19-fr/data/raw/master/dist/chiffres-cles.csv"
+#opencovid19_FR <- read.csv(link)
 
 }
 \keyword{datasets}

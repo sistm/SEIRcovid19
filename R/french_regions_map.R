@@ -31,18 +31,16 @@ french_regions_map <- function(fill_info_df,
   # save(reg_map_df, reg_map_centroids_df, file = "data/FrenchRegionsMap.RData")
   data(FrenchRegionsMap)
 
-  reg_map_df2plot <- reg_map_df %>% filter(name %in% c("Auvergne-Rhône-Alpes", "Bourgogne-Franche-Comté",
-                                                       "Bretagne", "Centre-Val de Loire", "Grand Est",
-                                                       "Hauts-de-France", "Île-de-France", "Normandie",
-                                                       "Nouvelle-Aquitaine", "Occitanie",
-                                                       "Pays de la Loire", "Provence-Alpes-Côte d'Azur")
-  )
-  reg_map_centroids_df2plot <- reg_map_centroids_df %>% filter(name %in% c("Auvergne-Rhône-Alpes", "Bourgogne-Franche-Comté",
-                                                                           "Bretagne", "Centre-Val de Loire", "Grand Est",
-                                                                           "Hauts-de-France", "Île-de-France", "Normandie",
-                                                                           "Nouvelle-Aquitaine", "Occitanie",
-                                                                           "Pays de la Loire", "Provence-Alpes-Côte d'Azur")
-  )
+  vec_regions <- c("Auvergne-Rh\u00f4ne-Alpes", "Bourgogne-Franche-Comt\u00e9",
+                   "Bretagne", "Centre-Val de Loire", "Grand Est",
+                   "Hauts-de-France", "\u00cele-de-France", "Normandie",
+                   "Nouvelle-Aquitaine", "Occitanie",
+                   "Pays de la Loire", "Provence-Alpes-C\u00f4te d'Azur")
+  
+  reg_map_df2plot <- reg_map_df %>% filter(name %in% vec_regions)
+  
+  reg_map_centroids_df2plot <- reg_map_centroids_df %>% filter(name %in% vec_regions)
+  
   reg_map_centroids_df2plot <- reg_map_centroids_df2plot %>% rename(group = id)
   reg_map_df2plot <- left_join(reg_map_df2plot, fill_info_df, by = c("name"))
   reg_map_centroids_df2plot <- left_join(reg_map_centroids_df2plot, fill_info_df, by = c("name"))
