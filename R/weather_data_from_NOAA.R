@@ -6,11 +6,25 @@
 #' @param years Years of interest. Default is 'c(2020, 2021)'.
 #' @param n.cores Number of cores to download NOAA meteorological dataset.
 #'
-#' @return
+#' @return A dataframe with 9 columns:
+#' \itemize{
+#'   \item label_insee - The name of the region or the departement.
+#'   \item code_insee - The insee code of the departement or the region.
+#'   \item date_day - The date.
+#'   \item stat_t.mean - The mean temperature over the day..
+#'   \item stat_precip - The precipitation over the day.
+#'   \item stat_RH.mean - The mean relative humidity over the day.
+#'   \item stat_AH.mean - The mean absolute humidity over the day.
+#'   \item stat_IPTCC.mean - The mean IPTCC index over the day.
+#'   \item stat_ws.mean - The mean wind speed over the day.
+#'   \item stat_dewpoint.mean - The mean dew point over the day.
+#' }
 #' @export
 #' 
 #' @import dplyr
 #' @importFrom tidyr replace_na
+#' @importFrom worldmet importNOAA
+#' @importFrom lubridate as_date
 #'
 #' @examples
 #' \dontrun{
@@ -27,32 +41,13 @@ weather_data_from_NOAA <- function(Regions_or_Dept_stations_pop,
 
   stations_code <- Regions_or_Dept_stations_pop$code %>% unique
   
-  # regions <- data.frame(id = 1:18,
-  #                       code_insee = c(11,24,27,28,32,44,52,53,75,76,84,93,94,4,6,2,1,3),
-  #                       name =  c("IDF","Centre","BFC","Normandie","HDF","GrandEst","PaysLoire",
-  #                                 "Bretagne","NAquitaine","Occitanie" ,"AURA","PACA","Corse",
-  #                                 "Reunion","Mayotte","Martinique","Guadeloupe","Guyanne"))
-  
   Regions_or_Dept_stations_pop2 <- Regions_or_Dept_stations_pop %>%
-    # mutate(admin_id = sapply(Regions_or_Dept_stations_pop$code_insee,
-    #                          FUN = function(x){which(regions$code_insee == x)}),
-    #        .before = 1) %>%
-    # mutate(region_name = regions$name[admin_id],.after = 1) %>%
-    # dplyr::select(-c(4:6,8:11,13:18)) %>%
     mutate_all(function(x){tidyr::replace_na(x,replace = 0)}) %>%
     mutate(total_pop_buff = fra_pop_su+glp_pop_su+mtq_pop_su+myt_pop_su+reu_pop_su) %>%
     select(code_insee,
-           # surf_km2,
+           nom,
            station,
-           # begin,
-           # end,
            code,
-           # fra_pop_su,
-           # glp_pop_su,
-           # guf_pop_su,
-           # mtq_pop_su,
-           # myt_pop_su,
-           # reu_pop_su,
            total_pop_buff)
   
   # 2 Weather data
@@ -61,13 +56,12 @@ weather_data_from_NOAA <- function(Regions_or_Dept_stations_pop,
   ### last update 2020-03-03 ###
   
   # get NOAA weather data :
-  weather_data <- importNOAA(code = stations_code,
-                             year = years,
-                             hourly = TRUE,
-                             quiet = FALSE,
-                             n.cores = n.cores) %>%
-    mutate(date_day=as_date(date),.after = date) %>%
-    #filter(date_day<as_date("2020-05-15")) %>%
+  weather_data <- worldmet::importNOAA(code = stations_code,
+                                       year = years,
+                                       hourly = TRUE,
+                                       quiet = FALSE,
+                                       n.cores = n.cores) %>%
+    mutate(date_day = lubridate::as_date(date),.after = date) %>%
     dplyr::select(-elev, -latitude, -longitude) %>%
     mutate(code=as.character(code))
   
@@ -76,7 +70,7 @@ weather_data_from_NOAA <- function(Regions_or_Dept_stations_pop,
   # Identify days of observation for each weather station with less than
   # 5 missing hours ("complete day")
   weather_complete_days <- weather_data %>%
-    mutate(date_day = as_date(date), obs = 1) %>%
+    mutate(date_day = lubridate::as_date(date), obs = 1) %>%
     group_by(code, date_day) %>%
     mutate(total_empties = sum(is.na(air_temp) & is.na(RH)),
            count_obs = sum(obs)) %>%
@@ -86,7 +80,7 @@ weather_data_from_NOAA <- function(Regions_or_Dept_stations_pop,
   
   # Calculate daily summaries by station
   daily_station_weather <- weather_data %>%
-    mutate(date_day=as_date(date),
+    mutate(date_day=lubridate::as_date(date),
            AH=6.112*exp(17.67*air_temp/(air_temp+243.5))*RH*2.1674/(273.15+air_temp),
            IPTCC = 100*exp(-0.5*((air_temp-7.5)^2/196+(RH-75)^2/625+(AH-6)^2/2.89))) %>%
     group_by(code, station, date_day) %>%
@@ -114,17 +108,14 @@ weather_data_from_NOAA <- function(Regions_or_Dept_stations_pop,
   
   ## 2.3 Daily weather data per region (weighted)
   
-  ### List of daily weather data per region
-  # weather_data_reg <- map(.x = 1:12,.f = ~fun_weighted_daily_obs(Regions_or_Dept_stations_pop2,.)) %>%
-  #   bind_rows(.id = "admin_id")
-  
+  ### List of daily weather data per region or departement
   vecInsee <- Regions_or_Dept_stations_pop2$code_insee %>% unique
   
-  weather_data_reg_or_dep <- map(.x = Regions_or_Dept_stations_pop2,
-                                 .f = ~fun_weighted_daily_obs(data0 = Regions_or_Dept_stations_pop2,
-                                                              which_insee = .,
-                                                              daily_station_weather = daily_station_weather)) %>%
-    bind_rows(.id = "code_insee")
+  weather_data_reg_or_dep <- purrr::map(.x = vecInsee,
+                                        .f = ~fun_weighted_daily_obs(data0 = Regions_or_Dept_stations_pop2,
+                                                                     which_insee = .,
+                                                                     daily_station_weather = daily_station_weather)) %>%
+    bind_rows()
   
   return(weather_data_reg_or_dep)
   
