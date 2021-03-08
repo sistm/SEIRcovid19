@@ -29,10 +29,14 @@
 #' @examples
 #' \dontrun{
 #' 
-#' weather_data_reg <- weather_data_from_NOAA(Regions_or_Dept_stations_pop = SEIRcovid19::Regions_stations_pop)
+#' weather_data_reg <- weather_data_from_NOAA(
+#'      Regions_or_Dept_stations_pop = SEIRcovid19::Regions_stations_pop
+#'      )
 #' 
 #' 
-#' weather_data_dep <- weather_data_from_NOAA(Regions_or_Dept_stations_pop = SEIRcovid19::Dept_stations_pop)
+#' weather_data_dep <- weather_data_from_NOAA(
+#'      Regions_or_Dept_stations_pop = SEIRcovid19::Dept_stations_pop
+#'      )
 #' }
 #' 
 weather_data_from_NOAA <- function(Regions_or_Dept_stations_pop,

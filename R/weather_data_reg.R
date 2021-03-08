@@ -21,9 +21,11 @@
 #'@examples
 #' ##### script generating meteo dataframe
 #' \dontrun{
-#' weather_data_reg <- weather_data_from_NOAA(Regions_or_Dept_stations_pop = SEIRcovid19FR::Regions_stations_pop,
-#'                                            years = 2020:2021,
-#'                                            n.cores = 2)
+#' weather_data_reg <- weather_data_from_NOAA(
+#'      Regions_or_Dept_stations_pop = SEIRcovid19FR::Regions_stations_pop,
+#'      years = 2020:2021,
+#'      n.cores = 2
+#'      )
 #' save(weather_data_reg, file = "weather_data_reg.rdata")
 #' }
 "weather_data_reg"

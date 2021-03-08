@@ -27,11 +27,16 @@
 #'                    station = c("Mos Eisley", "Mos Espa", "Alderaan city"),
 #'                    code = c(118, 218, 104),
 #'                    total_pop_buff = c(0.6, 0.4, 1.0))
-#' daily_station_weather <- data.frame(code = rep(c(118, 218, 104), 2),
-#'                                    date_day = lubridate::as_date(x = c(rep("2080-01-01", 3), rep("2080-01-02", 3))),
-#'                                    stat_temp = c(32, 34, 18, 36, 35, 15))
+#' daily_station_weather <- data.frame(
+#'                code = rep(c(118, 218, 104), 2),
+#'                date_day = lubridate::as_date(x = c(rep("2080-01-01", 3),
+#'                                                    rep("2080-01-02", 3))),
+#'                stat_temp = c(32, 34, 18, 36, 35, 15)
+#'                )
 #' which_insee <- 1
-#' fun_weighted_daily_obs(data0 = data0, which_insee = which_insee, daily_station_weather = daily_station_weather)
+#' fun_weighted_daily_obs(data0 = data0,
+#'                        which_insee = which_insee,
+#'                        daily_station_weather = daily_station_weather)
 #' 
 #' 
 fun_weighted_daily_obs <- function(data0, which_insee, daily_station_weather){
