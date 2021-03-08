@@ -1,9 +1,10 @@
 #' weather_data_from_NOAA
 #'
-#' @description Provide the weather data from NOAA. User should provide either 'Regions_stations_pop' or 'Dept_stations_pop' to the function which are datasets extracted from QGIS available in SEIRcovid19 package.
+#' @description Provide the weather data from NOAA. User should provide either 'Regions_stations_pop' or 'Dept_stations_pop' to the Regions_or_Dept_stations_pop parameter which are datasets extracted from QGIS available in SEIRcovid19 package.
 #'
-#' @param Regions_stations_pop The region QGIS dataset available in SEIRcovid19 package. Default is null.
-#' @param Dept_stations_pop The departement QGIS dataset available in SEIRcovid19 package. Default is null.
+#' @param Regions_or_Dept_stations_pop The region or departement QGIS dataset available in SEIRcovid19 package.
+#' @param years Years of interest. Default is 'c(2020, 2021)'.
+#' @param n.cores Number of cores to download NOAA meteorological dataset.
 #'
 #' @return
 #' @export
@@ -12,23 +13,47 @@
 #' @importFrom tidyr replace_na
 #'
 #' @examples
-weather_data_from_NOAA <- function(Regions_stations_pop = NULL,
-                                   Dept_stations_pop = NULL){
+#' \dontrun{
+#' 
+#' weather_data_reg <- weather_data_from_NOAA(Regions_or_Dept_stations_pop = SEIRcovid19::Regions_stations_pop)
+#' 
+#' 
+#' weather_data_dep <- weather_data_from_NOAA(Regions_or_Dept_stations_pop = SEIRcovid19::Dept_stations_pop)
+#' }
+#' 
+weather_data_from_NOAA <- function(Regions_or_Dept_stations_pop,
+                                   years = c(2020, 2021),
+                                   n.cores = 1){
 
-  regions <- data.frame(id = 1:18,
-                        code_insee = c(11,24,27,28,32,44,52,53,75,76,84,93,94,4,6,2,1,3),
-                        name =  c("IDF","Centre","BFC","Normandie","HDF","GrandEst","PaysLoire",
-                                  "Bretagne","NAquitaine","Occitanie" ,"AURA","PACA","Corse",
-                                  "Reunion","Mayotte","Martinique","Guadeloupe","Guyanne"))
+  stations_code <- Regions_or_Dept_stations_pop$code %>% unique
   
-  Regions_stations_pop2 <- Regions_stations_pop %>%
-    mutate(admin_id = sapply(Regions_stations_pop$code_insee,
-                             FUN = function(x){which(regions$code_insee == x)}),
-           .before = 1) %>%
-    mutate(region_name = regions$name[admin_id],.after = 1) %>%
-    dplyr::select(-c(4:6,8:11,13:18)) %>%
+  # regions <- data.frame(id = 1:18,
+  #                       code_insee = c(11,24,27,28,32,44,52,53,75,76,84,93,94,4,6,2,1,3),
+  #                       name =  c("IDF","Centre","BFC","Normandie","HDF","GrandEst","PaysLoire",
+  #                                 "Bretagne","NAquitaine","Occitanie" ,"AURA","PACA","Corse",
+  #                                 "Reunion","Mayotte","Martinique","Guadeloupe","Guyanne"))
+  
+  Regions_or_Dept_stations_pop2 <- Regions_or_Dept_stations_pop %>%
+    # mutate(admin_id = sapply(Regions_or_Dept_stations_pop$code_insee,
+    #                          FUN = function(x){which(regions$code_insee == x)}),
+    #        .before = 1) %>%
+    # mutate(region_name = regions$name[admin_id],.after = 1) %>%
+    # dplyr::select(-c(4:6,8:11,13:18)) %>%
     mutate_all(function(x){tidyr::replace_na(x,replace = 0)}) %>%
-    mutate(total_pop_buff = fra_pop_su+glp_pop_su+mtq_pop_su+myt_pop_su+reu_pop_su)
+    mutate(total_pop_buff = fra_pop_su+glp_pop_su+mtq_pop_su+myt_pop_su+reu_pop_su) %>%
+    select(code_insee,
+           # surf_km2,
+           station,
+           # begin,
+           # end,
+           code,
+           # fra_pop_su,
+           # glp_pop_su,
+           # guf_pop_su,
+           # mtq_pop_su,
+           # myt_pop_su,
+           # reu_pop_su,
+           total_pop_buff)
   
   # 2 Weather data
   ## 2.1 Import NOAA data
@@ -36,31 +61,28 @@ weather_data_from_NOAA <- function(Regions_stations_pop = NULL,
   ### last update 2020-03-03 ###
   
   # get NOAA weather data :
-  # weather_data <- importNOAA(code = stations_code, year = 2020:2021, hourly = TRUE,
-  #                            quiet = FALSE, n.cores=8)
-  #
-  #saveRDS(weather_data,paste0(today(),"_weather_data.rds"))
-  weather_data <- readRDS("2021-03-03_weather_data.rds")
-  
-  weather_data <- weather_data %>%
+  weather_data <- importNOAA(code = stations_code,
+                             year = years,
+                             hourly = TRUE,
+                             quiet = FALSE,
+                             n.cores = n.cores) %>%
     mutate(date_day=as_date(date),.after = date) %>%
     #filter(date_day<as_date("2020-05-15")) %>%
     dplyr::select(-elev, -latitude, -longitude) %>%
     mutate(code=as.character(code))
-  
   
   ## 2.2 Daily summary per station
   
   # Identify days of observation for each weather station with less than
   # 5 missing hours ("complete day")
   weather_complete_days <- weather_data %>%
-    mutate(date_day=as_date(date),obs = 1) %>%
+    mutate(date_day = as_date(date), obs = 1) %>%
     group_by(code, date_day) %>%
-    mutate(total_empties=sum(is.na(air_temp) & is.na(RH)),
+    mutate(total_empties = sum(is.na(air_temp) & is.na(RH)),
            count_obs = sum(obs)) %>%
     distinct(code,date_day, .keep_all = TRUE) %>%
-    dplyr::select(code, date_day, total_empties,count_obs) %>%
-    mutate(complete_day=ifelse(count_obs-total_empties > 19, 1, 0))
+    dplyr::select(code, date_day, total_empties, count_obs) %>%
+    mutate(complete_day = ifelse(count_obs-total_empties > 19, 1, 0))
   
   # Calculate daily summaries by station
   daily_station_weather <- weather_data %>%
@@ -93,9 +115,17 @@ weather_data_from_NOAA <- function(Regions_stations_pop = NULL,
   ## 2.3 Daily weather data per region (weighted)
   
   ### List of daily weather data per region
-  weather_data_reg <- map(.x = 1:12,.f = ~fun_weighted_daily_obs(Regions_stations_pop2,.)) %>%
-    bind_rows(.id = "admin_id")
+  # weather_data_reg <- map(.x = 1:12,.f = ~fun_weighted_daily_obs(Regions_or_Dept_stations_pop2,.)) %>%
+  #   bind_rows(.id = "admin_id")
   
-  return(weather_data_reg)
+  vecInsee <- Regions_or_Dept_stations_pop2$code_insee %>% unique
+  
+  weather_data_reg_or_dep <- map(.x = Regions_or_Dept_stations_pop2,
+                                 .f = ~fun_weighted_daily_obs(data0 = Regions_or_Dept_stations_pop2,
+                                                              which_insee = .,
+                                                              daily_station_weather = daily_station_weather)) %>%
+    bind_rows(.id = "code_insee")
+  
+  return(weather_data_reg_or_dep)
   
 }
