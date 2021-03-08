@@ -1,34 +1,36 @@
-Package: SEIRcovid19FR
 Type: Package
-Title: Interface Monolix for multilevel modeling of epidemic dynamics
+Package: SEIRcovid19FR
+Title: Interface Monolix for multilevel modeling of epidemic
+    dynamics
 Version: 0.3.0
 Author: Melanie Prague, Dan Dutartre, Boris P Hejblum
 Maintainer: Boris P Hejblum <boris.hejblum@u-bordeaux.fr>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-Depends: R (>= 3.5.0)
-Imports: colorspace,
-         deSolve,
-         dplyr,
-         forcats,
-         glue,
-         ggplot2,
-         here,
-         lubridate,
-         mlxR,
-         parallel,
-         patchwork,
-         pracma,
-         readxl,
-         reshape2,
-         scales,
-         stats,
-         tibble,
-         tidyr,
-         utils,
-         xtable
-Suggests: lixoftConnectors
 License: MIT + file LICENSE
+Depends: 
+    R (>= 3.5.0)
+Imports: 
+    colorspace,
+    deSolve,
+    dplyr,
+    forcats,
+    ggplot2,
+    here,
+    lixoftConnectors,
+    lubridate,
+    mlxR,
+    parallel,
+    patchwork,
+    pracma,
+    purrr,
+    readxl,
+    reshape2,
+    scales,
+    tibble,
+    tidyr,
+    worldmet,
+    xtable
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
