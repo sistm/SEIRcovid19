@@ -19,11 +19,11 @@ Estimate.default <- function(obj, time,is_global,regressor_value,TimeDependantPa
 #' @export
 Estimate.OdeSystem <- function(ode, time,is_global=0,regressor_value,TimeDependantParameter)
 {
-  lixoftConnectorsState<-lixoftConnectors::getLixoftConnectorsState(quietly = TRUE)
+  .hiddenCall("lixoftConnectorsState<-lixoftConnectors::getLixoftConnectorsState(quietly = TRUE)")
 
   if (lixoftConnectorsState$software == "simulx"){ # => nothing to be done
   }else{
-    lixoftConnectors::initializeLixoftConnectors(software="simulx",force=TRUE)
+    ".hiddenCall(lixoftConnectors::initializeLixoftConnectors(software='simulx',force=TRUE))"
   }
 
   param_and_init<-c(ode$parameter,ode$InitState)
