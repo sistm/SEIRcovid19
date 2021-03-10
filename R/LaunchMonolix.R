@@ -21,7 +21,7 @@ LaunchMonolix.default <- function(obj,  ProjectName, ObservationType, Mapping,ru
 LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,runToBeDone=TRUE,prior_mean=list(),prior_std=list(),PopInitValue=list())
 {
   # Initialize the connection
-  lixoftConnectors::initializeLixoftConnectors(software="monolix")
+  .hiddenCall("lixoftConnectors::initializeLixoftConnectors(software='monolix')")
 
   # Function to set Distribution and Parameter
   mlxProject.setIndividualParameterDistribution <- function(a,b) {
@@ -42,11 +42,11 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
     eval.parent(parse(text =paste0('r <- lixoftConnectors::setPopulationParameterInformation(',name,'_pop = list(initialValue = ',value_mean,', method = "FIXED" ) )')))
   }
   # Create the project
-  lixoftConnectors::newProject(modelFile = ode$ModelFile,
+  .hiddenCall("lixoftConnectors::newProject(modelFile = ode$ModelFile,
                                data = list(dataFile = ode$DataInfo$File,
                                            headerTypes =ode$DataInfo$HeaderType,
                                            observationTypes = ObservationType,
-                                           mapping = Mapping))
+                                           mapping = Mapping))")
   # Set initial value of the optimizable parameter
   # first take the value of the system
   parameter_with_normal_dist<-(c(names(ode$parameter[ode$Distribution$param=="normal"]),names(ode$InitState[ode$Distribution$ini=="normal"])))
@@ -105,26 +105,26 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
   }
   
   # Set all task to True (default for us)
-  scenario <- lixoftConnectors::getScenario()
+  .hiddenCall("scenario <- lixoftConnectors::getScenario()")
   for (itask in 1:length(scenario$tasks)){
     scenario$tasks[itask]<-TRUE
   }
   scenario$linearization<-FALSE
-  lixoftConnectors::setScenario(scenario)
+  .hiddenCall("lixoftConnectors::setScenario(scenario)")
   #Save the project
-  info = lixoftConnectors::getPopulationParameterInformation()
+  .hiddenCall("info = lixoftConnectors::getPopulationParameterInformation()")
   info
-  indivModel = lixoftConnectors::getIndividualParameterModel()
+  .hiddenCall("indivModel = lixoftConnectors::getIndividualParameterModel()")
   
   indivModel$variability
-  lixoftConnectors::saveProject(projectFile = paste(here::here(),'/MonolixFile/',ProjectName,".mlxtran",sep=""))
+  .hiddenCall("lixoftConnectors::saveProject(projectFile = paste(here::here(),'/MonolixFile/',ProjectName,'.mlxtran',sep=''))")
   if(runToBeDone){
-    lixoftConnectors::runScenario()
+    .hiddenCall("lixoftConnectors::runScenario()")
     dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',sep=""))
     dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,sep=""))
     dir.create(paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/IndividualParameters/',sep=""))
     # Indiv Param
-    indiv<-lixoftConnectors::getEstimatedIndividualParameters()
+    .hiddenCall("indiv<-lixoftConnectors::getEstimatedIndividualParameters()")
     indiv_mode<-indiv$conditionalMode
     indiv_sd<-indiv$conditionalSD
     new_names_mode<-rep("",length(names(indiv_mode)))
@@ -143,14 +143,14 @@ LaunchMonolix.OdeSystem <- function(ode, ProjectName, ObservationType, Mapping,r
     indiv_param<-cbind(indiv_mode,indiv_sd[,new_names_sd[2:length(new_names_sd)]])
     write.table(indiv_param,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/IndividualParameters/',"estimatedIndividualParameters.txt",sep=""),sep=",")
     # Pop standard error
-    pop<-lixoftConnectors::getEstimatedStandardErrors()
+    .hiddenCall("pop<-lixoftConnectors::getEstimatedStandardErrors()")
     write.table(pop,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/',"populationParameters.txt",sep=""),sep=",")
     # Log Likehood
-    likehood<-lixoftConnectors::getEstimatedLogLikelihood()
+    .hiddenCall("likehood<-lixoftConnectors::getEstimatedLogLikelihood()")
     write.table(likehood,file=paste(here::here(),'/MonolixFile/outputMonolix/',ProjectName,'/',"logLikelihood.txt",sep=""),sep=",")
     # Covariance Fisher info
-    corr<-lixoftConnectors::getCorrelationOfEstimates()
-    se<-lixoftConnectors::getEstimatedStandardErrors()
+    .hiddenCall("corr<-lixoftConnectors::getCorrelationOfEstimates()")
+    .hiddenCall("se<-lixoftConnectors::getEstimatedStandardErrors()")
     dimension<-dim(corr$stochasticApproximation)
     covariance<-corr
     for (i in 1:dimension[1]){
