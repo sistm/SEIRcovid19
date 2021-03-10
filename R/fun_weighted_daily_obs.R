@@ -65,9 +65,10 @@ fun_weighted_daily_obs <- function(data0, which_insee, daily_station_weather){
                 IPTCC.mean = weighted.mean(stat_IPTCC.mean,pop_buff,na.rm = TRUE),
                 ws.mean = weighted.mean(stat_ws.mean,pop_buff,na.rm = TRUE),
                 dewpoint.mean = weighted.mean(stat_dewpoint.mean,pop_buff,na.rm = TRUE)) %>%
-      mutate(admin_id = which_id, admin_name = unique(data0$region_name[data0$admin_id == which_id]),
+      mutate(label_insee = unique(list_stations$nom),
+             code_insee = which_insee,
              .before = 1)
-    
+
     return(reg_daily_station_weather)
   }
 }
