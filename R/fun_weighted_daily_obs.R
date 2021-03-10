@@ -56,13 +56,16 @@ fun_weighted_daily_obs <- function(data0, which_insee, daily_station_weather){
     reg_daily_station_weather <- daily_station_weather %>%
       filter(code %in% list_stations$code) %>%
       dplyr::select(!contains(".min") & !contains(".max")) %>%
-      mutate(weight_pop = sapply(code,
-                                 function(x){list_stations$weight_pop[which(list_stations$code == x)]})) %>%
-      mutate_at(.vars = vars(contains("stat_")),.funs = funs(.*weight_pop))  %>%
+      mutate(pop_buff = sapply(code, function(x){list_stations$total_pop_buff[which(list_stations$code == x)]})) %>%
       group_by(date_day) %>%
-      summarise_at(vars(contains("stat_")),.funs = sum) %>%
-      mutate(label_insee = unique(list_stations$nom),
-             code_insee = which_insee,
+      summarise(t.mean = weighted.mean(stat_t.mean,pop_buff,na.rm = TRUE),
+                precip = weighted.mean(stat_precip,pop_buff,na.rm = TRUE),
+                RH.mean = weighted.mean(stat_RH.mean,pop_buff,na.rm = TRUE),
+                AH.mean = weighted.mean(stat_AH.mean,pop_buff,na.rm = TRUE),
+                IPTCC.mean = weighted.mean(stat_IPTCC.mean,pop_buff,na.rm = TRUE),
+                ws.mean = weighted.mean(stat_ws.mean,pop_buff,na.rm = TRUE),
+                dewpoint.mean = weighted.mean(stat_dewpoint.mean,pop_buff,na.rm = TRUE)) %>%
+      mutate(admin_id = which_id, admin_name = unique(data0$region_name[data0$admin_id == which_id]),
              .before = 1)
     
     return(reg_daily_station_weather)

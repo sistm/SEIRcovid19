@@ -25,6 +25,7 @@
 #' @importFrom tidyr replace_na
 #' @importFrom worldmet importNOAA
 #' @importFrom lubridate as_date
+#' @import hablar
 #'
 #' @examples
 #' \dontrun{
@@ -88,23 +89,23 @@ weather_data_from_NOAA <- function(Regions_or_Dept_stations_pop,
            AH=6.112*exp(17.67*air_temp/(air_temp+243.5))*RH*2.1674/(273.15+air_temp),
            IPTCC = 100*exp(-0.5*((air_temp-7.5)^2/196+(RH-75)^2/625+(AH-6)^2/2.89))) %>%
     group_by(code, station, date_day) %>%
-    summarise(stat_t.mean=mean(air_temp, na.rm=TRUE),
-              stat_t.min=min(air_temp, na.rm = TRUE),
-              stat_t.max=max(air_temp, na.rm = TRUE),
-              stat_precip=sum(precip, na.rm=TRUE),
-              stat_RH.mean=mean(RH, na.rm=TRUE),
-              stat_RH.min=min(RH, na.rm=TRUE),
-              stat_RH.max=max(RH, na.rm=TRUE),
-              stat_AH.mean=mean(AH, na.rm=TRUE),
-              stat_AH.min=min(AH, na.rm=TRUE),
-              stat_AH.max=max(AH, na.rm=TRUE),
-              stat_IPTCC.mean=mean(IPTCC, na.rm=TRUE),
-              stat_IPTCC.min=min(IPTCC, na.rm=TRUE),
-              stat_IPTCC.max=max(IPTCC, na.rm=TRUE),
-              stat_ws.mean=mean(ws, na.rm=TRUE),
-              stat_dewpoint.mean=mean(dew_point, na.rm=TRUE),
-              stat_dewpoint.min=min(dew_point, na.rm=TRUE),
-              stat_dewpoint.max=max(dew_point, na.rm=TRUE)
+    summarise(stat_t.mean=mean_(air_temp, ignore_na =TRUE),
+              stat_t.pmin=min_(air_temp, ignore_na = TRUE),
+              stat_t.pmax=max_(air_temp, ignore_na = TRUE),
+              stat_precip=sum_(precip, ignore_na=TRUE),
+              stat_RH.mean=mean_(RH, ignore_na=TRUE),
+              stat_RH.min=min_(RH, ignore_na=TRUE),
+              stat_RH.max=max_(RH, ignore_na=TRUE),
+              stat_AH.mean=mean_(AH, ignore_na=TRUE),
+              stat_AH.min=min_(AH, ignore_na=TRUE),
+              stat_AH.max=max_(AH, ignore_na=TRUE),
+              stat_IPTCC.mean=mean_(IPTCC, ignore_na=TRUE),
+              stat_IPTCC.min=min_(IPTCC, ignore_na=TRUE),
+              stat_IPTCC.max=max_(IPTCC, ignore_na=TRUE),
+              stat_ws.mean=mean_(ws, ignore_na=TRUE),
+              stat_dewpoint.mean=mean_(dew_point, ignore_na=TRUE),
+              stat_dewpoint.min=min_(dew_point, ignore_na=TRUE),
+              stat_dewpoint.max=max_(dew_point, ignore_na=TRUE)
     ) %>%
     
     left_join(weather_complete_days, by = c("code", "date_day"))  %>%
