@@ -17,7 +17,6 @@ Imports:
     ggplot2,
     hablar,
     here,
-    lixoftConnectors,
     lubridate,
     mlxR,
     parallel,
