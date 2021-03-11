@@ -11,13 +11,13 @@
 #'   \item label_insee - The name of the region or the departement.
 #'   \item code_insee - The insee code of the departement or the region.
 #'   \item date_day - The date.
-#'   \item stat_t.mean - The mean temperature over the day..
-#'   \item stat_precip - The precipitation over the day.
-#'   \item stat_RH.mean - The mean relative humidity over the day.
-#'   \item stat_AH.mean - The mean absolute humidity over the day.
-#'   \item stat_IPTCC.mean - The mean IPTCC index over the day.
-#'   \item stat_ws.mean - The mean wind speed over the day.
-#'   \item stat_dewpoint.mean - The mean dew point over the day.
+#'   \item t.mean - The mean temperature over the day..
+#'   \item precip - The precipitation over the day.
+#'   \item RH.mean - The mean relative humidity over the day.
+#'   \item AH.mean - The mean absolute humidity over the day.
+#'   \item IPTCC.mean - The mean IPTCC index over the day.
+#'   \item ws.mean - The mean wind speed over the day.
+#'   \item dewpoint.mean - The mean dew point over the day.
 #' }
 #' @export
 #' 
@@ -25,30 +25,31 @@
 #' @importFrom tidyr replace_na
 #' @importFrom worldmet importNOAA
 #' @importFrom lubridate as_date
-#' @import hablar
+#' @importFrom hablar mean_ min_ max_ sum_
 #'
 #' @examples
 #' \dontrun{
 #'
-# 
-# 
-# weather_data_reg <- weather_data_from_NOAA(
-#      Regions_or_Dept_stations_pop = SEIRcovid19FR::Regions_stations_pop
-#      )
-# 
-# save(weather_data_reg, file = "data/weather_data_reg.rdata")
-# 
-# weather_data_dep <- weather_data_from_NOAA(
-#      Regions_or_Dept_stations_pop = SEIRcovid19FR::Dept_stations_pop
-#      )
-# 
-# save(weather_data_dep, file = "data/weather_data_dep.rdata")
-# 
-# weather_data_from_NOAA <- function(Regions_or_Dept_stations_pop,
-#                                    years = c(2020, 2021),
-#                                    n.cores = 1){
+#'weather_data_reg <- weather_data_from_NOAA(
+#'  Regions_or_Dept_stations_pop = SEIRcovid19FR::Regions_stations_pop,
+#'  years = 2020:2021,
+#'  n.cores = 2
+#')
+#'
+#'save(weather_data_reg, file = "data/weather_data_reg.rdata")
+#'
+#'weather_data_dep <- weather_data_from_NOAA(
+#'  Regions_or_Dept_stations_pop = SEIRcovid19FR::Dept_stations_pop,
+#'  years = 2020:2021,
+#'  n.cores = 2
+#')
+#'
+#'save(weather_data_dep, file = "data/weather_data_dep.rdata")
 #' }
-  
+weather_data_from_NOAA <- function(Regions_or_Dept_stations_pop,
+                                    years = c(2020, 2021),
+                                    n.cores = 1){
+
   stations_code <- Regions_or_Dept_stations_pop$code %>% unique
   
   Regions_or_Dept_stations_pop2 <- Regions_or_Dept_stations_pop %>%
