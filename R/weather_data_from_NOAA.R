@@ -11,13 +11,13 @@
 #'   \item label_insee - The name of the region or the departement.
 #'   \item code_insee - The insee code of the departement or the region.
 #'   \item date_day - The date.
-#'   \item stat_t.mean - The mean temperature over the day..
-#'   \item stat_precip - The precipitation over the day.
-#'   \item stat_RH.mean - The mean relative humidity over the day.
-#'   \item stat_AH.mean - The mean absolute humidity over the day.
-#'   \item stat_IPTCC.mean - The mean IPTCC index over the day.
-#'   \item stat_ws.mean - The mean wind speed over the day.
-#'   \item stat_dewpoint.mean - The mean dew point over the day.
+#'   \item t.mean - The mean temperature over the day..
+#'   \item precip - The precipitation over the day.
+#'   \item RH.mean - The mean relative humidity over the day.
+#'   \item AH.mean - The mean absolute humidity over the day.
+#'   \item IPTCC.mean - The mean IPTCC index over the day.
+#'   \item ws.mean - The mean wind speed over the day.
+#'   \item dewpoint.mean - The mean dew point over the day.
 #' }
 #' @export
 #' 

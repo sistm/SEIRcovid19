@@ -8,13 +8,13 @@
 #'   \item label_insee region name
 #'   \item code_insee insee code, 1 per region
 #'   \item date_day Date of meteorological data
-#'   \item stat_t.mean Mean temperature over the day
-#'   \item stat_precip Precipitation over the day
-#'   \item stat_RH.mean Mean relative humidity over the day
-#'   \item stat_AH.mean Mean absolute humidity over the day
-#'   \item stat_IPTCC.mean mean IPTCC index over the day
-#'   \item stat_ws.mean mean wind speed over the day
-#'   \item stat_dewpoint.mean Mean dew point ("point de rosée") over the day.
+#'   \item t.mean Mean temperature over the day
+#'   \item precip Precipitation over the day
+#'   \item RH.mean Mean relative humidity over the day
+#'   \item AH.mean Mean absolute humidity over the day
+#'   \item IPTCC.mean mean IPTCC index over the day
+#'   \item ws.mean mean wind speed over the day
+#'   \item dewpoint.mean Mean dew point ("point de rosée") over the day.
 #' }
 #' @format A data frame with 5024 rows and 10 variables
 #'
