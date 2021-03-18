@@ -1,11 +1,12 @@
 Type: Package
 Package: SEIRcovid19FR
-Title: Interface Monolix for multilevel modeling of epidemic dynamics
+Title: Interface Monolix for multilevel modeling of epidemic
+    dynamics
 Version: 0.3.0
 Author: Melanie Prague, Dan Dutartre, Boris P Hejblum
 Maintainer: Boris P Hejblum <boris.hejblum@u-bordeaux.fr>
-Description: More about what it does (maybe more than one line) Use four
-    spaces when indenting paragraphs within the Description.
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
 License: MIT + file LICENSE
 Depends: 
     R (>= 3.5.0)
@@ -26,8 +27,10 @@ Imports:
     readxl,
     reshape2,
     scales,
+    stringr,
     tibble,
     tidyr,
+    utils,
     worldmet,
     xtable
 Encoding: UTF-8
