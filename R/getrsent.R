@@ -1,6 +1,6 @@
 #' getrsent
 #'
-#' @description Get rsent for each region.
+#' @description Get ascertainment rate for each region.
 #'
 #' @param dataset A dataset with the id column
 #'

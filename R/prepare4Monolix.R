@@ -3,7 +3,7 @@
 #' @description Perform some modification to a dataset to make it ready for monolix.
 #'
 #' @param dataset the dataset of interest
-#' @param recuperation the variables of recuperation (no idea)
+#' @param recuperation correspond to the observations (usually H and Hin)
 #' @param nametokeep the variables to keep
 #'
 #' @return A dataframe prepared for monolix

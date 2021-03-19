@@ -45,8 +45,3 @@ ImportSivic <- function(file,
 
   return(dfResult)
 }
-
-# sivic <- ImportSivic(file = "data/sivic_panel_reg_latest (7).csv")
-# Monolix_REG_2021_03_12 <- readr::read_delim("data/Monolix_REG_2021-03-12.txt",
-#                                             "\t", escape_double = FALSE, trim_ws = TRUE)
-# any(Monolix_REG_2021_03_12 != sivic)
